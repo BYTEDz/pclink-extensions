@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Speed Test</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #12100e;
+            --surface: #1e1b18;
+            --primary: #f39c12;
+            --on-primary: #000;
+            --accent: #03dac6;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --divider: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+        }
+
+        .brand {
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--surface);
+            padding: 3px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 280px;
+            border: var(--card-border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+        }
+
+        .gauge-container {
+            position: relative;
+            width: 170px;
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .gauge-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--surface);
+        }
+
+        .gauge-progress {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            transform: rotate(-45deg);
+            transition: transform 0.3s ease;
+        }
+
+        .gauge-value {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .speed-number {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .speed-unit {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 16px;
+            border: var(--card-border);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .stat-unit {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .info-bar {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .btn-start {
+            width: 100%;
+            max-width: 400px;
+            padding: 14px;
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(243, 156, 18, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .btn-start:disabled {
+            background: var(--surface);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+
+        .btn-start:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .status-badge {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            display: inline-block;
+        }
+
+        #appLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease-out;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .testing .gauge-progress {
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <div id="appLoader">
+        <div
+            style="width: 32px; height: 32px; border: 3px solid var(--divider); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;">
+        </div>
+        <div style="margin-top: 16px; color: var(--primary); font-weight: 600; font-size: 11px; letter-spacing: 1px;">
+            INITIALIZING</div>
+    </div>
+
+    <div class="header">
+        <div class="brand">PCLink Connect</div>
+        <div id="statusBadge" class="status-badge">Ready to Test</div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" id="tabInternet" onclick="setMode('internet')">Internet</div>
+        <div class="tab" id="tabLan" onclick="setMode('lan')">Local Link</div>
+    </div>
+
+    <div class="gauge-container" id="gauge">
+        <div class="gauge-outer"></div>
+        <div class="gauge-progress" id="gaugeProgress"></div>
+        <div class="gauge-value">
+            <div class="speed-number" id="mainSpeed">0.0</div>
+            <div class="speed-unit" id="mainUnit">Mbps</div>
+        </div>
+    </div>
+
+    <div class="stats-grid" id="internetStats">
+        <div class="stat-card">
+            <div class="stat-label"><i data-lucide="arrow-down" style="width: 9px; color: var(--primary)"></i> Download
+            </div>
+            <div class="stat-value"><span id="dlValue">0.0</span> <span class="stat-unit">Mbps</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><i data-lucide="arrow-up" style="width: 9px; color: var(--accent)"></i> Upload
+            </div>
+            <div class="stat-value"><span id="ulValue">0.0</span> <span class="stat-unit">Mbps</span></div>
+        </div>
+        <div class="stat-card" style="grid-column: span 2">
+            <div class="stat-label"><i data-lucide="zap" style="width: 9px; color: #ffeb3b"></i> Ping Latency</div>
+            <div class="stat-value"><span id="pingValue">0</span> <span class="stat-unit">ms</span></div>
+        </div>
+    </div>
+
+    <!-- LAN Stats View (Simplified) -->
+    <div class="stats-grid hidden" id="lanStats">
+        <div class="stat-card" style="grid-column: span 2">
+            <div class="stat-label"><i data-lucide="zap" style="width: 9px; color: #ffeb3b"></i> Network Latency</div>
+            <div class="stat-value"><span id="lanPingValue">0</span> <span class="stat-unit">ms</span></div>
+        </div>
+        <div class="stat-card" style="grid-column: span 2">
+            <div class="stat-label"><i data-lucide="wifi" style="width: 9px; color: var(--primary)"></i> Highest
+                Measured Speed</div>
+            <div class="stat-value"><span id="lanMaxSpeed">0.0</span> <span class="stat-unit">Mbps</span></div>
+        </div>
+    </div>
+
+    <div class="info-bar" id="infoBar">
+        <i data-lucide="globe" id="infoIcon" style="width: 14px;"></i>
+        <span id="serverInfo">Detecting network...</span>
+    </div>
+
+    <button id="startBtn" class="btn-start" onclick="startTest()">
+        <i data-lucide="play"></i>
+        <span>START SPEED TEST</span>
+    </button>
+
+    <script>
+        lucide.createIcons();
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let isTesting = false;
+        let currentMode = 'internet';
+
+        function setMode(mode) {
+            if (isTesting) return;
+            currentMode = mode;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(mode === 'internet' ? 'tabInternet' : 'tabLan').classList.add('active');
+
+            if (mode === 'internet') {
+                document.getElementById('internetStats').classList.remove('hidden');
+                document.getElementById('lanStats').classList.add('hidden');
+                document.getElementById('serverInfo').textContent = 'Internet Speedtest';
+                document.getElementById('startBtn').querySelector('span').innerText = 'START INTERNET TEST';
+                document.getElementById('infoIcon').setAttribute('data-lucide', 'globe');
+            } else {
+                document.getElementById('internetStats').classList.add('hidden');
+                document.getElementById('lanStats').classList.remove('hidden');
+                document.getElementById('serverInfo').textContent = 'Local PC Link';
+                document.getElementById('startBtn').querySelector('span').innerText = 'START LOCAL TEST';
+                document.getElementById('infoIcon').setAttribute('data-lucide', 'wifi');
+            }
+            lucide.createIcons();
+        }
+
+        async function startTest() {
+            if (currentMode === 'internet') {
+                startInternetTest();
+            } else {
+                startLanTest();
+            }
+        }
+
+        async function startInternetTest() {
+            try {
+                const res = await fetch(apiPath + '/start', { method: 'POST' });
+                if ((await res.json()).status === 'success') {
+                    isTesting = true;
+                    updateUI();
+                }
+            } catch (e) { alert("Error: " + e.message); }
+        }
+
+        async function startLanTest() {
+            isTesting = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('body').classList.add('testing');
+
+            let maxSpeed = 0;
+
+            try {
+                // 1. PING
+                updateStatus('Measuring Latency...');
+                const startPing = Date.now();
+                await fetch(apiPath + '/status');
+                const ping = Date.now() - startPing;
+                document.getElementById('lanPingValue').textContent = ping;
+
+                // 2. PC -> Phone
+                updateStatus('Testing PC to Phone...');
+                const startDl = Date.now();
+                const dlRes = await fetch(apiPath + '/local/download');
+                const reader = dlRes.body.getReader();
+                let received = 0;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    received += value.length;
+                    const elapsed = (Date.now() - startDl) / 1000;
+                    const mbps = (received * 8) / (1024 * 1024) / elapsed;
+                    document.getElementById('mainSpeed').textContent = mbps.toFixed(1);
+                    if (mbps > maxSpeed) maxSpeed = mbps;
+                }
+
+                // 3. Phone -> PC
+                updateStatus('Testing Phone to PC...');
+                const uploadData = new Uint8Array(20 * 1024 * 1024); // 20MB
+                const startUl = Date.now();
+                await fetch(apiPath + '/local/upload', { method: 'POST', body: uploadData });
+                const totalUlTime = (Date.now() - startUl) / 1000;
+                const uploadMbps = (uploadData.length * 8) / (1024 * 1024) / totalUlTime;
+                if (uploadMbps > maxSpeed) maxSpeed = uploadMbps;
+                document.getElementById('mainSpeed').textContent = uploadMbps.toFixed(1);
+
+                // Final Result
+                document.getElementById('lanMaxSpeed').textContent = maxSpeed.toFixed(1);
+                document.getElementById('mainSpeed').textContent = maxSpeed.toFixed(1);
+
+                await fetch(apiPath + '/local/results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ download: maxSpeed, upload: uploadMbps, ping })
+                });
+
+                isTesting = false;
+                updateStatus('Link Test Finished');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('body').classList.remove('testing');
+            } catch (e) {
+                updateStatus('Link Test Error: ' + e.message);
+                isTesting = false;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('body').classList.remove('testing');
+            }
+        }
+
+        function updateStatus(text) {
+            document.getElementById('statusBadge').textContent = text;
+        }
+
+        async function updateUI() {
+            try {
+                const res = await fetch(apiPath + '/status');
+                const data = await res.json();
+
+                if (currentMode === 'internet') {
+                    document.getElementById('dlValue').textContent = data.download.toFixed(1);
+                    document.getElementById('ulValue').textContent = data.upload.toFixed(1);
+                    document.getElementById('pingValue').textContent = Math.round(data.ping);
+                }
+
+                if (data.status === 'testing') {
+                    document.getElementById('mainSpeed').textContent = (data.download > 0 ? data.download : data.upload).toFixed(1);
+                    updateStatus(data.phase || 'Testing...');
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('body').classList.add('testing');
+                } else if (data.status === 'complete') {
+                    document.getElementById('mainSpeed').textContent = data.download.toFixed(1);
+                    updateStatus('Test Complete');
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('body').classList.remove('testing');
+                    isTesting = false;
+                }
+
+                if (isTesting) setTimeout(updateUI, 1000);
+            } catch (e) { }
+        }
+
+        updateUI().then(() => {
+            const loader = document.getElementById('appLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 400);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quick Notes</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        :root {
+            --bg-color: #12100e;
+            --card-bg: #1e1b18;
+            --primary: #f39c12;
+            --on-primary: #000;
+            --text: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --danger: #e74c3c;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-bottom: 80px;
+            /* Space for FAB */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+
+
+        .add-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--primary);
+            border: none;
+            border-radius: 50px;
+            padding: 16px 24px;
+            color: var(--on-primary);
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .add-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
+        }
+
+        .notes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .note-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            min-height: 100px;
+            padding: 0;
+            margin-bottom: 8px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .delete-btn {
+            background: rgba(231, 76, 60, 0.1);
+            border: none;
+            color: var(--danger);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:active {
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader" class="loading-overlay">
+        <span>Loading notes...</span>
+    </div>
+
+    <button class="add-btn" id="add-btn">
+        <span>+</span> New Note
+    </button>
+
+    <div id="notes-grid" class="notes-grid"></div>
+
+    <div class="sync-status" id="status">Synced</div>
+
+    <script>
+        let notes = [];
+        const grid = document.getElementById('notes-grid');
+        const statusEl = document.getElementById('status');
+        const addBtn = document.getElementById('add-btn');
+        const loader = document.getElementById('loader');
+
+        // Robust fetch with absolute-like paths to avoid relative path issues
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+
+        async function loadNotes() {
+            try {
+                const response = await fetch(apiPath + '/data');
+                if (!response.ok) throw new Error('Load failed');
+                notes = await response.json();
+                renderNotes();
+                loader.classList.add('hidden');
+            } catch (e) {
+                statusEl.innerText = "Error loading notes";
+                loader.innerHTML = '<span style="color:var(--danger)">Failed to load. Is the server running?</span>';
+            }
+        }
+
+        function renderNotes() {
+            grid.innerHTML = '';
+            notes.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+
+                const box = document.createElement('textarea');
+                box.value = note.content;
+                box.placeholder = "Write something...";
+                box.oninput = (e) => updateNote(note.id, e.target.value);
+
+                const actions = document.createElement('div');
+                actions.className = 'card-actions';
+
+                const del = document.createElement('button');
+                del.className = 'delete-btn';
+                del.innerText = 'Delete';
+                del.onclick = () => deleteNote(note.id);
+
+                actions.appendChild(del);
+                card.appendChild(box);
+                card.appendChild(actions);
+                grid.appendChild(card);
+            });
+        }
+
+        addBtn.addEventListener('click', () => {
+            console.log("Add button clicked");
+            const newNote = {
+                id: Date.now(),
+                content: '',
+                color: '#f39c12'
+            };
+            notes.unshift(newNote);
+            renderNotes();
+
+            // Focus the new textarea
+            const firstTextarea = grid.querySelector('textarea');
+            if (firstTextarea) firstTextarea.focus();
+
+            saveNotes();
+        });
+
+        function deleteNote(id) {
+            notes = notes.filter(n => n.id !== id);
+            renderNotes();
+            saveNotes();
+        }
+
+        let saveTimeout;
+        function updateNote(id, content) {
+            const note = notes.find(n => n.id === id);
+            if (note) note.content = content;
+
+            clearTimeout(saveTimeout);
+            statusEl.innerText = "Saving...";
+            saveTimeout = setTimeout(saveNotes, 1000);
+        }
+
+        async function saveNotes() {
+            try {
+                const response = await fetch(apiPath + '/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(notes)
+                });
+                if (!response.ok) throw new Error('Save failed');
+                statusEl.innerText = "Synced to PC";
+            } catch (e) {
+                statusEl.innerText = "Sync Failed";
+            }
+        }
+
+        // Init
+        loadNotes();
+    </script>
+</body>
+
+</html>

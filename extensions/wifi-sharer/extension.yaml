@@ -1,0 +1,13 @@
+author: PCLink Team
+description: Share your WiFi credentials easily via QR code.
+display_name: WiFi Sharer
+enabled: true
+entry_point: extension.py
+name: wifi-sharer
+pclink_version: '>=1.0.0'
+ui_entry: templates/index.html
+permissions:
+- system
+version: 1.0.0
+supported_platforms:
+- windows

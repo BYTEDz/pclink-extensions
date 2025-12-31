@@ -1,0 +1,69 @@
+name: Package Extensions
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'extensions/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Package Extensions and Generate Registry
+        run: |
+          mkdir -p dist
+          # Iterate through each extension folder
+          for dir in extensions/*/ ; do
+            if [ -f "${dir}extension.yaml" ]; then
+              # Get name and version from yaml
+              # We use a simple python one-liner to parse the yaml values
+              EXT_NAME=$(python3 -c "import yaml; print(yaml.safe_load(open('${dir}extension.yaml'))['name'])")
+              EXT_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('${dir}extension.yaml'))['version'])")
+              
+              echo "Packaging $EXT_NAME v$EXT_VERSION..."
+              
+              # Create zip from the directory contents (not the directory itself)
+              (cd "$dir" && zip -r "../../dist/${EXT_NAME}-${EXT_VERSION}.zip" .)
+            fi
+          done
+          
+          # Generate the extensions.json registry
+          python scripts/generate_registry.py
+
+      - name: Commit and push registry
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add extensions.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update extensions registry [skip ci]" && git push)
+
+      - name: Release Packages
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: extensions-latest
+          files: dist/*.zip
+          name: Extension Packages
+          body: "Auto-generated packages for PCLink extensions. Download the .zip files and install them in the PCLink App."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

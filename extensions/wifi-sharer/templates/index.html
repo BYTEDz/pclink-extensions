@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WiFi Sharer</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1b18;
+            --primary: #bb86fc;
+            --on-primary: #000;
+            --text: #fff;
+            --text-muted: #888;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --card-border: 1px solid #333;
+            --danger: #cf6679;
+            --divider: #2d2d2d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            text-align: center;
+            padding: 20px 15px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 25px 20px;
+            display: inline-block;
+            box-shadow: var(--card-shadow);
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            border: var(--card-border);
+        }
+
+        canvas {
+            border: 10px solid #fff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            text-align: left;
+            background: var(--divider);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .label {
+            color: var(--text-muted);
+        }
+
+        .value {
+            font-family: monospace;
+            font-size: 1.1em;
+            color: var(--text);
+        }
+
+        .blur {
+            filter: blur(4px);
+            transition: 0.2s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .blur:hover {
+            filter: blur(0);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .error {
+            color: var(--danger);
+            background: rgba(207, 102, 121, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(207, 102, 121, 0.3);
+            text-align: left;
+        }
+
+        .error-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-help {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .error-solution {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+
+        <div id="loading">Loading details...</div>
+        <div id="error" style="display:none"></div>
+
+        <div id="content" style="display:none">
+            <canvas id="qr"></canvas>
+
+            <div class="details">
+                <div class="row">
+                    <span class="label">Network</span>
+                    <span class="value" id="ssid">--</span>
+                </div>
+                <div class="row">
+                    <span class="label">Password</span>
+                    <span class="value blur" id="password" onclick="this.classList.toggle('blur')">--</span>
+                </div>
+                <div class="row">
+                    <span class="label">Security</span>
+                    <span class="value" id="auth">WPA2</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="copyPassword()">
+                <i data-lucide="copy"></i> Copy Password
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        fetch(apiPath + '/info')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+
+                if (data.error) {
+                    const errorDiv = document.getElementById('error');
+
+                    // Build error message with help and solution
+                    let errorHTML = `
+                        <div class="error-title">
+                            <i data-lucide="alert-circle"></i>
+                            ${data.error}
+                        </div>
+                    `;
+
+                    if (data.help) {
+                        errorHTML += `<div class="error-help">${data.help}</div>`;
+                    }
+
+                    if (data.solution) {
+                        errorHTML += `<div class="error-solution">💡 ${data.solution}</div>`;
+                    }
+
+                    errorDiv.innerHTML = errorHTML;
+                    errorDiv.style.display = 'block';
+                    errorDiv.classList.add('error');
+
+                    // Re-render icons
+                    lucide.createIcons();
+                    return;
+                }
+
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('ssid').innerText = data.ssid;
+                document.getElementById('password').innerText = data.password || 'Open Network';
+                document.getElementById('auth').innerText = data.auth;
+
+                // Generate QR Code
+                // WIFI:T:WPA;S:MyNetwork;P:MyPassword;;
+                const qrString = `WIFI:T:${data.auth};S:${data.ssid};P:${data.password || ''};;`;
+
+                new QRious({
+                    element: document.getElementById('qr'),
+                    value: qrString,
+                    size: 200,
+                    level: 'H'
+                });
+            });
+
+        function copyPassword() {
+            const pass = document.getElementById('password').innerText;
+            navigator.clipboard.writeText(pass).then(() => alert('Password copied!'));
+        }
+    </script>
+</body>
+
+</html>

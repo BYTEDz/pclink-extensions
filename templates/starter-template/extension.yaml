@@ -1,0 +1,13 @@
+name: my-extension
+display_name: "My Extension"
+version: "1.0.0"
+author: "Your Name"
+description: "A brief description of my extension."
+entry_point: "extension.py"
+ui_entry: "templates/index.html"
+pclink_version: ">=3.1.0"
+supported_platforms:
+  - windows
+  - linux
+  - macos
+permissions: []

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clipboard History</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #12100e;
+            --surface: #1e1b18;
+            --surface-hover: rgba(255, 255, 255, 0.05);
+            --primary: #f39c12;
+            --on-primary: #000;
+            --accent: #03dac6;
+            --danger: #e74c3c;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --divider: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            padding: 16px;
+        }
+
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--danger);
+        }
+
+        /* Inputs */
+        .input-container {
+            position: relative;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            border: var(--card-border);
+            transition: border-color 0.2s;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .input-container:focus-within {
+            border-color: var(--primary);
+        }
+
+        .input-container i[data-lucide] {
+            flex-shrink: 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-icon {
+            margin-left: 16px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .input-container input {
+            padding-left: 12px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            outline: none;
+            padding: 14px 12px;
+            line-height: normal;
+        }
+
+        /* Send Button */
+        .send-btn {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: stretch;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-variant);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        /* List */
+        .card {
+            background: var(--surface);
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: var(--radius);
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+            background: var(--surface-hover);
+        }
+
+        .card-preview {
+            font-size: 15px;
+            line-height: 1.4;
+            color: var(--text);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-all;
+            margin-bottom: 8px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            border-radius: var(--radius);
+            border: var(--card-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: var(--card-border);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .empty i {
+            width: 48px;
+            height: 48px;
+            opacity: 0.5;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--primary);
+            color: var(--on-primary);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Select styling override */
+        ::selection {
+            background: rgba(243, 156, 18, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Send to PC -->
+    <div class="input-container">
+        <input type="text" id="sendInput" placeholder="Send text to PC..." style="padding-left: 16px;">
+        <button class="send-btn" onclick="sendToPc()">
+            <i data-lucide="send" style="width: 20px; height: 20px;"></i>
+        </button>
+    </div>
+
+    <!-- Search -->
+    <div class="input-container search-bar">
+        <i data-lucide="search" class="input-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search history..." onkeyup="handleSearch()">
+        <button class="icon-btn" onclick="clearHistory()" title="Clear History" style="margin-right: 8px;">
+            <i data-lucide="trash-2" style="width: 20px; height: 20px;"></i>
+        </button>
+    </div>
+
+    <div id="list">
+        <!-- Items will be injected here -->
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">Clipboard Item</div>
+                <button class="icon-btn" onclick="closeModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div id="modalBody" class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="modal-btn" id="modalCopyBtn" onclick="copyFromModal()">
+                    <i data-lucide="copy"></i> Copy
+                </button>
+                <button class="modal-btn primary" id="modalSendBtn" onclick="sendFromModal()">
+                    <i data-lucide="monitor-up"></i> Send to PC
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <i data-lucide="check" style="width: 18px;"></i>
+        <span id="toast-msg">Action Complete</span>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const API_BASE = apiPath;
+        let fullHistory = [];
+        let lastHistoryDigest = "";
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        async function fetchHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/history`);
+                const data = await res.json();
+
+                const currentDigest = JSON.stringify(data.map(i => i.id));
+                if (currentDigest === lastHistoryDigest) return;
+
+                lastHistoryDigest = currentDigest;
+                fullHistory = data;
+                handleSearch();
+            } catch (e) {
+                console.error("Failed to fetch history", e);
+            }
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = fullHistory.filter(item =>
+                item.content.toLowerCase().includes(query)
+            );
+            render(filtered);
+        }
+
+        let currentItem = null;
+
+        function openDetail(id) {
+            currentItem = fullHistory.find(i => String(i.id) === String(id));
+            if (!currentItem) return;
+
+            document.getElementById('modalBody').textContent = currentItem.content;
+            document.getElementById('modalOverlay').classList.add('active');
+
+            // Re-create icons for the modal contents
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            currentItem = null;
+        }
+
+        function copyFromModal() {
+            if (!currentItem) return;
+            navigator.clipboard.writeText(currentItem.content).then(() => {
+                showToast("Copied to local clipboard");
+            });
+        }
+
+        function sendFromModal() {
+            if (!currentItem) return;
+            sendToPc(currentItem.content);
+            closeModal();
+        }
+
+        function render(data) {
+            const list = document.getElementById('list');
+
+            if (!data.length) {
+                const query = document.getElementById('searchInput').value;
+                if (query) {
+                    list.innerHTML = `
+                        <div class="empty">
+                            <i data-lucide="search-x"></i>
+                            <span>No matches found</span>
+                        </div>`;
+                } else {
+                    list.innerHTML = `
+                        <div class="empty">
+                            <i data-lucide="clipboard-list"></i>
+                            <span>History is empty</span>
+                        </div>`;
+                }
+                lucide.createIcons();
+                return;
+            }
+
+            list.innerHTML = data.map((item) => {
+                return `
+                <div class="card" onclick="openDetail('${item.id}')">
+                    <div class="card-preview">${escapeHtml(item.content)}</div>
+                    <div class="card-footer">
+                        <span class="meta">${formatTime(item.timestamp)}</span>
+                        <i data-lucide="chevron-right" style="width: 14px; height: 14px; color: var(--text-secondary)"></i>
+                    </div>
+                </div>
+            `}).join('');
+
+            lucide.createIcons();
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const now = new Date();
+            if (date.toDateString() === now.toDateString()) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function sendToPc(textOverride) {
+            let text = textOverride;
+            if (!text) {
+                const input = document.getElementById('sendInput');
+                text = input.value;
+                input.value = '';
+            }
+
+            if (!text) return;
+
+            await fetch(`${API_BASE}/copy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text })
+            });
+
+            showToast("Sent to PC Clipboard");
+            fetchHistory();
+        }
+
+        function selectText(elementId) {
+            // Focus and Select All logic to workaround programmatic clipboard limitations
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            // Create a range to select the text
+            const range = document.createRange();
+            range.selectNodeContents(el);
+
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            // Focus so the user sees it's selected
+            el.focus();
+
+            // Try execCommand copy just in case it works in this context
+            try {
+                document.execCommand('copy');
+                showToast("Selected & Copied");
+            } catch (e) {
+                showToast("Text Selected");
+            }
+        }
+
+        async function clearHistory() {
+            // Using built-in Confirm Dialog as requested
+            if (confirm("Are you sure you want to clear your entire clipboard history? This cannot be undone.")) {
+                await fetch(`${API_BASE}/clear`, { method: 'POST' });
+                lastHistoryDigest = "";
+                fetchHistory();
+                showToast("History Cleared");
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-msg');
+            msgSpan.innerText = msg;
+            toast.classList.add('visible');
+
+            if (toast.timeoutId) clearTimeout(toast.timeoutId);
+
+            toast.timeoutId = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 2500);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        setInterval(fetchHistory, 2000);
+        fetchHistory();
+
+        document.getElementById('sendInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') sendToPc();
+        });
+    </script>
+</body>
+
+</html>

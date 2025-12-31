@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Extension</title>
+    <!-- Include the PCLink Theme SDK -->
+    <script src="/ui/static/extension-theme.js"></script>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 id="title">My Extension</h1>
+            <p class="subtitle">Powered by PCLink</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Welcome</h2>
+                <p>Build something amazing with the PCLink Extension system.</p>
+                <button class="primary-button" onclick="checkStatus()">Check Status</button>
+                <div id="status-output" class="status-box"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const output = document.getElementById('status-output');
+            output.innerText = 'Checking...';
+            try {
+                // API endpoints are relative to /extensions/{id}/
+                // Since this UI is served at /extensions/{id}/ui/
+                // We go up one level to reach the extension API root
+                const response = await fetch('../status');
+                const data = await response.json();
+                output.innerText = `Status: ${data.status} on ${data.platform}`;
+            } catch (e) {
+                output.innerText = 'Error connecting to extension API';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The DJ Mixer</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --primary: #bb86fc;
+            --on-primary: #000;
+            --text: #fff;
+            --text-muted: #aaa;
+            --range-fill: #bb86fc;
+            --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+            --divider: #333;
+            --danger: #cf6679;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            margin: 0;
+            max-width: 100%;
+        }
+
+
+        .channel {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--divider);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .controls {
+            flex: 1;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: var(--divider);
+            border-radius: 2px;
+        }
+
+        .mute-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .mute-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mute-btn.active {
+            color: var(--danger);
+        }
+
+        .mute-btn.active svg {
+            fill: currentColor;
+        }
+
+        .warning {
+            background: #ffb74d;
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading">Scanning sessions...</div>
+    <div id="list"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const API_BASE = apiPath;
+
+        // Polling to keep sync if volume changes on PC
+        setInterval(refresh, 2000);
+        refresh();
+
+        async function refresh() {
+            try {
+                const res = await fetch(`${API_BASE}/sessions`);
+                const sessions = await res.json();
+                document.getElementById('loading').style.display = 'none';
+                render(sessions);
+            } catch (e) { console.error(e); }
+        }
+
+        function render(sessions) {
+            const list = document.getElementById('list');
+            // If dragging, don't re-render entire list to avoid jitter, 
+            // ideally we'd diff, but for now we just check if active element is a range
+            if (document.activeElement.type === 'range') return;
+
+            list.innerHTML = sessions.map(s => `
+                <div class="channel">
+                    <div class="icon">
+                        <i data-lucide="${s.icon || 'box'}"></i>
+                    </div>
+                    <div class="controls">
+                        <div class="info">
+                            <span>${s.name}</span>
+                            <span>${Math.round(s.volume * 100)}%</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.01" value="${s.volume}" 
+                            oninput="updateVolume('${s.id}', this.value)"
+                            onchange="updateVolume('${s.id}', this.value)">
+                    </div>
+                    <button class="mute-btn ${s.muted ? 'active' : ''}" onclick="toggleMute('${s.id}', ${!s.muted})">
+                        <i data-lucide="${s.muted ? 'mic-off' : 'mic'}"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        async function updateVolume(id, vol) {
+            // Optimistic UI update could happen here
+            await fetch(`${API_BASE}/volume`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, volume: parseFloat(vol) })
+            });
+        }
+
+        async function toggleMute(id, state) {
+            await fetch(`${API_BASE}/mute`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, muted: state })
+            });
+            refresh(); // Force refresh to show state
+        }
+    </script>
+</body>
+
+</html>
