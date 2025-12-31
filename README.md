@@ -14,7 +14,7 @@ Enhance your remote control experience with custom features, automation, and imp
 
 ---
 
-## �️ Documentation
+## Documentation
 
 **Complete documentation is available in the [PCLink Wiki](https://github.com/BYTEDz/PCLink/wiki)**
 
@@ -27,7 +27,7 @@ Enhance your remote control experience with custom features, automation, and imp
 
 ## 🚀 Quick Start
 
-### � Installing Extensions
+### Installing Extensions
 1. **Browse the Marketplace**: Open the PCLink mobile app and go to the **Extensions** screen.
 2. **Download & Install**: Tap the **"Store"** icon to browse the official library and install with one click.
 3. **Manual Install**: Alternatively, download a `.zip` from the [Releases](https://github.com/BYTEDz/pclink-extensions/releases) and use the **"Install from File"** option in the app.
@@ -60,7 +60,7 @@ To maintain high quality, all extensions in this repository must follow these re
 
 ---
 
-## 👨 Maintainers
+## Maintainers
 
 <table>
   <tr>
