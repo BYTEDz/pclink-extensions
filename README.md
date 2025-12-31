@@ -1,71 +1,88 @@
+<div align="center">
+
 # PCLink Extensions
 
-Official extensions repository for [PCLink](https://github.com/BYTEDz/pclink) - Control your PC from your phone.
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Registry Status](https://github.com/BYTEDz/pclink-extensions/actions/workflows/package-extensions.yml/badge.svg)](https://github.com/BYTEDz/pclink-extensions/actions/workflows/package-extensions.yml)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![Extensions Catalog](https://img.shields.io/badge/Extensions-Browse%20Catalog-brightgreen)](EXTENSIONS.md)
 
-## 📁 Repository Structure
+**The official repository for [PCLink](https://github.com/BYTEDz/PCLink) extensions.**  
+Enhance your remote control experience with custom features, automation, and improved workflows.
 
-```
-pclink-extensions/
-├── extensions/          # All extension implementations
-├── templates/           # Starter templates
-└── README.md           # This file
-```
+</div>
+
+---
+
+## �️ Documentation
+
+**Complete documentation is available in the [PCLink Wiki](https://github.com/BYTEDz/PCLink/wiki)**
+
+- 🏗️ [Extension Development Guide](https://github.com/BYTEDz/PCLink/wiki/Extension-Development) - Build your first extension
+- 🔌 [Theme SDK](https://github.com/BYTEDz/PCLink/wiki/Theme-SDK) - Style your extension's web UI
+- 🤝 [Contributing Guide](CONTRIBUTING.md) - How to submit new extensions
+- 📦 [Marketplace Architecture](https://github.com/BYTEDz/PCLink/wiki/Marketplace-Architecture) - How the decentralized ecosystem works
+
+---
 
 ## 🚀 Quick Start
 
-### Installing Extensions
+### � Installing Extensions
+1. **Browse the Marketplace**: Open the PCLink mobile app and go to the **Extensions** screen.
+2. **Download & Install**: Tap the **"Store"** icon to browse the official library and install with one click.
+3. **Manual Install**: Alternatively, download a `.zip` from the [Releases](https://github.com/BYTEDz/pclink-extensions/releases) and use the **"Install from File"** option in the app.
 
-1. Download the extension `.zip` file
-2. Open PCLink app → Extensions → Install
-3. Select the downloaded file
-4. Enable the extension
+### 🏗️ Creating Extensions
+Join our community of developers and build your own tools! Use our [Starter Template](templates/starter-template/) to get running in seconds.
 
-### Creating Extensions
+---
 
-See the **PCLink Wiki** for the detailed Extension Development Guide.
+## 📁 Repository Structure
 
-## 📦 Available Extensions
-
-Browse the full [**Extensions Catalog**](EXTENSIONS.md) to see all officially supported extensions, their descriptions, and platform compatibility.
-
-## 🛠️ Development
-
-### Prerequisites
-
-- Python 3.11+
-- PCLink Server 8.9.0+
-
-### Extension Structure
-
-```
-your-extension/
-├── extension.yaml       # Metadata
-├── extension.py         # Backend logic
-└── templates/           # Web UI (optional)
-    └── index.html
+```text
+pclink-extensions/
+├── extensions/          # Official extension implementations
+├── scripts/             # Registry generation & automation tools
+├── templates/           # Starter templates for developers
+├── EXTENSIONS.md        # Human-readable catalog
+└── extensions.json      # Machine-readable marketplace registry
 ```
 
-### Quick Template
+---
 
-Use the template in `templates/starter-template/` to get started quickly.
+## 📜 Repository Standards
 
-- **PCLink Wiki**: Complete developer documentation.
+To maintain high quality, all extensions in this repository must follow these requirements:
+*   **Structured Metadata**: Every extension must have a valid `extension.yaml`.
+*   **Iconography**: High-quality icons (PNG/SVG) should be placed in `static/icon.png`.
+*   **Security First**: Dangerous permissions must be explicitly declared and justified.
+*   **Performance**: Extensions should be lightweight and avoid heavy background processing.
 
-## 🤝 Contributing
+---
 
-Contributions are welcome! Please:
+## 👨 Maintainers
 
-1. Fork this repository
-2. Create your extension in `extensions/`
-3. Test thoroughly
-4. Submit a pull request
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/AzharZouhir">
+        <img src="https://github.com/AzharZouhir.png" width="100px;" alt="Azhar Zouhir"/>
+        <br />
+        <sub><b>Azhar Zouhir</b></sub>
+      </a>
+      <br />
+      <sub>Creator & Lead Developer</sub>
+      <br />
+      <a href="mailto:support@bytedz.xyz">📧</a>
+      <a href="https://github.com/AzharZouhir">💻</a>
+    </td>
+  </tr>
+</table>
 
-## 📄 License
+---
 
-AGPL-3.0 - See LICENSE file for details
+<div align="center">
 
-## 🔗 Links
+🕊️ Free Palestine • 🇩🇿 Made with ❤️ in Algeria
 
-- [PCLink Main Repository](https://github.com/BYTEDz/pclink)
-- [Documentation](https://pclink.bytedz.xyz)
-- [Discord Community](https://discord.gg/pclink)
+</div>
