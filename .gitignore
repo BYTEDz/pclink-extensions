@@ -12,6 +12,7 @@ env/
 
 # Extension data
 *.json
+!extensions.json
 *.db
 *.sqlite
 

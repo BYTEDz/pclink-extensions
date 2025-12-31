@@ -55,7 +55,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add extensions.json
+          git add -f extensions.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update extensions registry [skip ci]" && git push)
 
       - name: Release Packages
