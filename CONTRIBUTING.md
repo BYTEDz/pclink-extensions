@@ -80,6 +80,18 @@ Thank you for your interest in contributing to PCLink Extensions! 🎉
 - **Optimize images** and assets
 - **Test on mobile devices**
 
+### 📚 Available Libraries (Don't Bundle These!)
+
+PCLink ships with these libraries. **Import them directly** - no need to add to `lib/`:
+
+**Core (All Platforms):**
+`fastapi`, `pydantic`, `websockets`, `psutil`, `pyperclip`, `mss`, `keyboard`, `requests`, `cryptography`, `pyautogui`, `pynput`, `PyYAML`, `qrcode`, `aiofiles`, `Pillow`, `python-multipart`
+
+**Windows Only:**
+`pycaw`, `pywin32`, `comtypes`, `winsdk`
+
+> 💡 See the [Extension Development Guide](https://github.com/BYTEDz/PCLink/wiki/Extension-Development) for version details.
+
 ## 📤 Submission Process
 
 ### 1. Prepare Your Extension
