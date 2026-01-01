@@ -12,8 +12,9 @@ except ImportError:
     HAS_SPEEDTEST = False
 
 class Extension(ExtensionBase):
-    def __init__(self, metadata, extension_path, config: dict):
-        super().__init__(metadata, extension_path, config)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.running = True
         self.results = {
             "status": "idle", # idle, testing, complete, error
             "mode": "internet", # internet, lan
