@@ -5,7 +5,7 @@ display_name: PC Speed Test
 enabled: true
 entry_point: extension.py
 name: speed-test
-pclink_version: '>=1.0.0'
+pclink_version: '>=3.2.0'
 ui_entry: templates/index.html
 version: 1.0.0
 supported_platforms:

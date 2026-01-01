@@ -4,7 +4,7 @@ display_name: Clipboard History
 enabled: true
 entry_point: extension.py
 name: clipboard-history
-pclink_version: '>=1.0.0'
+pclink_version: '>=3.2.0'
 ui_entry: templates/index.html
 permissions:
 - clipboard

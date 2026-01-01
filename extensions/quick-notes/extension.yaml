@@ -4,7 +4,7 @@ display_name: Quick Notes
 enabled: true
 entry_point: extension.py
 name: quick-notes
-pclink_version: '>=1.0.0'
+pclink_version: '>=3.2.0'
 permissions:
 - storage
 ui_entry: templates/index.html

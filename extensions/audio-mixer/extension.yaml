@@ -4,7 +4,7 @@ display_name: The DJ Mixer
 enabled: true
 entry_point: extension.py
 name: audio-mixer
-pclink_version: '>=1.0.0'
+pclink_version: '>=3.2.0'
 ui_entry: templates/index.html
 permissions:
 - audio
