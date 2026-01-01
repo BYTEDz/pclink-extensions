@@ -1,0 +1,99 @@
+[
+  {
+    "id": "audio-mixer",
+    "name": "The DJ Mixer",
+    "version": "1.0.0",
+    "description": "Control volume for individual applications.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=1.0.0",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.png",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
+    "permissions": [
+      "audio"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-01-01T00:07:50+01:00",
+    "file_size": 29819
+  },
+  {
+    "id": "clipboard-history",
+    "name": "Clipboard History",
+    "version": "1.0.0",
+    "description": "Keep track of your clipboard history and sync it with your phone.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=1.0.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
+    "permissions": [
+      "clipboard"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2025-12-31T23:29:18+01:00",
+    "file_size": 24604
+  },
+  {
+    "id": "wifi-sharer",
+    "name": "WiFi Sharer",
+    "version": "1.0.0",
+    "description": "Share your WiFi credentials easily via QR code.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=1.0.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2025-12-31T23:29:18+01:00",
+    "file_size": 12141
+  },
+  {
+    "id": "quick-notes",
+    "name": "Quick Notes",
+    "version": "1.0.0",
+    "description": "Sync small notes between your phone and PC instantly.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=1.0.0",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/quick-notes/icon.png",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-1.0.0.zip",
+    "permissions": [
+      "storage"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-01-01T00:07:50+01:00",
+    "file_size": 21906
+  },
+  {
+    "id": "speed-test",
+    "name": "PC Speed Test",
+    "version": "1.0.0",
+    "description": "Test your PC's internet download and upload speed directly from your phone.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=1.0.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.0.0.zip",
+    "permissions": [],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-01-01T14:50:27+01:00",
+    "file_size": 87755
+  }
+]
