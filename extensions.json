@@ -1,7 +1,7 @@
 [
   {
     "id": "audio-mixer",
-    "name": "The DJ Mixer",
+    "name": "Audio Mixer",
     "version": "1.0.0",
     "description": "Control volume for individual applications.",
     "author": "PCLink Team",
@@ -18,8 +18,8 @@
       "audio"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 14935
+    "updated_on": "2026-01-03T16:10:51+01:00",
+    "file_size": 15047
   },
   {
     "id": "dev-assistant",
