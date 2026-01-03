@@ -9,6 +9,9 @@ ui_entry: templates/index.html
 permissions:
 - audio
 version: 1.0.0
-icon: icon.png
+icon: icon.svg
+theme_aware_icon: true
 supported_platforms:
 - windows
+category: Media
+min_server_version: 1.0.0

@@ -8,7 +8,11 @@ name: speed-test
 pclink_version: '>=3.2.0'
 ui_entry: templates/index.html
 version: 1.0.0
+icon: icon.svg
+theme_aware_icon: true
 supported_platforms:
 - windows
 - linux
 - macos
+category: Utility
+min_server_version: 1.0.0

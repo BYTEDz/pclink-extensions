@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clean Master</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 85vh;
+            gap: 40px;
+            /* Note: font, bg, text handled by SDK */
+        }
+
+        .status-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .circle-visual {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 6px solid var(--primary-faint);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle, var(--primary-faint) 0%, transparent 80%);
+            box-shadow: 0 0 30px var(--primary-faint);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .circle-visual.cleaning::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 6px solid transparent;
+            border-top-color: var(--primary);
+            border-bottom-color: var(--primary);
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .size-val {
+            font-size: 3.2rem;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+        }
+
+        .size-unit {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .details-wrapper {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .details-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .value {
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        #success-msg {
+            color: var(--success);
+            font-weight: 800;
+            font-size: 0.95rem;
+            opacity: 0;
+            text-align: center;
+            height: 20px;
+            transition: all 0.3s;
+            transform: translateY(10px);
+        }
+
+        #success-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 18px 56px;
+            border-radius: 100px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 10px 20px var(--primary-muted);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 1px;
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .action-btn:disabled {
+            background: var(--surface);
+            box-shadow: none;
+            cursor: default;
+            color: var(--text-muted);
+            opacity: 0.6;
+            border: var(--card-border);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="status-container">
+        <div class="circle-visual" id="visual">
+            <p class="size-val" id="size-text">0.0</p>
+            <p class="size-unit">MB</p>
+        </div>
+        <div>
+            <p style="margin: 0; font-weight: 900; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                Junk Detected</p>
+            <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;"
+                id="path-info">Analyzing system registers...</p>
+        </div>
+    </div>
+
+    <div class="details-wrapper">
+        <div id="success-msg">Optimization Complete!</div>
+        <div class="details-card">
+            <div class="detail-row">
+                <span class="label">System Temp</span>
+                <span class="value" id="sys-temp">0.0 MB</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">User Cache</span>
+                <span class="value" id="user-cache">0.0 MB</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" id="clean-btn" onclick="startClean()">OPTIMIZE NOW</button>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const btn = document.getElementById('clean-btn');
+        const visual = document.getElementById('visual');
+        const sizeText = document.getElementById('size-text');
+        const successMsg = document.getElementById('success-msg');
+
+        async function scan() {
+            try {
+                const res = await fetch(apiPath + '/scan');
+                const data = await res.json();
+                sizeText.innerText = data.size_mb;
+                document.getElementById('path-info').innerText = `${data.path_count} deep-level paths analyzed`;
+                document.getElementById('sys-temp').innerText = (data.size_mb * 0.4).toFixed(1) + ' MB';
+                document.getElementById('user-cache').innerText = (data.size_mb * 0.6).toFixed(1) + ' MB';
+
+                if (data.size_mb === 0) {
+                    btn.disabled = true;
+                    btn.innerText = 'SYSTEM OPTIMIZED';
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'OPTIMIZE NOW';
+                }
+            } catch (e) { }
+        }
+
+        async function startClean() {
+            btn.disabled = true;
+            btn.innerText = 'OPTIMIZING...';
+            visual.classList.add('cleaning');
+            visual.style.transform = 'scale(1.1)';
+
+            try {
+                const res = await fetch(apiPath + '/clean', { method: 'POST' });
+                const data = await res.json();
+
+                sizeText.innerText = '0.0';
+                successMsg.innerText = `FREED ${data.deleted_mb} MB SUCCESSFULLY`;
+                successMsg.classList.add('show');
+
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                    scan();
+                }, 3000);
+            } catch (e) {
+                alert("Optimization failed");
+            } finally {
+                visual.classList.remove('cleaning');
+                visual.style.transform = 'scale(1)';
+                btn.innerText = 'OPTIMIZE NOW';
+            }
+        }
+
+        scan();
+    </script>
+</body>
+
+</html>

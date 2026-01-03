@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gamer HUD</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        :root {
+            /* Extension-Specific Accents (Fallback if not synced) */
+            --secondary: #7000ff;
+            --accent: #ff0055;
+            /* Success/Warning now provided by SDK but keeping local aliases for simplicity */
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-x: hidden;
+            /* Note: font-family, bg, and text are now handled by SDK */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            filter: drop-shadow(0 0 10px var(--primary-muted));
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.6;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        /* Upgraded Card with Glassmorphism and Radius Sync */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0.5;
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+        }
+
+        .card-value {
+            font-size: 2.22rem;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .unit {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-left: 6px;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--primary-faint);
+            border-radius: 100px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px var(--primary-muted);
+        }
+
+        .core-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .core-bar {
+            height: 30px;
+            background: var(--hover-overlay);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .core-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--primary);
+            opacity: 0.8;
+            transition: height 0.4s ease;
+        }
+
+        /* Specific styles for GPU/RAM stats to look distinct */
+        .gpu-card .progress-bar {
+            background: linear-gradient(90deg, var(--success), #00ffcc);
+            box-shadow: 0 0 15px var(--success);
+        }
+
+        .gpu-card .progress-container {
+            background: var(--success);
+            opacity: 0.1;
+        }
+
+        .ram-card .progress-bar {
+            background: linear-gradient(90deg, var(--warning), #ff8800);
+            box-shadow: 0 0 15px var(--warning);
+        }
+
+        .ram-card .progress-container {
+            background: var(--warning);
+            opacity: 0.1;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 16px 0;
+            border-top: 1px dashed var(--divider);
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Gamer HUD</h1>
+        <div class="status-dot"></div>
+    </div>
+
+    <div class="grid">
+        <!-- CPU MAIN -->
+        <div class="card span-2">
+            <div class="card-label">CPU LOAD</div>
+            <div class="card-value" id="cpu-usage">0<span class="unit">%</span></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="cpu-bar" style="width: 0%"></div>
+            </div>
+            <div class="card-label" style="margin-top: 16px;">LOGICAL CORES</div>
+            <div class="core-grid" id="core-grid">
+                <!-- Dynamic cores -->
+            </div>
+        </div>
+
+        <!-- GPU -->
+        <div class="card gpu-card">
+            <div class="card-label">GPU UTIL</div>
+            <div class="card-value" id="gpu-usage">0<span class="unit">%</span></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="gpu-bar-el" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- GPU TEMP -->
+        <div class="card gpu-card">
+            <div class="card-label">GPU TEMP</div>
+            <div class="card-value" id="gpu-temp">0<span class="unit">°C</span></div>
+        </div>
+
+        <!-- RAM -->
+        <div class="card ram-card span-2">
+            <div class="card-label">MEMORY USAGE</div>
+            <div class="card-value" id="ram-usage">0<span class="unit">%</span></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;" id="ram-details">0.0 / 0.0 GB
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="ram-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- CPU FREQ -->
+        <div class="card">
+            <div class="card-label">CPU CLOCK</div>
+            <div class="card-value" id="cpu-freq">0.00<span class="unit">GHz</span></div>
+        </div>
+
+        <!-- GPU NAME -->
+        <div class="card">
+            <div class="card-label">HARDWARE</div>
+            <div id="gpu-name"
+                style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; line-height: 1.4;">Detecting...
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        LIVE ENGINE TELEMETRY ACTIVE
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+
+        async function fetchStats() {
+            try {
+                const res = await fetch(apiPath + '/stats');
+                const data = await res.json();
+                updateUI(data);
+            } catch (err) {
+                console.error("Failed to fetch stats", err);
+            }
+        }
+
+        function updateUI(data) {
+            // CPU
+            document.getElementById('cpu-usage').innerHTML = `${Math.round(data.cpu.usage)}<span class="unit">%</span>`;
+            document.getElementById('cpu-bar').style.width = `${data.cpu.usage}%`;
+            document.getElementById('cpu-freq').innerHTML = `${data.cpu.freq.toFixed(2)}<span class="unit">GHz</span>`;
+
+            // Cores
+            const coreGrid = document.getElementById('core-grid');
+            if (coreGrid.children.length !== data.cpu.cores.length) {
+                coreGrid.innerHTML = '';
+                data.cpu.cores.forEach(() => {
+                    const div = document.createElement('div');
+                    div.className = 'core-bar';
+                    div.innerHTML = '<div class="core-fill" style="height: 0%"></div>';
+                    coreGrid.appendChild(div);
+                });
+            }
+            data.cpu.cores.forEach((usage, i) => {
+                coreGrid.children[i].firstElementChild.style.height = `${usage}%`;
+            });
+
+            // RAM
+            document.getElementById('ram-usage').innerHTML = `${Math.round(data.ram.usage)}<span class="unit">%</span>`;
+            document.getElementById('ram-bar').style.width = `${data.ram.usage}%`;
+            document.getElementById('ram-details').innerText = `${data.ram.used} / ${data.ram.total} GB`;
+
+            // GPU
+            document.getElementById('gpu-usage').innerHTML = `${data.gpu.usage}<span class="unit">%</span>`;
+            document.getElementById('gpu-bar-el').style.width = `${data.gpu.usage}%`;
+            document.getElementById('gpu-temp').innerHTML = `${data.gpu.temp}<span class="unit">°C</span>`;
+            document.getElementById('gpu-name').innerText = data.gpu.name;
+
+            // GPU color logic based on temp
+            const gpuVal = document.getElementById('gpu-temp');
+            if (data.gpu.temp > 80) gpuVal.style.color = 'var(--accent)';
+            else if (data.gpu.temp > 65) gpuVal.style.color = 'var(--warning)';
+            else gpuVal.style.color = 'var(--success)';
+        }
+
+        // High frequency update (1 second)
+        setInterval(fetchStats, 1000);
+        fetchStats();
+    </script>
+</body>
+
+</html>

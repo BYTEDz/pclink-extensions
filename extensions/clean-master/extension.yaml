@@ -1,17 +1,20 @@
 author: PCLink Team
-description: Share your WiFi credentials easily via QR code.
-display_name: WiFi Sharer
+description: Clean temporary files, empty recycle bin, and free up disk space with one tap.
+display_name: Clean Master
 enabled: true
 entry_point: extension.py
-name: wifi-sharer
+name: clean-master
 pclink_version: '>=3.2.0'
-ui_entry: templates/index.html
 permissions:
+- storage
 - system
+ui_entry: templates/index.html
 version: 1.0.0
 icon: icon.svg
 theme_aware_icon: true
 supported_platforms:
 - windows
+- linux
+- macos
 category: Utility
 min_server_version: 1.0.0

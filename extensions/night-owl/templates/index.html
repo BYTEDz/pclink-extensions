@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Night Owl</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            gap: 48px;
+            /* Note: font, bg, text handled by SDK */
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .owl-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px var(--primary-faint);
+            border: var(--card-border);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .owl-container:hover {
+            transform: scale(1.05);
+        }
+
+        .owl-icon {
+            font-size: 72px;
+            filter: drop-shadow(0 0 10px var(--primary-muted));
+        }
+
+        .slider-wrapper {
+            width: 100%;
+            max-width: 320px;
+            background: var(--surface);
+            padding: 32px 24px;
+            border-radius: var(--radius);
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .brightness-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .label-text {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .val-container {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+        }
+
+        .val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .unit {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* Premium Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--primary-faint);
+            border-radius: 100px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary-muted);
+            border: 4px solid var(--text);
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+            background: var(--text);
+            border-color: var(--primary);
+        }
+
+        .hint {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Night Owl</h1>
+        <p>Dynamic Brightness Control</p>
+    </div>
+
+    <div class="owl-container">
+        <span class="owl-icon">🦉</span>
+    </div>
+
+    <div class="slider-wrapper">
+        <div class="brightness-label">
+            <span class="label-text">Intensity</span>
+            <div class="val-container">
+                <span class="val" id="bright-val">0</span>
+                <span class="unit">%</span>
+            </div>
+        </div>
+        <input type="range" id="bright-slider" min="0" max="100" value="50">
+        <div class="hint" id="status-hint">Adjusting physical monitor hardware...</div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const slider = document.getElementById('bright-slider');
+        const valText = document.getElementById('bright-val');
+        const hint = document.getElementById('status-hint');
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(apiPath + '/status');
+                const data = await res.json();
+
+                if (!data.supported) {
+                    slider.disabled = true;
+                    hint.innerText = "Monitor DDC/CI not supported on this PC";
+                    hint.style.color = "var(--error)";
+                    hint.style.fontStyle = "normal";
+                    document.querySelector('.header p').innerText = "Incompatible Hardware";
+                    return;
+                }
+
+                slider.value = data.brightness;
+                valText.innerText = data.brightness;
+            } catch (e) { }
+        }
+
+        let timeout;
+        slider.oninput = () => {
+            valText.innerText = slider.value;
+            // Immediate glow effect logic could go here
+            clearTimeout(timeout);
+            timeout = setTimeout(async () => {
+                await fetch(apiPath + '/set', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ brightness: slider.value })
+                });
+            }, 50);
+        };
+
+        fetchStatus();
+    </script>
+</body>
+
+</html>

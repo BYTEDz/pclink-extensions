@@ -3,43 +3,98 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Extension</title>
-    <!-- Include the PCLink Theme SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Starter Template</title>
+
+    <!-- PCLink Theme SDK: Essential for native look & feel -->
     <script src="/ui/static/extension-theme.js"></script>
-    <link rel="stylesheet" href="../static/style.css">
+
+    <style>
+        /* 
+           The SDK automatically styles <body>, <button>, and .card.
+           Only add layout and component-specific styles here.
+        */
+        body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .hero {
+            padding: 32px 16px;
+            text-align: center;
+            background: var(--primary-faint);
+            border-radius: var(--radius);
+            border: 1px dashed var(--primary-muted);
+        }
+
+        .hero h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 12px;
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1 id="title">My Extension</h1>
-            <p class="subtitle">Powered by PCLink</p>
-        </header>
+    <div class="hero">
+        <h1>Starter Kit</h1>
+        <div id="status-label" class="status-badge">Awaiting Input</div>
+    </div>
 
-        <main>
-            <div class="card">
-                <h2>Welcome</h2>
-                <p>Build something amazing with the PCLink Extension system.</p>
-                <button class="primary-button" onclick="checkStatus()">Check Status</button>
-                <div id="status-output" class="status-box"></div>
-            </div>
-        </main>
+    <div class="card">
+        <h3>System Diagnostics</h3>
+        <p>This template demonstrates how a PCLink extension communicates with its Python backend.</p>
+
+        <div class="action-area">
+            <button onclick="pingServer()">Execute Backend Query</button>
+            <button class="secondary" onclick="window.location.reload()">Refresh UI</button>
+        </div>
     </div>
 
     <script>
-        async function checkStatus() {
-            const output = document.getElementById('status-output');
-            output.innerText = 'Checking...';
+        /**
+         * Communicates with the extension's Python backend.
+         * Endpoints are relative to the extension root.
+         */
+        async function pingServer() {
+            const label = document.getElementById('status-label');
+            label.innerText = 'Consulting Engine...';
+            label.style.color = 'var(--primary)';
+
             try {
-                // API endpoints are relative to /extensions/{id}/
-                // Since this UI is served at /extensions/{id}/ui/
-                // We go up one level to reach the extension API root
+                // UI is at /extensions/{id}/ui/
+                // API is at /extensions/{id}/status
                 const response = await fetch('../status');
                 const data = await response.json();
-                output.innerText = `Status: ${data.status} on ${data.platform}`;
-            } catch (e) {
-                output.innerText = 'Error connecting to extension API';
+
+                label.innerText = `Engine: ${data.status} | Platform: ${data.platform}`;
+                label.style.color = 'var(--success)';
+            } catch (error) {
+                console.error('Backend unreachable:', error);
+                label.innerText = 'Connection Refused';
+                label.style.color = 'var(--error)';
             }
         }
     </script>

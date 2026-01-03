@@ -1,12 +1,12 @@
 author: PCLink Team
-description: Sync small notes between your phone and PC instantly.
-display_name: Quick Notes
+description: Real-time high-performance dashboard for gamers. Monitor CPU, RAM, and System stats with high refresh rate.
+display_name: Gamer HUD
 enabled: true
 entry_point: extension.py
-name: quick-notes
+name: gamer-hud
 pclink_version: '>=3.2.0'
 permissions:
-- storage
+- system
 ui_entry: templates/index.html
 version: 1.0.0
 icon: icon.svg
@@ -15,5 +15,5 @@ supported_platforms:
 - windows
 - linux
 - macos
-category: Productivity
-min_server_version: 1.0.0
+category: System
+min_server_version: 3.2.0

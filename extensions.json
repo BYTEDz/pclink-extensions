@@ -8,6 +8,8 @@
     "supported_platforms": [
       "windows"
     ],
+    "category": "Media",
+    "min_server_version": "1.0.0",
     "min_pclink_version": ">=3.2.0",
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.png",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
@@ -27,8 +29,10 @@
     "supported_platforms": [
       "windows"
     ],
+    "category": "Productivity",
+    "min_server_version": "1.0.0",
     "min_pclink_version": ">=3.2.0",
-    "icon_url": null,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.png",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
     "permissions": [
       "clipboard"
@@ -46,6 +50,8 @@
     "supported_platforms": [
       "windows"
     ],
+    "category": "Utility",
+    "min_server_version": "1.0.0",
     "min_pclink_version": ">=3.2.0",
     "icon_url": null,
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
@@ -67,6 +73,8 @@
       "linux",
       "macos"
     ],
+    "category": "Productivity",
+    "min_server_version": "1.0.0",
     "min_pclink_version": ">=3.2.0",
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/quick-notes/icon.png",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-1.0.0.zip",
@@ -88,6 +96,8 @@
       "linux",
       "macos"
     ],
+    "category": "Utility",
+    "min_server_version": "1.0.0",
     "min_pclink_version": ">=3.2.0",
     "icon_url": null,
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.0.0.zip",
@@ -95,5 +105,120 @@
     "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-01-01T14:53:05+01:00",
     "file_size": 87755
+  },
+  {
+    "id": "gamer-hud",
+    "name": "Gamer HUD",
+    "version": "1.0.0",
+    "description": "Real-time high-performance dashboard for gamers. Monitor CPU, RAM, and GPU stats.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "category": "System",
+    "min_server_version": "3.2.0",
+    "min_pclink_version": ">=3.2.0",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/gamer-hud/icon.png",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/gamer-hud-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T11:40:00+01:00",
+    "updated_on": "2026-01-03T11:40:00+01:00",
+    "file_size": 0
+  },
+  {
+    "id": "dev-assistant",
+    "name": "Dev Assistant",
+    "version": "1.0.0",
+    "description": "Git manager and project script runner for developers.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "category": "Developer",
+    "min_server_version": "1.0.0",
+    "min_pclink_version": ">=3.2.0",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/dev-assistant/icon.png",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/dev-assistant-1.0.0.zip",
+    "permissions": [
+      "system",
+      "storage"
+    ],
+    "added_on": "2026-01-03T12:30:00+01:00",
+    "updated_on": "2026-01-03T12:30:00+01:00",
+    "file_size": 0
+  },
+  {
+    "id": "network-guard",
+    "name": "Network Guard",
+    "version": "1.0.0",
+    "description": "Monitor system bandwidth and control network-heavy processes.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "category": "Security",
+    "min_server_version": "1.0.0",
+    "min_pclink_version": ">=3.2.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T12:30:00+01:00",
+    "updated_on": "2026-01-03T12:30:00+01:00",
+    "file_size": 0
+  },
+  {
+    "id": "night-owl",
+    "name": "Night Owl",
+    "version": "1.0.0",
+    "description": "Control your screen brightness and comfort settings from your phone.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows"
+    ],
+    "category": "Utility",
+    "min_server_version": "1.0.0",
+    "min_pclink_version": ">=3.2.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T12:45:00+01:00",
+    "updated_on": "2026-01-03T12:45:00+01:00",
+    "file_size": 0
+  },
+  {
+    "id": "clean-master",
+    "name": "Clean Master",
+    "version": "1.0.0",
+    "description": "Optimize your PC by cleaning temporary files and junk.",
+    "author": "PCLink Team",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "category": "Utility",
+    "min_server_version": "1.0.0",
+    "min_pclink_version": ">=3.2.0",
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clean-master-1.0.0.zip",
+    "permissions": [
+      "storage",
+      "system"
+    ],
+    "added_on": "2026-01-03T12:45:00+01:00",
+    "updated_on": "2026-01-03T12:45:00+01:00",
+    "file_size": 0
   }
 ]

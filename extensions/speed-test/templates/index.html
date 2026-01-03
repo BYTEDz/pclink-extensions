@@ -6,23 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Speed Test</title>
     <script src="/ui/static/extension-theme.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root {
-            --bg: #12100e;
-            --surface: #1e1b18;
-            --primary: #f39c12;
-            --on-primary: #000;
-            --accent: #03dac6;
-            --text: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --divider: rgba(255, 255, 255, 0.05);
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --card-border: 1px solid rgba(255, 255, 255, 0.05);
-            --radius: 20px;
-        }
-
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
@@ -34,18 +19,18 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
             background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text);
-            padding: 12px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            gap: 20px;
         }
 
         .header {
@@ -54,177 +39,253 @@
         }
 
         .brand {
-            font-weight: 800;
+            font-weight: 900;
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 2.5px;
+            letter-spacing: 4px;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .tabs {
             display: flex;
             background: var(--surface);
-            padding: 3px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 4px;
+            border-radius: 14px;
             width: 100%;
-            max-width: 280px;
+            max-width: 320px;
             border: var(--card-border);
         }
 
         .tab {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
             cursor: pointer;
-            border-radius: 9px;
-            transition: all 0.2s;
+            border-radius: 11px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tab.active {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--primary);
+            background: var(--primary);
+            color: var(--on-primary);
+            box-shadow: 0 4px 12px var(--primary-muted);
         }
 
+        /* SVG GAUGE */
         .gauge-container {
             position: relative;
-            width: 170px;
-            height: 170px;
+            width: 240px;
+            height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 10px 0;
         }
 
-        .gauge-outer {
+        .gauge-svg {
+            transform: rotate(-220deg);
+            width: 240px;
+            height: 240px;
             position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 3px solid var(--surface);
+            top: -20px;
         }
 
-        .gauge-progress {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--primary);
-            transform: rotate(-45deg);
-            transition: transform 0.3s ease;
+        .gauge-track {
+            fill: none;
+            stroke: var(--surface);
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 440;
+            stroke-dashoffset: 176;
         }
 
-        .gauge-value {
+        .gauge-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 0 10px var(--primary-muted));
+        }
+
+        .gauge-content {
+            z-index: 10;
             text-align: center;
-            z-index: 1;
+            margin-top: 45px;
         }
 
         .speed-number {
-            font-size: 42px;
-            font-weight: 800;
+            font-size: 58px;
+            font-weight: 900;
             margin: 0;
             line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -2px;
         }
 
         .speed-unit {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            margin-top: 2px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 4px;
         }
 
-        .stats-grid {
+        .main-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 12px;
             width: 100%;
             max-width: 400px;
-            margin-bottom: 12px;
         }
 
         .stat-card {
             background: var(--surface);
-            padding: 12px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: var(--radius);
             border: var(--card-border);
             text-align: center;
+            box-shadow: var(--card-shadow);
         }
 
         .stat-label {
-            font-size: 9px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 800;
         }
 
         .stat-value {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
         }
 
         .stat-unit {
             font-size: 10px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            margin-left: 2px;
         }
 
-        .info-bar {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 11px;
-            color: var(--text-secondary);
+        .history-section {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-title {
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-left: 8px;
+        }
+
+        .history-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 14px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.9;
+        }
+
+        .history-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-faint);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .history-type {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+
+        .history-speeds {
+            text-align: right;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .history-ping {
+            font-size: 10px;
+            color: var(--success);
+            font-weight: 600;
         }
 
         .btn-start {
             width: 100%;
             max-width: 400px;
-            padding: 14px;
+            padding: 18px;
             background: var(--primary);
             color: var(--on-primary);
             border: none;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 800;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 900;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 16px rgba(243, 156, 18, 0.2);
+            box-shadow: 0 8px 16px var(--primary-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 8px;
+            gap: 12px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-start:active:not(:disabled) {
+            transform: scale(0.96);
         }
 
         .btn-start:disabled {
             background: var(--surface);
-            color: var(--text-secondary);
+            color: var(--text-muted);
             box-shadow: none;
-        }
-
-        .btn-start:active:not(:disabled) {
-            transform: scale(0.97);
+            opacity: 0.6;
         }
 
         .status-badge {
-            font-size: 10px;
-            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 14px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.08);
-            display: inline-block;
+            background: var(--hover-overlay);
+            color: var(--text-muted);
+            border: 1px solid var(--divider);
+            text-transform: uppercase;
         }
 
         #appLoader {
@@ -233,34 +294,36 @@
             background: var(--bg);
             z-index: 1000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.4s ease-out;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        .testing .gauge-fill {
+            animation: pulse-glow 2s infinite ease-in-out;
         }
 
-        .testing .gauge-progress {
-            animation: rotate 2s linear infinite;
-        }
+        @keyframes pulse-glow {
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+            0%,
+            100% {
+                stroke-opacity: 0.8;
+                filter: drop-shadow(0 0 5px var(--primary-muted));
             }
 
-            to {
-                transform: rotate(360deg);
+            50% {
+                stroke-opacity: 1;
+                filter: drop-shadow(0 0 15px var(--primary));
             }
         }
 
         .hidden {
             display: none !important;
+        }
+
+        /* Mobile Scrollbar hiding */
+        ::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
         }
     </style>
 </head>
@@ -268,69 +331,55 @@
 <body id="body">
     <div id="appLoader">
         <div
-            style="width: 32px; height: 32px; border: 3px solid var(--divider); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;">
+            style="width: 40px; height: 40px; border: 4px solid var(--primary-faint); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;">
         </div>
-        <div style="margin-top: 16px; color: var(--primary); font-weight: 600; font-size: 11px; letter-spacing: 1px;">
-            INITIALIZING</div>
     </div>
 
     <div class="header">
-        <div class="brand">PCLink Connect</div>
-        <div id="statusBadge" class="status-badge">Ready to Test</div>
+        <div class="brand">Network Engine</div>
+        <div id="statusBadge" class="status-badge">Engine Ready</div>
     </div>
 
     <div class="tabs">
-        <div class="tab active" id="tabInternet" onclick="setMode('internet')">Internet</div>
+        <div class="tab active" id="tabInternet" onclick="setMode('internet')">Broadband</div>
         <div class="tab" id="tabLan" onclick="setMode('lan')">Local Link</div>
     </div>
 
-    <div class="gauge-container" id="gauge">
-        <div class="gauge-outer"></div>
-        <div class="gauge-progress" id="gaugeProgress"></div>
-        <div class="gauge-value">
+    <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 200 200">
+            <circle class="gauge-track" cx="100" cy="100" r="70" />
+            <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="70" />
+        </svg>
+        <div class="gauge-content">
             <div class="speed-number" id="mainSpeed">0.0</div>
             <div class="speed-unit" id="mainUnit">Mbps</div>
         </div>
     </div>
 
-    <div class="stats-grid" id="internetStats">
+    <div class="main-stats">
         <div class="stat-card">
-            <div class="stat-label"><i data-lucide="arrow-down" style="width: 9px; color: var(--primary)"></i> Download
-            </div>
-            <div class="stat-value"><span id="dlValue">0.0</span> <span class="stat-unit">Mbps</span></div>
+            <div class="stat-label">Download</div>
+            <div class="stat-value" id="dlDisplay">0.0 <span class="stat-unit">Mbps</span></div>
         </div>
         <div class="stat-card">
-            <div class="stat-label"><i data-lucide="arrow-up" style="width: 9px; color: var(--accent)"></i> Upload
-            </div>
-            <div class="stat-value"><span id="ulValue">0.0</span> <span class="stat-unit">Mbps</span></div>
-        </div>
-        <div class="stat-card" style="grid-column: span 2">
-            <div class="stat-label"><i data-lucide="zap" style="width: 9px; color: #ffeb3b"></i> Ping Latency</div>
-            <div class="stat-value"><span id="pingValue">0</span> <span class="stat-unit">ms</span></div>
+            <div class="stat-label">Upload</div>
+            <div class="stat-value" id="ulDisplay">0.0 <span class="stat-unit">Mbps</span></div>
         </div>
     </div>
 
-    <!-- LAN Stats View (Simplified) -->
-    <div class="stats-grid hidden" id="lanStats">
-        <div class="stat-card" style="grid-column: span 2">
-            <div class="stat-label"><i data-lucide="zap" style="width: 9px; color: #ffeb3b"></i> Network Latency</div>
-            <div class="stat-value"><span id="lanPingValue">0</span> <span class="stat-unit">ms</span></div>
+    <div class="history-section">
+        <div class="history-title">
+            <i data-lucide="history" style="width: 14px;"></i>
+            Recent Results
         </div>
-        <div class="stat-card" style="grid-column: span 2">
-            <div class="stat-label"><i data-lucide="wifi" style="width: 9px; color: var(--primary)"></i> Highest
-                Measured Speed</div>
-            <div class="stat-value"><span id="lanMaxSpeed">0.0</span> <span class="stat-unit">Mbps</span></div>
+        <div id="historyList" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- History entries -->
         </div>
-    </div>
-
-    <div class="info-bar" id="infoBar">
-        <i data-lucide="globe" id="infoIcon" style="width: 14px;"></i>
-        <span id="serverInfo">Detecting network...</span>
     </div>
 
     <button id="startBtn" class="btn-start" onclick="startTest()">
         <i data-lucide="play"></i>
-        <span>START SPEED TEST</span>
+        <span>INITIATE TEST</span>
     </button>
 
     <script>
@@ -339,111 +388,153 @@
         let isTesting = false;
         let currentMode = 'internet';
 
+        // History Storage
+        let testHistory = JSON.parse(localStorage.getItem('pclink_speed_history') || '[]');
+
+        function formatSpeed(mbps) {
+            if (mbps >= 1000) {
+                return { value: (mbps / 1000).toFixed(2), unit: "Gbps" };
+            }
+            return { value: mbps.toFixed(1), unit: "Mbps" };
+        }
+
         function setMode(mode) {
             if (isTesting) return;
             currentMode = mode;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(mode === 'internet' ? 'tabInternet' : 'tabLan').classList.add('active');
+            updateStatus('Engine Ready');
+        }
 
-            if (mode === 'internet') {
-                document.getElementById('internetStats').classList.remove('hidden');
-                document.getElementById('lanStats').classList.add('hidden');
-                document.getElementById('serverInfo').textContent = 'Internet Speedtest';
-                document.getElementById('startBtn').querySelector('span').innerText = 'START INTERNET TEST';
-                document.getElementById('infoIcon').setAttribute('data-lucide', 'globe');
-            } else {
-                document.getElementById('internetStats').classList.add('hidden');
-                document.getElementById('lanStats').classList.remove('hidden');
-                document.getElementById('serverInfo').textContent = 'Local PC Link';
-                document.getElementById('startBtn').querySelector('span').innerText = 'START LOCAL TEST';
-                document.getElementById('infoIcon').setAttribute('data-lucide', 'wifi');
+        function updateGauge(speed) {
+            const maxRef = 1000; // 1Gbps ref
+            const circlePerimeter = 2 * Math.PI * 70;
+            const visibleArc = 0.61;
+            const minOffset = circlePerimeter * (1 - visibleArc);
+
+            const percent = Math.min(speed / maxRef, 1);
+            const offset = circlePerimeter - (percent * (circlePerimeter - minOffset));
+            document.getElementById('gaugeFill').style.strokeDashoffset = offset;
+        }
+
+        function updateHistory(entry) {
+            testHistory.unshift(entry);
+            if (testHistory.length > 5) testHistory.pop();
+            localStorage.setItem('pclink_speed_history', JSON.stringify(testHistory));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (testHistory.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 20px;">No recent tests</div>';
+                return;
             }
+            container.innerHTML = testHistory.map(h => {
+                const dl = formatSpeed(h.download);
+                const ul = formatSpeed(h.upload);
+                const date = new Date(h.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const icon = h.mode === 'internet' ? 'globe' : 'wifi';
+                return `
+                    <div class="history-card">
+                        <div class="history-icon"><i data-lucide="${icon}" style="width: 16px;"></i></div>
+                        <div class="history-info">
+                            <div class="history-type">${h.mode} Test</div>
+                            <div class="history-date">${date} • ${h.ping}ms</div>
+                        </div>
+                        <div class="history-speeds">
+                            <div>${dl.value} <span style="font-size: 9px; color: var(--text-muted)">${dl.unit} ↓</span></div>
+                            <div style="font-size: 11px; opacity: 0.7;">${ul.value} <span style="font-size: 9px; color: var(--text-muted)">${ul.unit} ↑</span></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
             lucide.createIcons();
         }
 
         async function startTest() {
             if (currentMode === 'internet') {
-                startInternetTest();
-            } else {
-                startLanTest();
-            }
-        }
-
-        async function startInternetTest() {
-            try {
                 const res = await fetch(apiPath + '/start', { method: 'POST' });
                 if ((await res.json()).status === 'success') {
                     isTesting = true;
                     updateUI();
                 }
-            } catch (e) { alert("Error: " + e.message); }
+            } else {
+                startLanTest();
+            }
         }
 
         async function startLanTest() {
             isTesting = true;
             document.getElementById('startBtn').disabled = true;
             document.getElementById('body').classList.add('testing');
-
-            let maxSpeed = 0;
+            let maxMeasured = 0;
 
             try {
-                // 1. PING
-                updateStatus('Measuring Latency...');
+                updateStatus('LATENCY...');
                 const startPing = Date.now();
                 await fetch(apiPath + '/status');
-                const ping = Date.now() - startPing;
-                document.getElementById('lanPingValue').textContent = ping;
+                const pingVal = Date.now() - startPing;
 
-                // 2. PC -> Phone
-                updateStatus('Testing PC to Phone...');
-                const startDl = Date.now();
+                updateStatus('DOWNLOADING...');
                 const dlRes = await fetch(apiPath + '/local/download');
                 const reader = dlRes.body.getReader();
                 let received = 0;
+                const startDl = Date.now();
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
                     received += value.length;
                     const elapsed = (Date.now() - startDl) / 1000;
                     const mbps = (received * 8) / (1024 * 1024) / elapsed;
-                    document.getElementById('mainSpeed').textContent = mbps.toFixed(1);
-                    if (mbps > maxSpeed) maxSpeed = mbps;
+                    refreshDisplay(mbps, 0);
+                    if (mbps > maxMeasured) maxMeasured = mbps;
                 }
 
-                // 3. Phone -> PC
-                updateStatus('Testing Phone to PC...');
-                const uploadData = new Uint8Array(20 * 1024 * 1024); // 20MB
+                updateStatus('UPLOADING...');
+                const uploadData = new Uint8Array(20 * 1024 * 1024);
                 const startUl = Date.now();
                 await fetch(apiPath + '/local/upload', { method: 'POST', body: uploadData });
-                const totalUlTime = (Date.now() - startUl) / 1000;
-                const uploadMbps = (uploadData.length * 8) / (1024 * 1024) / totalUlTime;
-                if (uploadMbps > maxSpeed) maxSpeed = uploadMbps;
-                document.getElementById('mainSpeed').textContent = uploadMbps.toFixed(1);
+                const elapsedUl = (Date.now() - startUl) / 1000;
+                const uploadMbps = (uploadData.length * 8) / (1024 * 1024) / elapsedUl;
+                if (uploadMbps > maxMeasured) maxMeasured = uploadMbps;
 
-                // Final Result
-                document.getElementById('lanMaxSpeed').textContent = maxSpeed.toFixed(1);
-                document.getElementById('mainSpeed').textContent = maxSpeed.toFixed(1);
+                const finalDl = maxMeasured;
+                const finalUl = uploadMbps;
+
+                refreshDisplay(finalDl, finalUl);
+                updateHistory({ mode: 'lan', download: finalDl, upload: finalUl, ping: pingVal, timestamp: Date.now() / 1000 });
 
                 await fetch(apiPath + '/local/results', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ download: maxSpeed, upload: uploadMbps, ping })
+                    body: JSON.stringify({ download: finalDl, upload: finalUl, ping: pingVal })
                 });
 
                 isTesting = false;
-                updateStatus('Link Test Finished');
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('body').classList.remove('testing');
+                updateStatus('ENGINE READY');
             } catch (e) {
-                updateStatus('Link Test Error: ' + e.message);
+                updateStatus('LINK ERROR');
                 isTesting = false;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('body').classList.remove('testing');
             }
         }
 
-        function updateStatus(text) {
-            document.getElementById('statusBadge').textContent = text;
+        function refreshDisplay(dlMbps, ulMbps) {
+            const activeSpeed = dlMbps > 0 ? dlMbps : ulMbps;
+            const fActive = formatSpeed(activeSpeed);
+            const fDl = formatSpeed(dlMbps);
+            const fUl = formatSpeed(ulMbps);
+
+            document.getElementById('mainSpeed').textContent = fActive.value;
+            document.getElementById('mainUnit').textContent = fActive.unit;
+            updateGauge(activeSpeed);
+
+            document.getElementById('dlDisplay').innerHTML = `${fDl.value} <span class="stat-unit">${fDl.unit}</span>`;
+            document.getElementById('ulDisplay').innerHTML = `${fUl.value} <span class="stat-unit">${fUl.unit}</span>`;
         }
 
         async function updateUI() {
@@ -451,29 +542,39 @@
                 const res = await fetch(apiPath + '/status');
                 const data = await res.json();
 
-                if (currentMode === 'internet') {
-                    document.getElementById('dlValue').textContent = data.download.toFixed(1);
-                    document.getElementById('ulValue').textContent = data.upload.toFixed(1);
-                    document.getElementById('pingValue').textContent = Math.round(data.ping);
-                }
-
                 if (data.status === 'testing') {
-                    document.getElementById('mainSpeed').textContent = (data.download > 0 ? data.download : data.upload).toFixed(1);
-                    updateStatus(data.phase || 'Testing...');
+                    const current = (data.download > 0 ? data.download : data.upload);
+                    refreshDisplay(data.download, data.upload);
+                    updateStatus(data.phase || 'TESTING...');
                     document.getElementById('startBtn').disabled = true;
                     document.getElementById('body').classList.add('testing');
                 } else if (data.status === 'complete') {
-                    document.getElementById('mainSpeed').textContent = data.download.toFixed(1);
-                    updateStatus('Test Complete');
+                    refreshDisplay(data.download, data.upload);
+                    updateStatus('ENGINE READY');
                     document.getElementById('startBtn').disabled = false;
                     document.getElementById('body').classList.remove('testing');
-                    isTesting = false;
+                    if (isTesting) {
+                        updateHistory({
+                            mode: data.mode,
+                            download: data.download,
+                            upload: data.upload,
+                            ping: data.ping,
+                            timestamp: data.timestamp
+                        });
+                        isTesting = false;
+                    }
                 }
 
                 if (isTesting) setTimeout(updateUI, 1000);
             } catch (e) { }
         }
 
+        function updateStatus(text) {
+            document.getElementById('statusBadge').textContent = text;
+        }
+
+        // Initialize display
+        renderHistory();
         updateUI().then(() => {
             const loader = document.getElementById('appLoader');
             if (loader) {

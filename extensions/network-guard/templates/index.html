@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Network Guard</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        :root {
+            --bg: #0d0e12;
+            --surface: #1a1b23;
+            --primary: #4f46e5;
+            --secondary: #06b6d4;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .speed-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 12px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .speed-card {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .speed-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .speed-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .speed-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .app-item {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 12px;
+            border: var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .app-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .app-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .app-details {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text);
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-warning {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .loading-bar {
+            height: 2px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .loading-progress {
+            position: absolute;
+            height: 100%;
+            width: 30%;
+            background: var(--primary);
+            animation: loading 1.5s infinite linear;
+        }
+
+        @keyframes loading {
+            0% {
+                left: -30%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Network Guard</h1>
+        <div id="status-text" style="font-size: 10px; color: var(--text-muted);">POLLING...</div>
+    </div>
+
+    <div class="loading-bar">
+        <div class="loading-progress"></div>
+    </div>
+
+    <div class="speed-grid">
+        <div class="card speed-card">
+            <span class="speed-label">Download</span>
+            <div class="speed-value" id="down-speed">0.0<span class="speed-unit">KB/s</span></div>
+        </div>
+        <div class="card speed-card">
+            <span class="speed-label">Upload</span>
+            <div class="speed-value" id="up-speed">0.0<span class="speed-unit">KB/s</span></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 8px;">
+        <span class="speed-label">Active Connections</span>
+        <div class="list-container" id="app-list" style="margin-top: 8px;">
+            <!-- App items here -->
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(apiPath + '/status');
+                const data = await res.json();
+                updateUI(data);
+                document.getElementById('status-text').innerText = 'LIVE';
+            } catch (err) {
+                document.getElementById('status-text').innerText = 'OFFLINE';
+            }
+        }
+
+        function updateUI(data) {
+            // Update Speeds
+            document.getElementById('down-speed').innerHTML = `${formatSpeed(data.speed.down)}<span class="speed-unit">${data.speed.down > 1024 ? 'MB/s' : 'KB/s'}</span>`;
+            document.getElementById('up-speed').innerHTML = `${formatSpeed(data.speed.up)}<span class="speed-unit">${data.speed.up > 1024 ? 'MB/s' : 'KB/s'}</span>`;
+
+            // Update App List
+            const list = document.getElementById('app-list');
+            if (data.apps.length === 0) {
+                list.innerHTML = '<div class="empty-state">No active network processes detected.</div>';
+                return;
+            }
+
+            list.innerHTML = data.apps.map(app => `
+                <div class="app-item">
+                    <div class="app-info">
+                        <span class="app-name">${app.name}</span>
+                        <span class="app-details">${app.conn_count} Connections • PID: ${app.pid}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-warning" onclick="sendAction(${app.pid}, '${app.status === 'suspended' ? 'resume' : 'suspend'}')" title="${app.status === 'suspended' ? 'Resume' : 'Suspend'}">
+                            ${app.status === 'suspended' ? '▶' : 'II'}
+                        </button>
+                        <button class="btn btn-danger" onclick="sendAction(${app.pid}, 'kill')" title="Termiate">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatSpeed(kb) {
+            if (kb > 1024) return (kb / 1024).toFixed(1);
+            return kb.toFixed(1);
+        }
+
+        async function sendAction(pid, action) {
+            try {
+                const res = await fetch(apiPath + '/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pid, action })
+                });
+                if (res.ok) fetchStatus();
+            } catch (err) {
+                alert("Action failed: " + err);
+            }
+        }
+
+        setInterval(fetchStatus, 1500); // Polling every 1.5s
+        fetchStatus();
+    </script>
+</body>
+
+</html>

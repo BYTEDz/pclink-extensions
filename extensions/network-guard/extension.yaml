@@ -1,12 +1,12 @@
 author: PCLink Team
-description: Sync small notes between your phone and PC instantly.
-display_name: Quick Notes
+description: Real-time network monitor and firewall. See which apps are using your bandwidth and control them with one tap.
+display_name: Network Guard
 enabled: true
 entry_point: extension.py
-name: quick-notes
+name: network-guard
 pclink_version: '>=3.2.0'
 permissions:
-- storage
+- system
 ui_entry: templates/index.html
 version: 1.0.0
 icon: icon.svg
@@ -15,5 +15,5 @@ supported_platforms:
 - windows
 - linux
 - macos
-category: Productivity
+category: Security
 min_server_version: 1.0.0

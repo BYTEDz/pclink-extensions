@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dev Assistant</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+        :root {
+            --bg: #0f1115;
+            --surface: #1a1d23;
+            --primary: #58a6ff;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --success: #238636;
+            --warning: #d29922;
+            --danger: #d73a49;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .path-input-group {
+            display: flex;
+            gap: 8px;
+            background: var(--surface);
+            padding: 8px;
+            border-radius: 12px;
+            border: var(--card-border);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: monospace;
+            font-size: 14px;
+            outline: none;
+        }
+
+        button.small {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .git-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .badge.git {
+            background: #2ea04333;
+            color: #3fb950;
+        }
+
+        .badge.changes {
+            background: #d2992233;
+            color: #d29922;
+        }
+
+        .scripts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .script-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .script-btn:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .script-type {
+            font-size: 9px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .script-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .console {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #1a1d23;
+        }
+
+        .recent-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .recent-item {
+            background: var(--surface);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+            color: var(--text-muted);
+            border: var(--card-border);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Dev Assistant</h1>
+        <div class="recent-list" id="recent-projects">
+            <!-- Recent projects here -->
+        </div>
+    </div>
+
+    <div class="path-input-group">
+        <input type="text" id="project-path" placeholder="C:\Path\To\Project">
+        <button class="small" onclick="scanProject()">SCAN</button>
+    </div>
+
+    <div id="project-view" class="hidden">
+        <div class="card">
+            <div class="git-status">
+                <div>
+                    <div style="font-size: 14px; font-weight: bold;" id="proj-name">Project Name</div>
+                    <div style="font-size: 11px; color: var(--text-muted);" id="proj-path">/path/to/project</div>
+                </div>
+                <div id="git-badges">
+                    <span class="badge git">Main</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="small" style="flex: 1; background: #30363d; color: #c9d1d9;"
+                    onclick="gitAction('pull')">GIT PULL</button>
+                <button class="small" style="flex: 1; background: #30363d; color: #c9d1d9;"
+                    onclick="gitAction('fetch')">GIT FETCH</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 8px;">RUN COMMANDS
+            </div>
+            <div class="scripts-grid" id="scripts-grid">
+                <!-- Scripts here -->
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 8px;">CONSOLE
+                OUTPUT</div>
+            <div class="console" id="console">Ready.</div>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let currentPath = '';
+
+        async function loadRecent() {
+            const res = await fetch(apiPath + '/projects');
+            const projects = await res.json();
+            const list = document.getElementById('recent-projects');
+            list.innerHTML = '';
+            projects.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'recent-item';
+                item.innerText = p.split(/[\\/]/).pop();
+                item.onclick = () => {
+                    document.getElementById('project-path').value = p;
+                    scanProject();
+                };
+                list.appendChild(item);
+            });
+        }
+
+        async function scanProject() {
+            const path = document.getElementById('project-path').value;
+            const res = await fetch(apiPath + '/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path })
+            });
+
+            if (!res.ok) return alert("Invalid Path");
+
+            const data = await res.json();
+            currentPath = data.path;
+
+            document.getElementById('project-view').classList.remove('hidden');
+            document.getElementById('proj-name').innerText = data.name;
+            document.getElementById('proj-path').innerText = data.path;
+
+            // Git
+            const badges = document.getElementById('git-badges');
+            badges.innerHTML = '';
+            if (data.git.is_git) {
+                const b = document.createElement('span');
+                b.className = 'badge git';
+                b.innerText = data.git.branch;
+                badges.appendChild(b);
+
+                if (data.git.has_changes) {
+                    const c = document.createElement('span');
+                    c.className = 'badge changes';
+                    c.innerText = `${data.git.change_count} CHANGES`;
+                    c.style.marginLeft = '4px';
+                    badges.appendChild(c);
+                }
+            }
+
+            // Scripts
+            const grid = document.getElementById('scripts-grid');
+            grid.innerHTML = '';
+            data.scripts.forEach(s => {
+                const btn = document.createElement('div');
+                btn.className = 'script-btn';
+                btn.innerHTML = `
+                    <span class="script-type">${s.type}</span>
+                    <span class="script-name">${s.name}</span>
+                `;
+                btn.onclick = () => runCommand(s.command);
+                grid.appendChild(btn);
+            });
+
+            loadRecent();
+        }
+
+        async function gitAction(action) {
+            log(`Running git ${action}...`);
+            const res = await fetch(apiPath + '/git/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: currentPath, action })
+            });
+            const data = await res.json();
+            log(data.output);
+            scanProject(); // Refresh git status
+        }
+
+        async function runCommand(command) {
+            log(`Executing: ${command}`);
+            const res = await fetch(apiPath + '/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: currentPath, command })
+            });
+            const data = await res.json();
+            if (data.output) {
+                data.output.forEach(line => log(line));
+            }
+        }
+
+        function log(msg) {
+            const con = document.getElementById('console');
+            con.innerText += '\n' + msg;
+            con.scrollTop = con.scrollHeight;
+        }
+
+        loadRecent();
+    </script>
+</body>
+
+</html>

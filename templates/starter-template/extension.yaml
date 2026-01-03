@@ -11,3 +11,5 @@ supported_platforms:
   - linux
   - macos
 permissions: []
+category: Utility
+min_server_version: 1.0.0

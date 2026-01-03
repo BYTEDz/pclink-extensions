@@ -3,142 +3,180 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The DJ Mixer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Audio Mixer</title>
     <script src="/ui/static/extension-theme.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root {
-            --bg: #121212;
-            --surface: #1e1e1e;
-            --primary: #bb86fc;
-            --on-primary: #000;
-            --text: #fff;
-            --text-muted: #aaa;
-            --range-fill: #bb86fc;
-            --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            --card-border: 1px solid rgba(255, 255, 255, 0.05);
-            --divider: #333;
-            --danger: #cf6679;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 15px;
-            margin: 0;
-            max-width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* Note: font-family, bg, and text are now handled by SDK */
         }
-
 
         .channel {
             background: var(--surface);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: var(--radius);
+            padding: 18px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             border: var(--card-border);
             box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
-        .icon {
-            width: 40px;
-            height: 40px;
-            background: var(--divider);
-            border-radius: 8px;
+        .channel:active {
+            transform: scale(0.99);
+        }
+
+        .icon-container {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-faint);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-muted);
+            color: var(--primary);
+            flex-shrink: 0;
+            border: 1px solid var(--primary-muted);
         }
 
         .controls {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            font-weight: 500;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
 
-        /* Custom Range Slider */
+        .vol-text {
+            color: var(--primary);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Premium Range Slider */
         input[type=range] {
             width: 100%;
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
+            height: 24px;
         }
 
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-            margin-top: -8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        input[type=range]:focus {
+            outline: none;
         }
 
+        /* Track */
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 4px;
+            height: 6px;
             cursor: pointer;
-            background: var(--divider);
-            border-radius: 2px;
+            background: var(--primary-faint);
+            border-radius: 100px;
+            border: none;
+        }
+
+        /* Thumb */
+        input[type=range]::-webkit-slider-thumb {
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: var(--text);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border: 4px solid var(--primary);
+            transition: transform 0.1s ease;
+        }
+
+        input[type=range]:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+            background: var(--primary);
+            border-color: var(--text);
         }
 
         .mute-btn {
-            background: transparent;
-            border: none;
-            color: #666;
+            background: var(--hover-overlay);
+            border: 1px solid var(--divider);
+            color: var(--text-muted);
             cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: 0.2s;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         .mute-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--primary-muted);
+            color: var(--primary);
         }
 
         .mute-btn.active {
-            color: var(--danger);
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+            animation: shake 0.5s ease-in-out;
         }
 
-        .mute-btn.active svg {
-            fill: currentColor;
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-2px);
+            }
+
+            75% {
+                transform: translateX(2px);
+            }
         }
 
-        .warning {
-            background: #ffb74d;
-            color: #000;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        #loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
             font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
         }
     </style>
 </head>
 
 <body>
 
-    <div id="loading">Scanning sessions...</div>
+    <div id="loading">
+        <div style="margin-bottom: 12px;">SCANNING PC AUDIO...</div>
+    </div>
     <div id="list"></div>
 
     <script>
@@ -160,26 +198,35 @@
 
         function render(sessions) {
             const list = document.getElementById('list');
-            // If dragging, don't re-render entire list to avoid jitter, 
-            // ideally we'd diff, but for now we just check if active element is a range
             if (document.activeElement.type === 'range') return;
+
+            if (sessions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="volume-x" style="width: 48px; height: 48px; opacity: 0.3;"></i>
+                        <div>No active audio sessions found.</div>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
 
             list.innerHTML = sessions.map(s => `
                 <div class="channel">
-                    <div class="icon">
-                        <i data-lucide="${s.icon || 'box'}"></i>
+                    <div class="icon-container">
+                        <i data-lucide="${s.icon || 'music'}"></i>
                     </div>
                     <div class="controls">
                         <div class="info">
                             <span>${s.name}</span>
-                            <span>${Math.round(s.volume * 100)}%</span>
+                            <span class="vol-text">${Math.round(s.volume * 100)}%</span>
                         </div>
                         <input type="range" min="0" max="1" step="0.01" value="${s.volume}" 
                             oninput="updateVolume('${s.id}', this.value)"
                             onchange="updateVolume('${s.id}', this.value)">
                     </div>
                     <button class="mute-btn ${s.muted ? 'active' : ''}" onclick="toggleMute('${s.id}', ${!s.muted})">
-                        <i data-lucide="${s.muted ? 'mic-off' : 'mic'}"></i>
+                        <i data-lucide="${s.muted ? 'volume-x' : 'volume-2'}"></i>
                     </button>
                 </div>
             `).join('');
@@ -188,7 +235,12 @@
         }
 
         async function updateVolume(id, vol) {
-            // Optimistic UI update could happen here
+            // Update the display text immediately for that warm 'analog' feel
+            const parent = document.querySelector(`input[value="${vol}"]`)?.closest('.channel');
+            if (parent) {
+                parent.querySelector('.vol-text').innerText = `${Math.round(vol * 100)}%`;
+            }
+
             await fetch(`${API_BASE}/volume`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -202,7 +254,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id, muted: state })
             });
-            refresh(); // Force refresh to show state
+            refresh();
         }
     </script>
 </body>

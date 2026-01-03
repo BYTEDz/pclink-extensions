@@ -1,11 +1,12 @@
 author: PCLink Team
-description: Sync small notes between your phone and PC instantly.
-display_name: Quick Notes
+description: A powerful tool for developers to manage Git repositories and run custom project scripts (npm, flutter, etc.) from their phone.
+display_name: Dev Assistant
 enabled: true
 entry_point: extension.py
-name: quick-notes
+name: dev-assistant
 pclink_version: '>=3.2.0'
 permissions:
+- system
 - storage
 ui_entry: templates/index.html
 version: 1.0.0
@@ -15,5 +16,5 @@ supported_platforms:
 - windows
 - linux
 - macos
-category: Productivity
+category: Developer
 min_server_version: 1.0.0
