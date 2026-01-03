@@ -19,54 +19,7 @@
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 24731
-  },
-  {
-    "id": "clean-master",
-    "name": "Clean Master",
-    "version": "1.0.0",
-    "description": "Clean temporary files, empty recycle bin, and free up disk space with one tap.",
-    "author": "PCLink Team",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clean-master/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clean-master-1.0.0.zip",
-    "permissions": [
-      "storage",
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 11535
-  },
-  {
-    "id": "clipboard-history",
-    "name": "Clipboard History",
-    "version": "1.0.0",
-    "description": "Keep track of your clipboard history and sync it with your phone.",
-    "author": "PCLink Team",
-    "category": "Productivity",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
-    "permissions": [
-      "clipboard"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 38400
+    "file_size": 14935
   },
   {
     "id": "dev-assistant",
@@ -91,7 +44,51 @@
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 18697
+    "file_size": 18167
+  },
+  {
+    "id": "clipboard-history",
+    "name": "Clipboard History",
+    "version": "1.0.0",
+    "description": "Keep track of your clipboard history and sync it with your phone.",
+    "author": "PCLink Team",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
+    "permissions": [
+      "clipboard"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-01-03T15:08:26+01:00",
+    "file_size": 25445
+  },
+  {
+    "id": "wifi-sharer",
+    "name": "WiFi Sharer",
+    "version": "1.0.0",
+    "description": "Share your WiFi credentials easily via QR code.",
+    "author": "PCLink Team",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-01-03T15:08:26+01:00",
+    "file_size": 13027
   },
   {
     "id": "gamer-hud",
@@ -115,7 +112,7 @@
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 15926
+    "file_size": 15489
   },
   {
     "id": "network-guard",
@@ -139,29 +136,7 @@
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 13598
-  },
-  {
-    "id": "night-owl",
-    "name": "Night Owl",
-    "version": "1.0.0",
-    "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
-    "author": "PCLink Team",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 11609
+    "file_size": 13289
   },
   {
     "id": "quick-notes",
@@ -185,7 +160,29 @@
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 15110
+    "file_size": 10561
+  },
+  {
+    "id": "night-owl",
+    "name": "Night Owl",
+    "version": "1.0.0",
+    "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
+    "author": "PCLink Team",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T15:08:26+01:00",
+    "updated_on": "2026-01-03T15:08:26+01:00",
+    "file_size": 11278
   },
   {
     "id": "speed-test",
@@ -207,28 +204,31 @@
     "permissions": [],
     "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 190302
+    "file_size": 91121
   },
   {
-    "id": "wifi-sharer",
-    "name": "WiFi Sharer",
+    "id": "clean-master",
+    "name": "Clean Master",
     "version": "1.0.0",
-    "description": "Share your WiFi credentials easily via QR code.",
+    "description": "Clean temporary files, empty recycle bin, and free up disk space with one tap.",
     "author": "PCLink Team",
     "category": "Utility",
     "supported_platforms": [
-      "windows"
+      "windows",
+      "linux",
+      "macos"
     ],
     "min_pclink_version": ">=3.2.0",
     "min_server_version": "1.0.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clean-master/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clean-master-1.0.0.zip",
     "permissions": [
+      "storage",
       "system"
     ],
-    "added_on": "2025-12-31T23:29:18+01:00",
+    "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 19479
+    "file_size": 11192
   }
 ]
