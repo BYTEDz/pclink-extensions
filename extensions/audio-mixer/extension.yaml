@@ -1,6 +1,6 @@
 author: PCLink Team
 description: Control volume for individual applications.
-display_name: The DJ Mixer
+display_name: Audio Mixer
 enabled: true
 entry_point: extension.py
 name: audio-mixer
