@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 16px; }
+        
+        .pulse-card {
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 32px; text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+        .battery-level {
+            font-size: 3.5rem; font-weight: 800; margin: 4px 0;
+            color: var(--text);
+        }
+        .status-sub {
+            font-weight: 700; font-size: 0.75rem; letter-spacing: 1.2px; opacity: 0.5; text-transform: uppercase;
+        }
+
+        .plan-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        
+        .plan-btn {
+            background: var(--surface);
+            border: 2px solid transparent;
+            color: var(--text);
+            padding: 16px; border-radius: 20px;
+            display: flex; align-items: center; gap: 16px;
+            cursor: pointer; transition: all 0.2s ease;
+            text-align: left;
+        }
+        
+        .plan-btn i { 
+            flex-shrink: 0;
+            padding: 12px; border-radius: 14px; 
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .plan-info {
+            display: flex; flex-direction: column; justify-content: center;
+            line-height: 1.2;
+        }
+        .plan-info h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+        .plan-info p { margin: 2px 0 0; font-size: 0.8rem; opacity: 0.5; }
+
+        .plan-btn.active {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb, 100, 100, 255), 0.08);
+        }
+        .plan-btn.active i {
+            background: var(--primary);
+            color: var(--on-primary) !important;
+        }
+
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--text); color: var(--bg);
+            padding: 12px 24px; border-radius: 30px;
+            font-weight: 600; font-size: 0.9rem; opacity: 0;
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 1000; white-space: nowrap;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pulse-card">
+            <div id="statusLabel" class="status-sub">Detecting System...</div>
+            <div class="battery-level" id="levelText">--</div>
+            <div id="detailLabel" style="font-size: 0.9rem; opacity: 0.6; margin-top: 4px;">AC Power</div>
+        </div>
+
+        <div class="plan-grid">
+            <button class="plan-btn" id="btn-saver" onclick="setPlan('saver')">
+                <i data-lucide="leaf" style="color: #4ade80;"></i>
+                <div class="plan-info">
+                    <h3>Power Saver</h3>
+                    <p>Minimum energy consumption</p>
+                </div>
+            </button>
+            <button class="plan-btn" id="btn-balanced" onclick="setPlan('balanced')">
+                <i data-lucide="scale" style="color: #60a5fa;"></i>
+                <div class="plan-info">
+                    <h3>Balanced</h3>
+                    <p>Standard performance mode</p>
+                </div>
+            </button>
+            <button class="plan-btn" id="btn-high" onclick="setPlan('high')">
+                <i data-lucide="zap" style="color: #fb923c;"></i>
+                <div class="plan-info">
+                    <h3>High Performance</h3>
+                    <p>Maximum power and speed</p>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast">Profile Updated</div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        async function updateStatus() {
+            try {
+                const res = await fetch(`${apiPath}/status`);
+                const data = await res.json();
+                
+                const lvl = document.getElementById('levelText');
+                const lbl = document.getElementById('statusLabel');
+                const det = document.getElementById('detailLabel');
+
+                if (data.has_battery) {
+                    lvl.innerText = data.percent + "%";
+                    lbl.innerText = data.power_plugged ? "Charging" : "On Battery";
+                    det.innerText = data.power_plugged ? "Power Connected" : "Discharging";
+                } else {
+                    lvl.innerHTML = '<i data-lucide="plug-zap" style="width:48px; height:48px;"></i>';
+                    lbl.innerText = "Desktop PC";
+                    det.innerText = "AC Power Active";
+                    lucide.createIcons();
+                }
+                
+                document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+                const activeBtn = document.getElementById(`btn-${data.active_plan}`);
+                if(activeBtn) activeBtn.classList.add('active');
+
+            } catch(e) { console.error(e); }
+        }
+
+        async function setPlan(type) {
+            const res = await fetch(`${apiPath}/set-plan/${type}`, { method: 'POST' });
+            const data = await res.json();
+            if(data.success) {
+                showToast(`Mode: ${type.toUpperCase()}`);
+                updateStatus();
+            }
+        }
+
+        setInterval(updateStatus, 5000);
+        updateStatus();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

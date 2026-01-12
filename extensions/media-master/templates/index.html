@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 16px;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 90vh;
+        }
+        .container {
+            width: 100%; max-width: 380px;
+            display: flex; flex-direction: column; gap: 24px;
+        }
+        /* Album Art Area */
+        .art-card {
+            aspect-ratio: 1/1;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+        }
+        .art-card i { color: white; opacity: 0.9; width: 80px; height: 80px; }
+        
+        /* Song Info */
+        .info { text-align: left; padding: 0 8px; }
+        .info h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+        .info p { margin: 4px 0 0; color: var(--text-muted); font-size: 1rem; }
+
+        /* Modern Transport Controls */
+        .transport {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 10px;
+        }
+        .btn-main {
+            background: var(--text); color: var(--bg);
+            border: none; border-radius: 50%;
+            width: 72px; height: 72px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-icon {
+            background: none; border: none; color: var(--text);
+            width: 48px; height: 48px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.2s;
+        }
+        .btn-icon:active { opacity: 0.5; }
+        .btn-main:active { transform: scale(0.9); }
+
+        /* Secondary Controls (Seek) */
+        .secondary-actions {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+        .seek-btn {
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            padding: 14px; border-radius: 16px;
+            font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        /* Volume Bar Wrapper */
+        .volume-section {
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            padding: 20px; border-radius: 24px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .vol-btn { background: none; border: none; color: var(--text-muted); padding: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Visual Art -->
+        <div class="art-card">
+            <i data-lucide="music-4"></i>
+        </div>
+
+        <!-- Meta -->
+        <div class="info">
+            <h1>Active Media</h1>
+            <p>Remote PC Playback</p>
+        </div>
+
+        <!-- Main Playback -->
+        <div class="transport">
+            <button class="btn-icon" onclick="control('prev')"><i data-lucide="skip-back"></i></button>
+            <button class="btn-icon" onclick="control('seek_bwd')"><i data-lucide="rotate-ccw"></i></button>
+            <button class="btn-main" onclick="control('play_pause')"><i data-lucide="play" id="playIcon"></i></button>
+            <button class="btn-icon" onclick="control('seek_fwd')"><i data-lucide="rotate-cw"></i></button>
+            <button class="btn-icon" onclick="control('next')"><i data-lucide="skip-forward"></i></button>
+        </div>
+
+        <!-- Seek Shortcuts -->
+        <div class="secondary-actions">
+            <button class="seek-btn" onclick="control('seek_bwd')">
+                <i data-lucide="chevrons-left" size="18"></i> -10s
+            </button>
+            <button class="seek-btn" onclick="control('seek_fwd')">
+                10s <i data-lucide="chevrons-right" size="18"></i>
+            </button>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="volume-section">
+            <button class="vol-btn" onclick="control('vol_down')"><i data-lucide="volume-1"></i></button>
+            <div style="flex-grow: 1; height: 6px; background: var(--card-border); border-radius: 3px; position: relative;">
+                <div style="width: 65%; height: 100%; background: var(--text); border-radius: 3px;"></div>
+            </div>
+            <button class="vol-btn" onclick="control('vol_up')"><i data-lucide="volume-2"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let isPlaying = true;
+
+        async function control(action) {
+            if(action === 'play_pause') {
+                isPlaying = !isPlaying;
+                document.getElementById('playIcon').setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+                lucide.createIcons();
+            }
+            try {
+                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
+            } catch (e) { console.error(e); }
+        }
+        
+        lucide.createIcons();
+    </script>
+</body>
+</html>

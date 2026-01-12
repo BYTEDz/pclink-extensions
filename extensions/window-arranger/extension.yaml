@@ -1,0 +1,13 @@
+name: window-arranger
+display_name: Window Arranger
+version: 1.0.0
+description: Remote window snapping and management for multi-monitor setups.
+author: PCLink Developer
+pclink_version: '>=3.2.0'
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Productivity
+supported_platforms:
+  - windows

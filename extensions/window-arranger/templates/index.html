@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><script src="/ui/static/extension-theme.js"></script><script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; display: flex; justify-content: center; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 320px; }
+    .tile { background: var(--surface); border: 1px solid var(--card-border); padding: 24px; border-radius: 16px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .tile:active { background: var(--primary); color: var(--on-primary); }
+</style></head>
+<body>
+    <div class="grid">
+        <div class="tile" style="grid-column: span 2" onclick="snap('max')"><i data-lucide="maximize"></i>Maximize Active</div>
+        <div class="tile" onclick="snap('left')"><i data-lucide="layout-columns"></i>Snap Left</div>
+        <div class="tile" onclick="snap('right')"><i data-lucide="layout-columns" style="transform: scaleX(-1)"></i>Snap Right</div>
+    </div>
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        function snap(p) { fetch(`${apiPath}/snap/${p}`, {method:'POST'}); }
+        lucide.createIcons();
+    </script>
+</body></html>

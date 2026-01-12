@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head><script src="/ui/static/extension-theme.js"></script><script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; text-align: center; }
+    .box { background: var(--surface); border: 1px solid var(--card-border); padding: 24px; border-radius: 24px; }
+    input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--bg); color: var(--text); margin: 20px 0; box-sizing: border-box; }
+    button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--primary); color: var(--on-primary); font-weight: bold; cursor: pointer; }
+</style></head>
+<body>
+    <div class="box">
+        <i data-lucide="send" size="48" style="color: var(--primary)"></i>
+        <h2>URL Beam</h2>
+        <input type="text" id="url" placeholder="Paste URL here...">
+        <button onclick="beam()">Beam to PC</button>
+    </div>
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        function beam() { 
+            const url = document.getElementById('url').value;
+            if(!url) return;
+            fetch(`${apiPath}/beam`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url:url})});
+        }
+        lucide.createIcons();
+    </script>
+</body></html>

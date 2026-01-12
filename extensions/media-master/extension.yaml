@@ -1,0 +1,17 @@
+name: media-master
+display_name: Media Master Pro
+version: 1.0.0
+description: Modern media controller with seek support and a premium mobile UI.
+author: PCLink Developer
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Utility
+supported_platforms:
+  - windows
+  - linux
+  - macos
+permissions:
+  - theme.read

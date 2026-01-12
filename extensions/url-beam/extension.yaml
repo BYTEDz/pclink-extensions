@@ -1,0 +1,15 @@
+name: url-beam
+display_name: URL Beam
+version: 1.0.0
+description: Instantly open links from your phone in your PC browser.
+author: PCLink Developer
+pclink_version: '>=3.2.0'
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Productivity
+supported_platforms:
+  - windows
+  - linux
+  - macos
