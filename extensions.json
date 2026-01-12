@@ -47,6 +47,26 @@
     "file_size": 18167
   },
   {
+    "id": "window-arranger",
+    "name": "Window Arranger",
+    "version": "1.0.0",
+    "description": "Remote window snapping and management for multi-monitor setups.",
+    "author": "PCLink Developer",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/window-arranger/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
+    "permissions": [],
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-01-12T22:02:13+01:00",
+    "file_size": 2787
+  },
+  {
     "id": "clipboard-history",
     "name": "Clipboard History",
     "version": "1.0.0",
@@ -67,6 +87,29 @@
     "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
     "file_size": 25445
+  },
+  {
+    "id": "energy-pulse",
+    "name": "Energy Pulse Pro",
+    "version": "1.0.0",
+    "description": "Remote power management. Improved desktop detection and aligned UI.",
+    "author": "PCLink Developer",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-1.0.0.zip",
+    "permissions": [
+      "theme.read"
+    ],
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-01-12T22:02:13+01:00",
+    "file_size": 9600
   },
   {
     "id": "wifi-sharer",
@@ -138,6 +181,52 @@
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-01-03T15:08:26+01:00",
     "file_size": 15489
+  },
+  {
+    "id": "url-beam",
+    "name": "URL Beam",
+    "version": "1.0.0",
+    "description": "Instantly open links from your phone in your PC browser.",
+    "author": "PCLink Developer",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/url-beam/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
+    "permissions": [],
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-01-12T22:02:13+01:00",
+    "file_size": 2570
+  },
+  {
+    "id": "media-master",
+    "name": "Media Master Pro",
+    "version": "1.0.0",
+    "description": "Modern media controller with seek support and a premium mobile UI.",
+    "author": "PCLink Developer",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-1.0.0.zip",
+    "permissions": [
+      "theme.read"
+    ],
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-01-12T22:02:13+01:00",
+    "file_size": 8088
   },
   {
     "id": "network-guard",
