@@ -91,6 +91,31 @@
     "file_size": 13027
   },
   {
+    "id": "process-manager",
+    "name": "Task Manager",
+    "version": "1.0.0",
+    "description": "Monitor running processes and remotely kill frozen applications.",
+    "author": "PCLink Team",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-1.0.0.zip",
+    "permissions": [
+      "system.read",
+      "system.manage"
+    ],
+    "added_on": "2026-01-12T20:17:14+01:00",
+    "updated_on": "2026-01-12T20:17:14+01:00",
+    "file_size": 11676
+  },
+  {
     "id": "gamer-hud",
     "name": "Gamer HUD",
     "version": "1.0.0",
