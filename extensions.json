@@ -10,7 +10,7 @@
       "windows"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
@@ -18,8 +18,8 @@
       "audio"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T16:10:51+01:00",
-    "file_size": 15047
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 15051
   },
   {
     "id": "dev-assistant",
@@ -34,7 +34,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/dev-assistant/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/dev-assistant-1.0.0.zip",
@@ -43,8 +43,8 @@
       "storage"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 18167
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 18177
   },
   {
     "id": "window-arranger",
@@ -77,7 +77,7 @@
       "windows"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
@@ -85,8 +85,8 @@
       "clipboard"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 25445
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 25449
   },
   {
     "id": "energy-pulse",
@@ -122,7 +122,7 @@
       "windows"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
@@ -130,8 +130,8 @@
       "system"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 13027
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 13031
   },
   {
     "id": "process-manager",
@@ -146,7 +146,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-1.0.0.zip",
@@ -155,8 +155,8 @@
       "system.manage"
     ],
     "added_on": "2026-01-12T20:17:14+01:00",
-    "updated_on": "2026-01-12T20:17:14+01:00",
-    "file_size": 11676
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 11677
   },
   {
     "id": "gamer-hud",
@@ -241,7 +241,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-1.0.0.zip",
@@ -249,8 +249,8 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 13289
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 13297
   },
   {
     "id": "quick-notes",
@@ -265,7 +265,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/quick-notes/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-1.0.0.zip",
@@ -273,8 +273,8 @@
       "storage"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 10561
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 10569
   },
   {
     "id": "night-owl",
@@ -287,7 +287,7 @@
       "windows"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
@@ -295,8 +295,8 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 11278
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 11282
   },
   {
     "id": "speed-test",
@@ -311,14 +311,14 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.0.0.zip",
     "permissions": [],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 91121
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 91129
   },
   {
     "id": "clean-master",
@@ -333,7 +333,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clean-master/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clean-master-1.0.0.zip",
@@ -342,7 +342,7 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 11192
+    "updated_on": "2026-01-13T12:07:54+01:00",
+    "file_size": 11202
   }
 ]
