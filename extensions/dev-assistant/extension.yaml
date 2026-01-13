@@ -4,17 +4,17 @@ display_name: Dev Assistant
 enabled: true
 entry_point: extension.py
 name: dev-assistant
-pclink_version: '>=3.2.0'
+pclink_version: ">=3.2.0"
 permissions:
-- system
-- storage
+  - system
+  - storage
 ui_entry: templates/index.html
 version: 1.0.0
 icon: icon.svg
 theme_aware_icon: true
 supported_platforms:
-- windows
-- linux
-- macos
+  - windows
+  - linux
+  - macos
 category: Developer
-min_server_version: 1.0.0
+min_server_version: 3.2.0

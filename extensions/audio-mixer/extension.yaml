@@ -4,14 +4,14 @@ display_name: Audio Mixer
 enabled: true
 entry_point: extension.py
 name: audio-mixer
-pclink_version: '>=3.2.0'
+pclink_version: ">=3.2.0"
 ui_entry: templates/index.html
 permissions:
-- audio
+  - audio
 version: 1.0.0
 icon: icon.svg
 theme_aware_icon: true
 supported_platforms:
-- windows
+  - windows
 category: Media
-min_server_version: 1.0.0
+min_server_version: 3.2.0

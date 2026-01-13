@@ -1,18 +1,19 @@
 author: PCLink Team
-description: Test your PC's internet download and upload speed directly from your
+description:
+  Test your PC's internet download and upload speed directly from your
   phone.
 display_name: PC Speed Test
 enabled: true
 entry_point: extension.py
 name: speed-test
-pclink_version: '>=3.2.0'
+pclink_version: ">=3.2.0"
 ui_entry: templates/index.html
 version: 1.0.0
 icon: icon.svg
 theme_aware_icon: true
 supported_platforms:
-- windows
-- linux
-- macos
+  - windows
+  - linux
+  - macos
 category: Utility
-min_server_version: 1.0.0
+min_server_version: 3.2.0

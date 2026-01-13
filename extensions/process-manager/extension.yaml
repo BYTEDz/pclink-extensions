@@ -3,8 +3,8 @@ display_name: Task Manager
 version: 1.0.0
 description: Monitor running processes and remotely kill frozen applications.
 author: PCLink Team
-pclink_version: '>=3.2.0'
-min_server_version: 1.0.0
+pclink_version: ">=3.2.0"
+min_server_version: 3.2.0
 entry_point: extension.py
 ui_entry: templates/index.html
 icon: icon.svg
