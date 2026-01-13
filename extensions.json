@@ -57,7 +57,7 @@
       "windows"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/window-arranger/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
@@ -100,7 +100,7 @@
       "linux"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-1.0.0.zip",
@@ -195,7 +195,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/url-beam/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
@@ -217,7 +217,7 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-1.0.0.zip",
