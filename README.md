@@ -28,11 +28,13 @@ Enhance your remote control experience with custom features, automation, and imp
 ## 🚀 Quick Start
 
 ### 💻 Installing Extensions
+
 1. **Browse the Marketplace**: Open the PCLink mobile app and go to the **Extensions** screen.
 2. **Download & Install**: Tap the **"Store"** icon to browse the official library and install with one click.
 3. **Manual Install**: Alternatively, download a `.zip` from the [Releases](https://github.com/BYTEDz/pclink-extensions/releases) and use the **"Install from File"** option in the app.
 
 ### 🏗️ Creating Extensions
+
 Join our community of developers and build your own tools! Use our [Starter Template](templates/starter-template/) to get running in seconds.
 
 ---
@@ -53,10 +55,11 @@ pclink-extensions/
 ## 📜 Repository Standards
 
 To maintain high quality, all extensions in this repository must follow these requirements:
-*   **Structured Metadata**: Every extension must have a valid `extension.yaml`.
-*   **Iconography**: High-quality icons (PNG/SVG) should be placed in `static/icon.png`.
-*   **Security First**: Dangerous permissions must be explicitly declared and justified.
-*   **Performance**: Extensions should be lightweight and avoid heavy background processing.
+
+- **Structured Metadata**: Every extension must have a valid `extension.yaml`.
+- **Iconography**: High-quality icons (PNG/SVG) should be placed in `static/icon.png`.
+- **Security First**: Dangerous permissions must be explicitly declared and justified.
+- **Performance**: Extensions should be lightweight and avoid heavy background processing.
 
 ---
 
@@ -73,7 +76,7 @@ To maintain high quality, all extensions in this repository must follow these re
       <br />
       <sub>Creator & Lead Developer</sub>
       <br />
-      <a href="mailto:support@bytedz.xyz">📧</a>
+      <a href="mailto:support@bytedz.com">📧</a>
       <a href="https://github.com/AzharZouhir">💻</a>
     </td>
   </tr>
