@@ -1,7 +1,7 @@
 name: energy-pulse
 display_name: Energy Pulse Pro
-version: 1.0.0
-description: Remote power management. Improved desktop detection and aligned UI.
+version: 1.1.0
+description: Remote power management. Linux optimized with power-profiles-daemon integration.
 author: PCLink Developer
 pclink_version: ">=3.2.0"
 entry_point: extension.py
@@ -10,7 +10,6 @@ icon: icon.svg
 theme_aware_icon: true
 category: System
 supported_platforms:
-  - windows
   - linux
 permissions:
   - theme.read
