@@ -13,3 +13,17 @@ supported_platforms:
 permissions: []
 category: Utility
 min_server_version: 1.0.0
+
+# UI Flags (Optional)
+ui_capabilities:
+  allow_fullscreen: false
+  allow_touchpad_overlay: false
+  allow_keyboard: false
+  prevent_sleep: false
+  orientation: "auto" # auto, follow_system, landscape, portrait
+
+# Dashboard Widgets (Optional)
+dashboard_widgets: []
+#  - id: "my-widget-1"
+#    name: "My Widget"
+#    refresh_ms: 5000

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --bg: transparent;
+            --text: #ffffff;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.1);
+            --error: #f44336;
+        }
+
+        :root[data-theme="light"] {
+            --text: #1a1a1a;
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            margin: 0;
+            padding: 2px 4px 6px 4px; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body.ready { opacity: 1; }
+
+        .widget-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: var(--surface);
+            border-radius: 12px;
+        }
+
+        .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary);
+        }
+
+        .label { font-size: 14px; font-weight: 500; }
+        .value { font-size: 13px; opacity: 0.7; }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .mode-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 4px;
+            background: var(--surface);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn:active { transform: scale(0.96); }
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mode-btn.active .icon-svg { fill: white; }
+
+        .mode-icon-svg { width: 18px; height: 18px; }
+        .mode-label { font-size: 10px; font-weight: 600; text-transform: uppercase; }
+
+        /* Skeleton Styles */
+        #skeleton {
+            position: fixed;
+            top: 8px; left: 12px; right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .skel-box {
+            height: 40px;
+            background: var(--surface);
+            border-radius: 12px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .skel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .skel-item {
+            height: 54px;
+            background: var(--surface);
+            border-radius: 12px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div id="skeleton">
+        <div class="skel-box"></div>
+        <div class="skel-grid">
+            <div class="skel-item"></div>
+            <div class="skel-item"></div>
+            <div class="skel-item"></div>
+        </div>
+    </div>
+
+    <div class="widget-container">
+        <div class="status-row">
+            <div class="info">
+                <svg class="icon-svg" id="bat-icon" viewBox="0 0 24 24">
+                    <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.34C7 21.4 7.6 22 8.33 22h7.34c.74 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
+                </svg>
+                <div>
+                    <div class="label" id="power-status">Unknown</div>
+                    <div class="value" id="battery-pct">--%</div>
+                </div>
+            </div>
+            <svg class="icon-svg" id="status-glow" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                <path d="M11 15h2v2h-2zm0-8h2v6h-2zm1-5C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            </svg>
+        </div>
+
+        <div class="modes-grid">
+            <div class="mode-btn" onclick="setPlan('saver')" id="plan-saver">
+                <svg class="icon-svg mode-icon-svg" viewBox="0 0 24 24">
+                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+                </svg>
+                <span class="mode-label">Saver</span>
+            </div>
+            <div class="mode-btn" onclick="setPlan('balanced')" id="plan-balanced">
+                <svg class="icon-svg mode-icon-svg" viewBox="0 0 24 24">
+                    <path d="M13 11V5h-2v6H5v2h6v6h2v-6h6v-2z"/>
+                </svg>
+                <span class="mode-label">Auto</span>
+            </div>
+            <div class="mode-btn" onclick="setPlan('high')" id="plan-high">
+                <svg class="icon-svg mode-icon-svg" viewBox="0 0 24 24">
+                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                </svg>
+                <span class="mode-label">Turbo</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        
+        function updateUI(theme) {
+            if (theme.theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+            if (theme.primaryColor) document.documentElement.style.setProperty('--primary', '#' + theme.primaryColor);
+            if (theme.textColor) document.documentElement.style.setProperty('--text', '#' + theme.textColor);
+        }
+
+        window.updateTheme = function(theme) {
+            updateUI(theme);
+        };
+
+        updateUI({
+            theme: params.get('theme'),
+            primaryColor: params.get('primary_color'),
+            textColor: params.get('text_color')
+        });
+
+        window.onPCLinkResize = function() {
+            if (window.PCLinkWidget) {
+                const height = document.body.scrollHeight;
+                window.PCLinkWidget.postMessage('height:' + height);
+            }
+        };
+
+        async function refreshStatus() {
+            try {
+                const res = await fetch('/extensions/energy-pulse/status');
+                const data = await res.json();
+                
+                // FIXED: Use correct keys from extension.py
+                const percent = data.percent;
+                const plugged = data.power_plugged;
+                const plan = data.active_plan;
+                
+                document.getElementById('power-status').innerText = plugged ? "AC Power" : "On Battery";
+                document.getElementById('battery-pct').innerText = percent + '%';
+                
+                // Update buttons
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                if (plan === 'saver') document.getElementById('plan-saver').classList.add('active');
+                if (plan === 'balanced') document.getElementById('plan-balanced').classList.add('active');
+                if (plan === 'high') document.getElementById('plan-high').classList.add('active');
+                
+            } catch (e) {
+                console.error("Energy Pulse Status error:", e);
+            }
+        }
+
+        async function setPlan(plan) {
+           try {
+               await fetch(`/extensions/energy-pulse/set-plan/${plan}`, { method: 'POST' });
+               refreshStatus();
+           } catch(e) {}
+        }
+
+        // Readiness Handling
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('skeleton').style.display = 'none';
+                document.body.classList.add('ready');
+                onPCLinkResize();
+                if (window.PCLinkWidget) window.PCLinkWidget.postMessage('loaded');
+            }, 100);
+        });
+
+        setInterval(refreshStatus, 15000);
+        refreshStatus();
+        
+        const observer = new MutationObserver(onPCLinkResize);
+        observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+    </script>
+</body>
+</html>
