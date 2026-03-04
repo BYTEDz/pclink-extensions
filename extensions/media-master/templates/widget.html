@@ -4,15 +4,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <style>
         :root {
+            /* Fallbacks if script fails to load */
             --primary: #2196F3;
             --bg: transparent;
             --text: #ffffff;
+            --text-muted: rgba(255,255,255,0.6);
             --surface: rgba(255, 255, 255, 0.05);
             --surface-hover: rgba(255, 255, 255, 0.1);
+            --radius: 12px; /* Fallback radius */
         }
 
         :root[data-theme="light"] {
             --text: #1a1a1a;
+            --text-muted: rgba(0,0,0,0.5);
             --surface: rgba(0, 0, 0, 0.04);
             --surface-hover: rgba(0, 0, 0, 0.08);
         }
@@ -40,40 +44,42 @@
             justify-content: space-around;
             padding: 10px;
             background: var(--surface);
-            border-radius: 16px;
+            /* SYNCED RADIUS */
+            border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%; /* Playback buttons usually stay circular */
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: transparent;
         }
 
         .btn:active {
             background: var(--surface-hover);
-            transform: scale(0.9);
+            transform: scale(0.85);
         }
 
         .btn-primary {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary:active {
             background: var(--primary);
-            opacity: 0.9;
+            filter: brightness(1.2);
         }
 
         .icon-svg {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             fill: var(--text);
         }
 
@@ -94,24 +100,29 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            height: 38px;
+            height: 42px;
             background: var(--surface);
-            border-radius: 12px;
+            /* SYNCED RADIUS */
+            border-radius: calc(var(--radius) * 0.8); 
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
             transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text);
         }
 
         .vol-btn:active {
             background: var(--surface-hover);
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
         
         .vol-icon-svg {
             width: 18px;
             height: 18px;
-            fill: var(--text);
+            fill: var(--text-muted);
         }
 
     </style>
@@ -148,24 +159,33 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         
-        function updateUI(theme) {
-            if (theme.theme === 'light') {
+        function updateUI(config) {
+            if (config.theme === 'light') {
                 document.documentElement.setAttribute('data-theme', 'light');
             } else {
                 document.documentElement.removeAttribute('data-theme');
             }
-            if (theme.primaryColor) document.documentElement.style.setProperty('--primary', '#' + theme.primaryColor);
-            if (theme.textColor) document.documentElement.style.setProperty('--text', '#' + theme.textColor);
+
+            // Sync Radius
+            if (config.radius) {
+                document.documentElement.style.setProperty('--radius', config.radius + 'px');
+            }
+
+            // Sync Colors
+            if (config.primaryColor) document.documentElement.style.setProperty('--primary', '#' + config.primaryColor);
+            if (config.textColor) document.documentElement.style.setProperty('--text', '#' + config.textColor);
         }
 
         window.updateTheme = function(theme) {
             updateUI(theme);
         };
 
+        // Initial load from URL params
         updateUI({
             theme: params.get('theme'),
             primaryColor: params.get('primary_color'),
-            textColor: params.get('text_color')
+            textColor: params.get('text_color'),
+            radius: params.get('radius')
         });
 
         window.onPCLinkResize = function() {
@@ -177,7 +197,6 @@
 
         async function control(action) {
             try {
-                // FIXED: Use correct action names from extension.py (vol_up, vol_down, prev)
                 const res = await fetch(`/extensions/media-master/control/${action}`, { method: 'POST' });
                 await res.json();
             } catch (e) {

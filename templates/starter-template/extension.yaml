@@ -4,26 +4,44 @@ version: "1.0.0"
 author: "Your Name"
 description: "A brief description of my extension."
 entry_point: "extension.py"
-ui_entry: "templates/index.html"
-pclink_version: ">=3.1.0"
+ui_entry: "templates/index.html" # Dashboard UI (Optional)
+icon: "icon.svg" # (Optional)
+theme_aware_icon: true # Automatically tint monochrome icon
+pclink_version: ">=3.5.0"
+category: Utility
+min_server_version: "1.0.0"
+
+# Runtime Compatibility (Optional)
 supported_platforms:
   - windows
   - linux
-  - macos
+  - darwin
+supported_architectures:
+  - x86_64
+  - amd64
+  - arm64
+  - aarch64
+# supported_distros: ["arch", "ubuntu", "fedora"] # Linux only
+
+# Permissions (Optional)
+# system, filesystem.read, filesystem.write, input.inject
 permissions: []
-category: Utility
-min_server_version: 1.0.0
 
 # UI Flags (Optional)
 ui_capabilities:
-  allow_fullscreen: false
-  allow_touchpad_overlay: false
-  allow_keyboard: false
-  prevent_sleep: false
-  orientation: "auto" # auto, follow_system, landscape, portrait
+  allow_fullscreen: false # Hide AppBar and mobile status bars
+  allow_touchpad_overlay: false # Enable virtual touchpad
+  allow_keyboard: false # Enable native keyboard toggle
+  allow_mouse: false # Enable mouse overlay
+  allow_rotate: false # Enable manual orientation toggle
+  prevent_sleep: false # Keep mobile screen active
+  orientation: "auto" # auto, landscape, portrait
 
 # Dashboard Widgets (Optional)
 dashboard_widgets: []
 #  - id: "my-widget-1"
-#    name: "My Widget"
-#    refresh_ms: 5000
+#    display_name: "My Widget"
+#    ui_entry: "templates/widget.html"
+#    width: 1
+#    height: 1
+#    refresh_ms: 10000

@@ -1,6 +1,6 @@
 name: energy-pulse
 display_name: Energy Pulse Pro
-version: 2.0.0
+version: 2.1.0
 description: Remote power management. Linux optimized with power-profiles-daemon integration.
 author: PCLink Team
 pclink_version: ">=3.6.0"

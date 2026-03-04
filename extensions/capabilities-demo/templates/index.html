@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Capabilities Demo</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <style>
+      :root {
+        --animation-speed: 0.6s;
+      }
+
+      body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-height: 100vh;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+        background: radial-gradient(circle at top right, var(--primary-faint), transparent);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+
+      .status-container {
+        padding: 40px 24px;
+        border-radius: calc(var(--radius) * 1.5);
+        background: var(--surface);
+        border: var(--card-border);
+        max-width: 450px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        animation: slideUp var(--animation-speed) cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative;
+        backdrop-filter: blur(10px);
+      }
+
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 32px;
+      }
+
+      .cap-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 20px;
+        background: var(--primary-faint);
+        border-radius: var(--radius);
+        border: 1px solid var(--primary-muted);
+        transition: all 0.3s ease;
+        animation: fadeIn 1s ease both;
+      }
+
+      .cap-item:nth-child(1) { animation-delay: 0.2s; }
+      .cap-item:nth-child(2) { animation-delay: 0.3s; }
+      .cap-item:nth-child(3) { animation-delay: 0.4s; }
+      .cap-item:nth-child(4) { animation-delay: 0.5s; }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      .cap-item:hover {
+        transform: translateY(-5px);
+        background: var(--surface-hover);
+        border-color: var(--primary);
+      }
+
+      .cap-item b {
+        font-size: 1.1rem;
+        color: var(--primary);
+        display: block;
+      }
+
+      .cap-item span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--primary);
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      
+      p.subtitle {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-top: 12px;
+        line-height: 1.5;
+      }
+
+      .hint-card {
+        margin-top: 32px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        padding: 12px 20px;
+        background: var(--surface);
+        border-radius: 100px;
+        border: var(--card-border);
+        animation: fadeIn 1s ease 0.8s both;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .pulsing-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 var(--primary-muted); }
+        70% { transform: scale(1.2); box-shadow: 0 0 0 10px transparent; }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status-container">
+      <h1>Immersive Elite</h1>
+      <p class="subtitle">
+        PCLink Extension Framework v3.5 is powering this edge-to-edge experience.
+      </p>
+
+      <div class="icon-grid">
+        <div class="cap-item">
+          <b>🖥️ View</b>
+          <span>True Fullscreen</span>
+        </div>
+        <div class="cap-item">
+          <b>🔄 Orientation</b>
+          <span>Dynamic Rotation</span>
+        </div>
+        <div class="cap-item">
+          <b>⌨️ Input</b>
+          <span>Seamless Keyboard</span>
+        </div>
+        <div class="cap-item">
+          <b>🖱️ Precision</b>
+          <span>Touchpad Overlay</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-card">
+      <div class="pulsing-dot"></div>
+      Explore controls via the movable bubble
+    </div>
+
+    <script>
+      window.addEventListener("theme-changed", (e) => {
+        console.log("Elite Theme Sync active", e.detail);
+      });
+    </script>
+  </body>
+</html>

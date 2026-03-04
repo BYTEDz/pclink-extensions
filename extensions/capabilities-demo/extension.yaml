@@ -1,0 +1,27 @@
+name: capabilities-demo
+display_name: "Capabilities Demo"
+version: "1.0.0"
+author: "PCLink Team"
+description: "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay."
+entry_point: "extension.py"
+ui_entry: "templates/index.html"
+pclink_version: ">=3.5.0"
+category: Developer
+min_server_version: "1.0.0"
+
+# Compatibility
+supported_platforms: ["windows", "linux", "darwin"]
+supported_architectures: ["x86_64", "amd64", "arm64", "aarch64"]
+
+# UI Flags: Enable all new capabilities
+ui_capabilities:
+  allow_fullscreen: true
+  allow_touchpad_overlay: true
+  allow_keyboard: true
+  allow_mouse: true
+  allow_rotate: true
+  prevent_sleep: true
+  orientation: "portrait"
+
+permissions: []
+dashboard_widgets: []

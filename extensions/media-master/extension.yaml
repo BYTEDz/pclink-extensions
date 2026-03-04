@@ -1,6 +1,6 @@
 name: media-master
 display_name: Media Master Pro
-version: 2.0.0
+version: 2.1.0
 description: Modern media controller with seek support and a premium mobile UI.
 author: PCLink Team
 pclink_version: ">=3.6.0"

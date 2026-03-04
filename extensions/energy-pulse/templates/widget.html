@@ -4,23 +4,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <style>
         :root {
+            /* Theme fallbacks */
             --primary: #4CAF50;
+            --primary-muted: rgba(76, 175, 80, 0.2);
             --bg: transparent;
             --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
             --surface: rgba(255, 255, 255, 0.05);
             --surface-hover: rgba(255, 255, 255, 0.1);
-            --error: #f44336;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
         }
 
         :root[data-theme="light"] {
             --text: #1a1a1a;
+            --text-muted: rgba(0, 0, 0, 0.5);
             --surface: rgba(0, 0, 0, 0.04);
             --surface-hover: rgba(0, 0, 0, 0.08);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         body {
             margin: 0;
-            padding: 2px 4px 6px 4px; 
+            padding: 4px 6px; 
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
@@ -39,64 +45,76 @@
             gap: 8px;
         }
 
+        /* Status Row - Synced with Radius */
         .status-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 10px;
+            padding: 10px 12px;
             background: var(--surface);
-            border-radius: 12px;
+            border-radius: var(--radius);
+            border: var(--card-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .icon-svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             fill: var(--primary);
+            filter: drop-shadow(0 0 5px var(--primary-muted));
         }
 
-        .label { font-size: 14px; font-weight: 500; }
-        .value { font-size: 13px; opacity: 0.7; }
+        .label { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+        .value { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 
         .modes-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            gap: 8px;
         }
 
+        /* Mode Buttons - Synced with Radius */
         .mode-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 10px 4px;
+            gap: 6px;
+            padding: 12px 4px;
             background: var(--surface);
-            border: 1px solid transparent;
-            border-radius: 12px;
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.8);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-muted);
         }
 
-        .mode-btn:active { transform: scale(0.96); }
+        .mode-btn:active { transform: scale(0.94); }
+        
         .mode-btn.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-muted);
         }
 
-        .mode-btn.active .icon-svg { fill: white; }
+        .mode-btn.active .icon-svg { 
+            fill: white; 
+            filter: none;
+        }
 
-        .mode-icon-svg { width: 18px; height: 18px; }
-        .mode-label { font-size: 10px; font-weight: 600; text-transform: uppercase; }
+        .mode-icon-svg { width: 20px; height: 20px; fill: var(--text-muted); }
+        .mode-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Skeleton Styles */
+        /* Skeleton Styles - Synced with Radius */
         #skeleton {
             position: fixed;
-            top: 8px; left: 12px; right: 12px;
+            top: 4px; left: 6px; right: 6px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -104,30 +122,31 @@
             pointer-events: none;
         }
         .skel-box {
-            height: 40px;
+            height: 48px;
             background: var(--surface);
-            border-radius: 12px;
+            border-radius: var(--radius);
             animation: pulse 1.5s infinite ease-in-out;
         }
         .skel-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            gap: 8px;
         }
         .skel-item {
-            height: 54px;
+            height: 64px;
             background: var(--surface);
-            border-radius: 12px;
+            border-radius: calc(var(--radius) * 0.8);
             animation: pulse 1.5s infinite ease-in-out;
         }
         @keyframes pulse {
             0% { opacity: 0.3; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.6; }
             100% { opacity: 0.3; }
         }
     </style>
 </head>
 <body>
+    <!-- Loading State -->
     <div id="skeleton">
         <div class="skel-box"></div>
         <div class="skel-grid">
@@ -137,6 +156,7 @@
         </div>
     </div>
 
+    <!-- Main Widget Content -->
     <div class="widget-container">
         <div class="status-row">
             <div class="info">
@@ -144,12 +164,12 @@
                     <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.34C7 21.4 7.6 22 8.33 22h7.34c.74 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
                 </svg>
                 <div>
-                    <div class="label" id="power-status">Unknown</div>
+                    <div class="label" id="power-status">Detecting...</div>
                     <div class="value" id="battery-pct">--%</div>
                 </div>
             </div>
-            <svg class="icon-svg" id="status-glow" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
-                <path d="M11 15h2v2h-2zm0-8h2v6h-2zm1-5C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            <svg class="icon-svg" style="width: 16px; height: 16px; opacity: 0.5;" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
             </svg>
         </div>
 
@@ -178,24 +198,36 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         
-        function updateUI(theme) {
-            if (theme.theme === 'light') {
+        function updateUI(config) {
+            if (config.theme === 'light') {
                 document.documentElement.setAttribute('data-theme', 'light');
             } else {
                 document.documentElement.removeAttribute('data-theme');
             }
-            if (theme.primaryColor) document.documentElement.style.setProperty('--primary', '#' + theme.primaryColor);
-            if (theme.textColor) document.documentElement.style.setProperty('--text', '#' + theme.textColor);
+
+            // Sync Radius from App
+            if (config.radius) {
+                document.documentElement.style.setProperty('--radius', config.radius + 'px');
+            }
+
+            // Sync Colors
+            if (config.primaryColor) {
+                document.documentElement.style.setProperty('--primary', '#' + config.primaryColor);
+                document.documentElement.style.setProperty('--primary-muted', '#' + config.primaryColor + '33');
+            }
+            if (config.textColor) document.documentElement.style.setProperty('--text', '#' + config.textColor);
         }
 
         window.updateTheme = function(theme) {
             updateUI(theme);
         };
 
+        // Initial setup
         updateUI({
             theme: params.get('theme'),
             primaryColor: params.get('primary_color'),
-            textColor: params.get('text_color')
+            textColor: params.get('text_color'),
+            radius: params.get('radius')
         });
 
         window.onPCLinkResize = function() {
@@ -210,22 +242,17 @@
                 const res = await fetch('/extensions/energy-pulse/status');
                 const data = await res.json();
                 
-                // FIXED: Use correct keys from extension.py
-                const percent = data.percent;
-                const plugged = data.power_plugged;
-                const plan = data.active_plan;
+                document.getElementById('power-status').innerText = data.power_plugged ? "AC Power" : "On Battery";
+                document.getElementById('battery-pct').innerText = data.percent + '%';
                 
-                document.getElementById('power-status').innerText = plugged ? "AC Power" : "On Battery";
-                document.getElementById('battery-pct').innerText = percent + '%';
-                
-                // Update buttons
+                // Active mode UI
                 document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-                if (plan === 'saver') document.getElementById('plan-saver').classList.add('active');
-                if (plan === 'balanced') document.getElementById('plan-balanced').classList.add('active');
-                if (plan === 'high') document.getElementById('plan-high').classList.add('active');
+                const activeId = `plan-${data.active_plan}`;
+                const activeBtn = document.getElementById(activeId);
+                if (activeBtn) activeBtn.classList.add('active');
                 
             } catch (e) {
-                console.error("Energy Pulse Status error:", e);
+                console.error("Energy Pulse error:", e);
             }
         }
 
@@ -236,17 +263,16 @@
            } catch(e) {}
         }
 
-        // Readiness Handling
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('skeleton').style.display = 'none';
                 document.body.classList.add('ready');
                 onPCLinkResize();
                 if (window.PCLinkWidget) window.PCLinkWidget.postMessage('loaded');
-            }, 100);
+            }, 150);
         });
 
-        setInterval(refreshStatus, 15000);
+        setInterval(refreshStatus, 10000);
         refreshStatus();
         
         const observer = new MutationObserver(onPCLinkResize);
