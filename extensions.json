@@ -52,7 +52,7 @@
   {
     "id": "media-master",
     "name": "Media Master Pro",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Modern media controller with seek support and a premium mobile UI.",
     "author": "PCLink Team",
     "category": "Utility",
@@ -65,13 +65,13 @@
     "min_server_version": "3.5.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.1.0.zip",
     "permissions": [
       "theme.read"
     ],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-02T02:17:19+01:00",
-    "file_size": 14965
+    "updated_on": "2026-03-04T15:03:33+01:00",
+    "file_size": 17548
   },
   {
     "id": "audio-mixer",
@@ -140,6 +140,28 @@
     "file_size": 91129
   },
   {
+    "id": "capabilities-demo",
+    "name": "Capabilities Demo",
+    "version": "1.0.0",
+    "description": "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay.",
+    "author": "PCLink Team",
+    "category": "Developer",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.5.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": false,
+    "icon_url": null,
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.0.0.zip",
+    "permissions": [],
+    "added_on": "2026-03-04T15:03:33+01:00",
+    "updated_on": "2026-03-04T15:03:33+01:00",
+    "file_size": 6550
+  },
+  {
     "id": "process-manager",
     "name": "Task Manager",
     "version": "1.0.0",
@@ -167,7 +189,7 @@
   {
     "id": "energy-pulse",
     "name": "Energy Pulse Pro",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Remote power management. Linux optimized with power-profiles-daemon integration.",
     "author": "PCLink Team",
     "category": "System",
@@ -178,13 +200,13 @@
     "min_server_version": "3.5.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-2.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-2.1.0.zip",
     "permissions": [
       "theme.read"
     ],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-02T02:17:19+01:00",
-    "file_size": 19892
+    "updated_on": "2026-03-04T15:03:33+01:00",
+    "file_size": 21802
   },
   {
     "id": "quick-notes",
