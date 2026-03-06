@@ -4,7 +4,7 @@
     "name": "Dev Assistant",
     "version": "1.0.0",
     "description": "A powerful tool for developers to manage Git repositories and run custom project scripts (npm, flutter, etc.) from their phone.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Developer",
     "supported_platforms": [
       "windows",
@@ -21,15 +21,15 @@
       "storage"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 18177
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 19235
   },
   {
     "id": "clean-master",
     "name": "Clean Master",
     "version": "1.0.0",
     "description": "Clean temporary files, empty recycle bin, and free up disk space with one tap.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Utility",
     "supported_platforms": [
       "windows",
@@ -46,15 +46,39 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 11202
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 12260
+  },
+  {
+    "id": "vessel-forge",
+    "name": "Vessel Forge",
+    "version": "1.0.0",
+    "description": "Advanced container fleet orchestration and image forging. Monitor stats, manage vessels, and pull images across architectures (ARM/x86).",
+    "author": "BYTEDz",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.6.0",
+    "min_server_version": "3.5.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-1.0.0.zip",
+    "permissions": [
+      "theme.read"
+    ],
+    "added_on": "2026-03-06T15:17:43+01:00",
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 2757239
   },
   {
     "id": "media-master",
     "name": "Media Master Pro",
     "version": "2.1.0",
     "description": "Modern media controller with seek support and a premium mobile UI.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Utility",
     "supported_platforms": [
       "windows",
@@ -70,15 +94,15 @@
       "theme.read"
     ],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-04T15:03:33+01:00",
-    "file_size": 17548
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 19065
   },
   {
     "id": "audio-mixer",
     "name": "Audio Mixer",
     "version": "1.0.0",
     "description": "Control volume for individual applications.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Media",
     "supported_platforms": [
       "windows"
@@ -92,15 +116,15 @@
       "audio"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 15051
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 16109
   },
   {
     "id": "url-beam",
     "name": "URL Beam",
     "version": "1.0.0",
     "description": "Instantly open links from your phone in your PC browser.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows",
@@ -114,15 +138,15 @@
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
     "permissions": [],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-02T02:17:19+01:00",
-    "file_size": 2566
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 3624
   },
   {
     "id": "speed-test",
     "name": "PC Speed Test",
     "version": "1.0.0",
     "description": "Test your PC's internet download and upload speed directly from your phone.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Utility",
     "supported_platforms": [
       "windows",
@@ -136,15 +160,15 @@
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.0.0.zip",
     "permissions": [],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 91129
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 92187
   },
   {
     "id": "capabilities-demo",
     "name": "Capabilities Demo",
     "version": "1.0.0",
     "description": "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Developer",
     "supported_platforms": [
       "windows",
@@ -158,15 +182,15 @@
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.0.0.zip",
     "permissions": [],
     "added_on": "2026-03-04T15:03:33+01:00",
-    "updated_on": "2026-03-04T15:03:33+01:00",
-    "file_size": 6550
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 7608
   },
   {
     "id": "process-manager",
     "name": "Task Manager",
     "version": "1.0.0",
     "description": "Monitor running processes and remotely kill frozen applications.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "System",
     "supported_platforms": [
       "windows",
@@ -183,15 +207,15 @@
       "system.manage"
     ],
     "added_on": "2026-01-12T20:17:14+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 11677
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 12735
   },
   {
     "id": "energy-pulse",
     "name": "Energy Pulse Pro",
     "version": "2.1.0",
     "description": "Remote power management. Linux optimized with power-profiles-daemon integration.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "System",
     "supported_platforms": [
       "linux"
@@ -205,15 +229,15 @@
       "theme.read"
     ],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-04T15:03:33+01:00",
-    "file_size": 21802
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 23399
   },
   {
     "id": "quick-notes",
     "name": "Quick Notes",
     "version": "1.0.0",
     "description": "Sync small notes between your phone and PC instantly.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows",
@@ -229,15 +253,15 @@
       "storage"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 10569
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 11627
   },
   {
     "id": "night-owl",
     "name": "Night Owl",
     "version": "1.0.0",
     "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Utility",
     "supported_platforms": [
       "windows"
@@ -251,15 +275,15 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 11282
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 12340
   },
   {
     "id": "wifi-sharer",
     "name": "WiFi Sharer",
     "version": "1.0.0",
     "description": "Share your WiFi credentials easily via QR code.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Utility",
     "supported_platforms": [
       "windows"
@@ -273,15 +297,15 @@
       "system"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 13031
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 14089
   },
   {
     "id": "network-guard",
     "name": "Network Guard",
     "version": "1.0.0",
     "description": "Real-time network monitor and firewall. See which apps are using your bandwidth and control them with one tap.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Security",
     "supported_platforms": [
       "windows",
@@ -297,15 +321,15 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 13297
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 14355
   },
   {
     "id": "window-arranger",
     "name": "Window Arranger",
     "version": "1.0.0",
     "description": "Remote window snapping and management for multi-monitor setups.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows"
@@ -317,15 +341,15 @@
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
     "permissions": [],
     "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-02T02:17:19+01:00",
-    "file_size": 2783
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 3841
   },
   {
     "id": "gamer-hud",
     "name": "Gamer HUD",
     "version": "1.0.0",
     "description": "Real-time high-performance dashboard for gamers. Monitor CPU, RAM, and System stats with high refresh rate.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "System",
     "supported_platforms": [
       "windows",
@@ -341,15 +365,15 @@
       "system"
     ],
     "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-01-03T15:08:26+01:00",
-    "file_size": 15489
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 16555
   },
   {
     "id": "clipboard-history",
     "name": "Clipboard History",
     "version": "1.0.0",
     "description": "Keep track of your clipboard history and sync it with your phone.",
-    "author": "PCLink Team",
+    "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows"
@@ -363,7 +387,7 @@
       "clipboard"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-01-13T12:07:54+01:00",
-    "file_size": 25449
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 26507
   }
 ]
