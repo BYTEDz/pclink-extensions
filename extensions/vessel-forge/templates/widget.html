@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        :root {
+            --primary: #2496ed;
+            --primary-muted: rgba(36, 150, 237, 0.2);
+            --bg: transparent; --text: #ffffff; --text-muted: rgba(255, 255, 255, 0.6);
+            --surface: rgba(255, 255, 255, 0.08); 
+            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+            --radius: 12px;
+        }
+        :root[data-theme="light"] {
+            --text: #1a1a1a; --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.05); --card-border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        body { 
+            margin: 0; padding: 4px 6px; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--text); overflow: hidden; 
+            -webkit-user-select: none; user-select: none;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        body.ready { opacity: 1; }
+        
+        .widget-container { display: flex; flex-direction: column; gap: 6px; }
+        
+        .status-header {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .main-info { display: flex; align-items: center; gap: 8px; }
+        .icon { width: 18px; height: 18px; fill: var(--primary); }
+        .count { font-size: 14px; font-weight: 800; }
+        .label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2px; }
+
+        .health-bar {
+            height: 3px; background: var(--surface); border-radius: var(--radius);
+            overflow: hidden; border: none; margin: -2px 2px 2px 2px;
+        }
+        .health-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; width: 0%; border-radius: var(--radius); }
+
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        
+        .btn {
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.8);
+            padding: 8px 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            color: var(--text-muted);
+        }
+        
+        .btn:active { transform: scale(0.95); background: var(--primary-muted); color: var(--primary); }
+        .btn-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+        .btn-icon { width: 13px; height: 13px; fill: currentColor; }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="status-header">
+            <div class="main-info">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M13.983 11.078h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.186.186 0 00.185-.186V6.468a.186.186 0 00-.185-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m0 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954-2.305h2.119a.186.186 0 00.186-.186V6.468a.185.185 0 00-.186-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186zM21.007 12.11c-.569 0-1.03.46-1.03 1.03 0 .18.065.344.148.498-1.247.762-2.327.57-2.423.553-.047-.01-.114-.01-.189-.01h-.034c-.202 0-.317.07-.389.13-.039.034-.148.131-.148.452l-.001.039c-.015.632.709 1.144 1.157 1.402.128.074.205.145.205.289 0 .141-.079.21-.21.289-.512.303-1.605.959-1.605 2.122 0 1.077.926 1.868 2.11 1.868 3.705 0 6.22-3.003 6.22-6.104 0-1.428-.567-2.568-1.811-2.568"/>
+                </svg>
+                <div>
+                    <div id="status-text" class="label">Vessel Forge</div>
+                    <div style="display: flex; align-items: baseline; gap: 4px">
+                        <span id="count" class="count">--</span>
+                        <span style="font-size: 9px; opacity: 0.5;">/ <span id="total">--</span></span>
+                    </div>
+                </div>
+            </div>
+            <div id="ref-btn" onclick="refresh()" style="cursor: pointer; opacity: 0.5; padding-right: 4px;"><svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></div>
+        </div>
+
+        <div class="health-bar"><div class="health-fill" id="fill"></div></div>
+
+        <div class="shortcut-grid">
+            <div class="btn" onclick="bulk('start')"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><div class="btn-label">Start</div></div>
+            <div class="btn" onclick="bulk('stop')"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg><div class="btn-label">Stop</div></div>
+            <div class="btn" onclick="prune()"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg><div class="btn-label">Prune</div></div>
+            <div class="btn" onclick="openFull()"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><div class="btn-label">Fleet</div></div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        function updateUI(c) {
+            if (c.theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            if (c.radius) document.documentElement.style.setProperty('--radius', c.radius + 'px');
+            if (c.primaryColor) document.documentElement.style.setProperty('--primary', '#' + c.primaryColor);
+        }
+        updateUI({ theme: params.get('theme'), primaryColor: params.get('primary_color'), radius: params.get('radius') });
+
+        async function refresh() {
+            try {
+                const res = await fetch('/extensions/vessel-forge/status');
+                const data = await res.json();
+                if (data.connected) {
+                    document.getElementById('count').innerText = data.running;
+                    document.getElementById('total').innerText = data.total;
+                    const pct = data.total > 0 ? (data.running / data.total) * 100 : 0;
+                    document.getElementById('fill').style.width = pct + '%';
+                }
+            } catch(e) {}
+        }
+        async function bulk(t) { fetch(`/extensions/vessel-forge/containers/bulk/${t}`, { method: 'POST' }).then(() => refresh()); }
+        async function prune() { if(confirm("Nuke unused?")) fetch(`/extensions/vessel-forge/system/prune`, { method: 'POST' }).then(() => refresh()); }
+        function openFull() { if (window.PCLinkWidget) window.PCLinkWidget.postMessage('open'); }
+        window.onload = () => { document.body.classList.add('ready'); refresh(); setInterval(refresh, 8000); };
+    </script>
+</body>
+</html>

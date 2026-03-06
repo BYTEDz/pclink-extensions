@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Docker Manager</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #2496ed;
+            --primary-muted: rgba(36, 150, 237, 0.15);
+            --bg: #0f172a;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --surface: rgba(30, 41, 59, 0.5);
+            --surface-hover: #1e293b;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f8fafc;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --surface: #ffffff;
+            --surface-hover: #f1f5f9;
+            --card-border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+        header { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+
+        .tabs-nav {
+            display: flex; background: var(--surface); padding: 4px; border-radius: var(--radius); border: var(--card-border);
+        }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; background: none; color: var(--text-muted);
+            font-weight: 700; font-size: 0.75rem; text-transform: uppercase; cursor: pointer;
+            border-radius: calc(var(--radius) * 0.8); transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab-btn.active { background: var(--primary); color: #fff; }
+
+        .search-field {
+            width: 100%; padding: 12px 14px; background: var(--surface); border: var(--card-border);
+            border-radius: var(--radius); color: var(--text); font-weight: 600; outline: none; transition: 0.2s;
+        }
+        .search-field:focus { border-color: var(--primary); }
+
+        .card {
+            background: var(--surface); border: var(--card-border); border-radius: var(--radius);
+            padding: 16px; position: relative; overflow: hidden;
+        }
+        
+        .status-badge { font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: var(--radius); text-transform: uppercase; }
+        .status-running { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .status-exited { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .container-name { font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
+        .container-image { font-family: monospace; font-size: 0.7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .details-grid {
+            margin-top: 12px; display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-top: 12px; border-top: 1px solid var(--card-border);
+        }
+        .details-item { display: flex; flex-direction: column; gap: 2px; }
+        .details-label { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); }
+        .details-value { font-size: 0.75rem; font-weight: 600; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .btn-sm {
+            background: var(--bg); border: var(--card-border); color: var(--text); 
+            padding: 8px; border-radius: var(--radius); cursor: pointer; transition: 0.1s;
+            display: flex; align-items: center; justify-content: center; flex: 1;
+        }
+        .btn-sm:active { background: var(--primary-muted); color: var(--primary); border-color: var(--primary); }
+        .btn-nuke:active { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+        .input-group { display: flex; flex-direction: column; gap: 10px; }
+        .input-pro {
+            width: 100%; padding: 12px; background: var(--bg); border: var(--card-border); border-radius: var(--radius);
+            color: var(--text); font-weight: 600; font-size: 0.9rem; outline: none;
+        }
+        textarea.input-pro { min-height: 180px; font-family: monospace; font-size: 0.75rem; }
+
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: var(--radius);
+            color: #fff; font-weight: 800; font-size: 0.95rem; cursor: pointer; margin-top: 10px;
+        }
+        .btn-primary:active { opacity: 0.8; }
+
+        /* Progress States */
+        .progress-box { background: var(--primary-muted); border: 1px solid var(--primary); padding: 10px; border-radius: var(--radius); margin-bottom: 12px; }
+        .progress-bar-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 30%; border-radius: 10px; animation: pulse 1.5s infinite ease-in-out; }
+        @keyframes pulse { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal { background: var(--bg); border: var(--card-border); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 400px; }
+        
+        #log-view { position: fixed; inset: 0; background: #000; z-index: 200; display: none; padding: 20px; flex-direction: column; }
+        pre#logText { flex: 1; overflow: auto; color: #10b981; font-family: monospace; font-size: 0.75rem; margin-top: 16px; }
+
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 10px 20px; border-radius: var(--radius); font-weight: 800; font-size: 0.8rem; z-index: 300; pointer-events: none; opacity: 0; transition: 0.3s; }
+        .toast.show { opacity: 1; bottom: 40px; }
+
+        .template-chip { 
+            font-size: 0.65rem; background: var(--bg); border: var(--card-border); padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: 0.1s;
+        }
+        .template-chip:hover { border-color: var(--primary); color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"><i data-lucide="box" color="var(--primary)"></i> Vessel Forge</div>
+            <div id="status-tag" class="status-badge status-running" style="padding: 2px 6px;">Connected</div>
+        </header>
+
+        <nav class="tabs-nav">
+            <button class="tab-btn active" id="btn-containers" onclick="switchTab('containers')"><i data-lucide="layers" size="14"></i> Fleet</button>
+            <button class="tab-btn" id="btn-deploy" onclick="switchTab('deploy')"><i data-lucide="plus" size="14"></i> Run</button>
+            <button class="tab-btn" id="btn-images" onclick="switchTab('images')"><i data-lucide="package" size="14"></i> Images</button>
+        </nav>
+
+        <div id="active-tasks"></div>
+
+        <div id="view-containers">
+            <input type="text" id="search" class="search-field" placeholder="Search fleet..." oninput="refresh()">
+            <div id="containerList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;"></div>
+        </div>
+
+        <div id="view-deploy" style="display: none">
+            <div class="card">
+                <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                    <div class="template-chip" onclick="loadTemplate('nginx')">Nginx Web</div>
+                    <div class="template-chip" onclick="loadTemplate('mariadb')">MariaDatabase</div>
+                    <div class="template-chip" onclick="loadTemplate('redis')">RedisCache</div>
+                    <div class="template-chip" onclick="loadTemplate('portainer')">PortainerUI</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="run-image" class="input-pro" placeholder="Image:tag (nginx:latest)">
+                    <input type="text" id="run-name" class="input-pro" placeholder="Container Name">
+                    <input type="text" id="run-ports" class="input-pro" placeholder="Host Port:Cont Port (80:80)">
+                    <textarea id="run-json" class="input-pro" placeholder="Advanced JSON Config" style="display:none"></textarea>
+                    <button class="btn-sm" onclick="toggleAdv()" style="font-size: 0.65rem; color: var(--text-muted); border: none; background: transparent">Switch Mode</button>
+                </div>
+                <button class="btn-primary" id="launch-btn" onclick="deployContainer()">Ignite Container</button>
+            </div>
+        </div>
+
+        <div id="view-images" style="display: none">
+            <div style="display: flex; gap: 6px;"><input type="text" id="pull-input" class="search-field" style="flex:1" placeholder="Image to pull..."><button class="btn-sm" style="flex:0; width:50px" onclick="pullImg()"><i data-lucide="download"></i></button></div>
+            <div id="imageList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;"></div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-bg">
+        <div class="modal">
+            <h3 id="modal-title" style="margin:0 0 10px 0">Action</h3>
+            <p id="modal-body" style="color: var(--text-muted); font-size: 0.85rem"></p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-sm" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" style="margin:0; flex:1" id="confirm-exec">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-view">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+            <h4 id="log-title" style="margin:0">Logs</h4>
+            <button class="btn-sm" style="flex:0; padding:4px 12px;" onclick="closeLogs()">X</button>
+        </div>
+        <pre id="logText">Streaming logs...</pre>
+    </div>
+
+    <div id="toast" class="toast">Action completed</div>
+
+    <script>
+        const api = window.location.pathname.replace(/\/ui$/, "");
+        let currentTab = 'containers';
+        let expanded = new Set();
+
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000); }
+        function closeModal() { document.getElementById('confirm-modal').style.display='none'; }
+        function showModal(title, body, onConfirm) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = body;
+            const btn = document.getElementById('confirm-exec');
+            btn.onclick = () => { onConfirm(); closeModal(); };
+            document.getElementById('confirm-modal').style.display='flex';
+        }
+
+        function switchTab(t) {
+            currentTab = t;
+            ['containers', 'deploy', 'images'].forEach(v => {
+                document.getElementById(`view-${v}`).style.display = v === t ? 'block' : 'none';
+                document.getElementById(`btn-${v}`).classList.toggle('active', v === t);
+            });
+            refresh();
+        }
+
+        function toggleAdv() {
+            const json = document.getElementById('run-json');
+            const fields = ['run-image','run-name','run-ports'];
+            const isColl = json.style.display === 'none';
+            json.style.display = isColl ? 'block' : 'none';
+            fields.forEach(f => document.getElementById(f).style.display = isColl ? 'none' : 'block');
+        }
+
+        function loadTemplate(type) {
+            const templates = {
+                nginx: { image: "nginx:latest", name: "web-server", ports: {"80/tcp": 8080} },
+                mariadb: { image: "mariadb:latest", name: "db-node", environment: ["MYSQL_ROOT_PASSWORD=password"], ports: {"3306/tcp": 3306} },
+                redis: { image: "redis:alpine", name: "cache-node", ports: {"6379/tcp": 6379} },
+                portainer: { image: "portainer/portainer-ce:latest", name: "portainer-ui", ports: {"9000/tcp": 9000, "9443/tcp": 9443}, volumes: {"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}} }
+            };
+            const config = templates[type];
+            if (document.getElementById('run-json').style.display === 'block') {
+                document.getElementById('run-json').value = JSON.stringify(config, null, 2);
+            } else {
+                document.getElementById('run-image').value = config.image;
+                document.getElementById('run-name').value = config.name;
+                document.getElementById('run-ports').value = Object.entries(config.ports || {}).map(([p,h]) => `${h}:${p.split('/')[0]}`).join(",");
+            }
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return seconds + "s";
+            if (seconds < 3600) return Math.floor(seconds/60) + "m";
+            if (seconds < 86400) return Math.floor(seconds/3600) + "h";
+            return Math.floor(seconds/86400) + "d";
+        }
+
+        async function refresh() {
+            try {
+                const search = document.getElementById('search').value.toLowerCase();
+                const resStatus = await fetch(`${api}/status`);
+                const status = await resStatus.json();
+                
+                // Track Progress
+                const tasks = document.getElementById('active-tasks');
+                tasks.innerHTML = "";
+                const active = {...status.pulling, ...status.deploying};
+                Object.keys(active).forEach(t => {
+                    tasks.innerHTML += `<div class="progress-box"><div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; font-weight:800;"><span>${t.toUpperCase()}</span><span>IN PROGRESS</span></div><div class="progress-bar-track"><div class="progress-bar-fill"></div></div></div>`;
+                });
+
+                if (currentTab === 'containers') {
+                    const res = await fetch(`${api}/containers`);
+                    const data = await res.json();
+                    const list = document.getElementById('containerList');
+                    list.innerHTML = "";
+                    data.filter(c => c.name.toLowerCase().includes(search) || c.image.toLowerCase().includes(search)).forEach(c => {
+                        const card = document.createElement('div');
+                        card.className = "card";
+                        const isExpanded = expanded.has(c.id);
+                        const uptime = c.status === 'running' ? timeAgo(c.started_at) : 'Offline';
+                        
+                        card.innerHTML = `
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer;" onclick="toggleDetails('${c.id}')">
+                                <div><div class="container-name">${c.name}</div><div class="container-image">${c.image}</div></div>
+                                <div class="status-badge status-${c.status==='running'?'running':'exited'}">${c.status}</div>
+                            </div>
+                            <div class="details-grid" id="details-${c.id}" style="display:${isExpanded?'grid':'none'}">
+                                <div class="details-item"><span class="details-label">ID</span><span class="details-value">${c.id}</span></div>
+                                <div class="details-item"><span class="details-label">Uptime</span><span class="details-value">${uptime}</span></div>
+                                <div class="details-item"><span class="details-label">Created</span><span class="details-value">${timeAgo(c.created)} ago</span></div>
+                                <div class="details-item"><span class="details-label">Ports</span><span class="details-value">${Object.entries(c.ports).map(([p,v])=>`${v?v[0].HostPort:''}->${p}`).join(", ") || 'N/A'}</span></div>
+                                <div class="details-item" style="grid-column: span 2"><span class="details-label">Networks</span><span class="details-value">${c.networks.join(", ")}</span></div>
+                                <div class="details-item" style="grid-column: span 2"><span class="details-label">Command</span><span class="details-value">${c.command}</span></div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-sm" onclick="action('${c.id}', '${c.status==='running'?'stop':'start'}')"><i data-lucide="${c.status==='running'?'pause':'play'}" size="14"></i></button>
+                                <button class="btn-sm" onclick="viewLogs('${c.id}', '${c.name}')"><i data-lucide="terminal" size="14"></i></button>
+                                <button class="btn-sm btn-nuke" onclick="showModal('Nuke?', 'Delete ${c.name}?', ()=>action('${c.id}','remove'))"><i data-lucide="trash-2" size="14"></i></button>
+                            </div>`;
+                        list.appendChild(card);
+                    });
+                } else if (currentTab === 'images') {
+                    const res = await fetch(`${api}/images`);
+                    const data = await res.json();
+                    const list = document.getElementById('imageList');
+                    list.innerHTML = "";
+                    data.forEach(img => {
+                        const card = document.createElement('div'); card.className = "card";
+                        card.style.display = "flex"; card.style.justifyContent = "space-between"; card.style.alignItems = "center";
+                        card.innerHTML = `<div><div class="container-name" style="font-size:0.9rem">${img.tags[0] || img.id.substring(0,12)}</div><div class="container-image">${(img.size/1024/1024).toFixed(1)} MB</div></div>
+                            <button class="btn-sm" style="flex:0" onclick="showModal('Purge?', 'Remove image?', ()=>actionImg('${img.id}'))"><i data-lucide="trash-2" size="14"></i></button>`;
+                        list.appendChild(card);
+                    });
+                }
+                lucide.createIcons();
+            } catch(e) {}
+        }
+
+        async function deployContainer() {
+            const btn = document.getElementById('launch-btn');
+            btn.innerText = "Deploying..."; btn.disabled = true;
+            let payload;
+            if (document.getElementById('run-json').style.display === 'block') {
+                payload = { mode: 'advanced', config: JSON.parse(document.getElementById('run-json').value) };
+            } else {
+                payload = { mode: 'basic', image: document.getElementById('run-image').value, name: document.getElementById('run-name').value, ports: document.getElementById('run-ports').value };
+            }
+            try {
+                const r = await fetch(`${api}/containers/run`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                if (r.ok) { showToast("Task started"); switchTab('containers'); }
+            } catch(e) {}
+            btn.innerText = "Ignite Container"; btn.disabled = false;
+        }
+
+        async function action(id, t) { await fetch(`${api}/containers/${id}/${t}`, { method: "POST" }); refresh(); }
+        async function actionImg(id) { await fetch(`${api}/images/${id}`, { method: "DELETE" }); refresh(); }
+        async function pullImg() { const img = document.getElementById('pull-input').value; if(img) { fetch(`${api}/images/pull`, { method: 'POST', body: JSON.stringify({image:img}), headers:{'Content-Type':'application/json'} }); document.getElementById('pull-input').value=""; setTimeout(refresh, 500); } }
+        function toggleDetails(id) { if(expanded.has(id)) expanded.delete(id); else expanded.add(id); document.getElementById(`details-${id}`).style.display = expanded.has(id) ? 'grid' : 'none'; }
+        async function viewLogs(id, name) {
+            document.getElementById('log-title').innerText = `Logs: ${name}`;
+            document.getElementById('logText').innerText = "Connecting...";
+            document.getElementById('log-view').style.display = 'flex';
+            const r = await fetch(`${api}/containers/${id}/logs`);
+            const d = await r.json();
+            document.getElementById('logText').innerText = d.logs;
+        }
+        function closeLogs() { document.getElementById('log-view').style.display = 'none'; }
+
+        window.onload = () => { refresh(); setInterval(refresh, 5000); lucide.createIcons(); };
+    </script>
+</body>
+</html>

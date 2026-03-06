@@ -1,7 +1,7 @@
 name: capabilities-demo
 display_name: "Capabilities Demo"
 version: "1.0.0"
-author: "PCLink Team"
+author: "BYTEDz"
 description: "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay."
 entry_point: "extension.py"
 ui_entry: "templates/index.html"

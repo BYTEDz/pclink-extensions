@@ -2,7 +2,8 @@ name: energy-pulse
 display_name: Energy Pulse Pro
 version: 2.1.0
 description: Remote power management. Linux optimized with power-profiles-daemon integration.
-author: PCLink Team
+author: BYTEDz
+license: MIT
 pclink_version: ">=3.6.0"
 min_server_version: 3.5.0
 entry_point: extension.py

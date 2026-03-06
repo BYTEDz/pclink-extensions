@@ -1,0 +1,32 @@
+name: vessel-forge
+display_name: Vessel Forge
+version: 1.0.0
+description: Advanced container fleet orchestration and image forging. Monitor stats, manage vessels, and pull images across architectures (ARM/x86).
+author: BYTEDz
+license: MIT
+pclink_version: ">=3.6.0"
+min_server_version: 3.5.0
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: System
+supported_platforms:
+  - windows
+  - linux
+  - darwin
+supported_architectures:
+  - x86_64
+  - amd64
+  - arm64
+  - aarch64
+permissions:
+  - theme.read
+
+dashboard_widgets:
+  - id: "docker-status"
+    display_name: "Docker Summary"
+    ui_entry: "templates/widget.html"
+    width: 1
+    height: 2
+    refresh_ms: 5000
