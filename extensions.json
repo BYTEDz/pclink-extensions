@@ -371,7 +371,7 @@
   {
     "id": "clipboard-history",
     "name": "Clipboard History",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Keep track of your clipboard history and sync it with your phone.",
     "author": "BYTEDz",
     "category": "Productivity",
@@ -384,12 +384,12 @@
     "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.1.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.2.0.zip",
     "permissions": [
       "clipboard"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-09T15:54:24+01:00",
-    "file_size": 21632
+    "updated_on": "2026-03-09T20:03:32+01:00",
+    "file_size": 23083
   }
 ]
