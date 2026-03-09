@@ -166,7 +166,7 @@
   {
     "id": "capabilities-demo",
     "name": "Capabilities Demo",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay.",
     "author": "BYTEDz",
     "category": "Developer",
@@ -179,11 +179,11 @@
     "min_server_version": "1.0.0",
     "theme_aware_icon": false,
     "icon_url": null,
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.1.0.zip",
     "permissions": [],
     "added_on": "2026-03-04T15:03:33+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 7608
+    "updated_on": "2026-03-09T15:54:24+01:00",
+    "file_size": 9457
   },
   {
     "id": "process-manager",
@@ -371,23 +371,25 @@
   {
     "id": "clipboard-history",
     "name": "Clipboard History",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Keep track of your clipboard history and sync it with your phone.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
-      "windows"
+      "windows",
+      "linux",
+      "macos"
     ],
     "min_pclink_version": ">=3.2.0",
     "min_server_version": "3.2.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.1.0.zip",
     "permissions": [
       "clipboard"
     ],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 26507
+    "updated_on": "2026-03-09T15:54:24+01:00",
+    "file_size": 21632
   }
 ]
