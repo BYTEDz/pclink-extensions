@@ -10,7 +10,6 @@ from fastapi import APIRouter, Body
 from typing import List, Dict, Optional
 from pclink.core.extension_base import ExtensionBase
 
-# Load Windows ctypes only if on Windows to prevent Linux crashes
 OS_NAME = platform.system().lower()
 if OS_NAME == "windows":
     import ctypes
@@ -22,6 +21,7 @@ class Clipboard:
         self.os_name = OS_NAME
         self.copy_cmd = None
         self.paste_cmd = None
+        self.has_wl_paste_watch = False
         
         if self.os_name == "windows":
             self._init_windows()
@@ -57,10 +57,10 @@ class Clipboard:
         self.GMEM_MOVEABLE = 0x0002
 
     def _init_linux(self):
-        # Detect whether the user uses Wayland or X11 and set the appropriate CLI tool
         if shutil.which("wl-copy") and shutil.which("wl-paste"):
             self.copy_cmd = ["wl-copy"]
             self.paste_cmd =["wl-paste", "-n"]
+            self.has_wl_paste_watch = True
         elif shutil.which("xclip"):
             self.copy_cmd =["xclip", "-selection", "clipboard"]
             self.paste_cmd =["xclip", "-selection", "clipboard", "-o"]
@@ -76,7 +76,7 @@ class Clipboard:
             self.paste_cmd = ["pbpaste"]
 
     def _get_text_windows(self) -> Optional[str]:
-        for _ in range(5):  # Retry up to 5 times
+        for _ in range(5):
             try:
                 if self.user32.OpenClipboard(None):
                     break
@@ -84,8 +84,8 @@ class Clipboard:
                 pass
             time.sleep(0.1)
         else:
-            return None  # Failed to open clipboard
-        
+            return None
+
         text = None
         try:
             h_data = self.user32.GetClipboardData(self.CF_UNICODETEXT)
@@ -95,10 +95,9 @@ class Clipboard:
                     text = ctypes.c_wchar_p(p_data).value
                     self.kernel32.GlobalUnlock(h_data)
         except Exception:
-            pass # Silent failure for clipboard access
+            pass
         finally:
             self.user32.CloseClipboard()
-            
         return text
 
     def _set_text_windows(self, text: str) -> bool:
@@ -114,12 +113,9 @@ class Clipboard:
 
         try:
             self.user32.EmptyClipboard()
-            
-            # Allocate global memory
             count = len(text) + 1
             byte_count = count * ctypes.sizeof(ctypes.c_wchar)
             h_mem = self.kernel32.GlobalAlloc(self.GMEM_MOVEABLE, byte_count)
-            
             if h_mem:
                 p_mem = self.kernel32.GlobalLock(h_mem)
                 if p_mem:
@@ -138,12 +134,12 @@ class Clipboard:
             return self._get_text_windows()
         elif self.paste_cmd:
             try:
-                result = subprocess.run(self.paste_cmd, capture_output=True)
+                result = subprocess.run(self.paste_cmd, capture_output=True, timeout=2)
                 if result.returncode == 0:
                     return result.stdout.decode('utf-8')
             except UnicodeDecodeError:
-                return None  # Ignore binary/image data on the clipboard
-            except Exception as e:
+                return None
+            except Exception:
                 pass
         return None
 
@@ -169,6 +165,7 @@ class Extension(ExtensionBase):
         
         self.running = False
         self.monitor_thread = None
+        self._watch_proc = None
         
         self.setup_routes()
 
@@ -195,33 +192,78 @@ class Extension(ExtensionBase):
     def initialize(self) -> bool:
         self.logger.info("Clipboard History Extension initialized.")
         self.running = True
-        self.monitor_thread = threading.Thread(target=self._monitor_loop, daemon=True)
+        
+        # pick the right monitor strategy
+        if self.clipboard.has_wl_paste_watch:
+            self.logger.info("Using event-driven wl-paste --watch (no polling)")
+            self.monitor_thread = threading.Thread(target=self._monitor_wayland_watch, daemon=True)
+        else:
+            self.logger.info("Using poll-based clipboard monitor")
+            self.monitor_thread = threading.Thread(target=self._monitor_poll, daemon=True)
+        
         self.monitor_thread.start()
         return True
 
     def cleanup(self):
         self.logger.info("Clipboard History Extension shutting down.")
         self.running = False
+        if self._watch_proc:
+            try: self._watch_proc.terminate()
+            except Exception: pass
         if self.monitor_thread:
-            self.monitor_thread.join(timeout=1.0)
+            self.monitor_thread.join(timeout=2.0)
 
-    def _monitor_loop(self):
+    def _monitor_wayland_watch(self):
+        """Uses wl-paste --watch to get notified on clipboard change (event-driven)."""
+        SENTINEL = "\x00__PCLINK_CLIP_SEP__\x00"
+        
+        while self.running:
+            try:
+                self._watch_proc = subprocess.Popen(
+                    ["wl-paste", "--no-newline", "--type", "text/plain", "--watch",
+                     "sh", "-c", f'cat; printf "{SENTINEL}\n"'],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL
+                )
+                
+                buf = []
+                for raw_line in self._watch_proc.stdout:
+                    if not self.running:
+                        break
+                    
+                    line = raw_line.decode("utf-8", errors="replace")
+                    
+                    if SENTINEL in line:
+                        content = "".join(buf).strip()
+                        buf.clear()
+                        if content:
+                            self._add_to_history(content)
+                    else:
+                        buf.append(line)
+                
+                self._watch_proc.wait()
+                
+            except Exception as e:
+                self.logger.error(f"wl-paste --watch error: {e}")
+                if self.running:
+                    time.sleep(5)
+
+    def _monitor_poll(self):
         last_text = self.clipboard.get_text()
         
         while self.running:
             try:
                 current_text = self.clipboard.get_text()
                 if current_text and current_text != last_text:
-                    if current_text.strip(): # Ignore empty strings
+                    if current_text.strip():
                         self._add_to_history(current_text)
                         last_text = current_text
             except Exception as e:
                 self.logger.error(f"Error in clipboard monitor: {e}")
             
-            time.sleep(1.0) # Check every second
+            time.sleep(5.0)
 
     def _add_to_history(self, content: str):
-        # Avoid duplicates at the top
         if self.history and self.history[0]["content"] == content:
             return
 
@@ -233,11 +275,8 @@ class Extension(ExtensionBase):
         }
         
         self.history.insert(0, entry)
-        
-        # Keep only last 50 items
         if len(self.history) > 50:
             self.history = self.history[:50]
-            
         self._save_history()
 
     def _load_history(self):

@@ -8,7 +8,7 @@ pclink_version: ">=3.2.0"
 ui_entry: templates/index.html
 permissions:
   - clipboard
-version: 1.1.0
+version: 1.2.0
 icon: icon.svg
 theme_aware_icon: true
 supported_platforms:
