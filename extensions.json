@@ -52,8 +52,8 @@
   {
     "id": "vessel-forge",
     "name": "Vessel Forge",
-    "version": "1.0.0",
-    "description": "Advanced container fleet orchestration and image forging. Monitor stats, manage vessels, and pull images across architectures (ARM/x86).",
+    "version": "1.1.0",
+    "description": "Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.",
     "author": "BYTEDz",
     "category": "System",
     "supported_platforms": [
@@ -65,13 +65,13 @@
     "min_server_version": "3.5.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-1.1.0.zip",
     "permissions": [
       "theme.read"
     ],
     "added_on": "2026-03-06T15:17:43+01:00",
-    "updated_on": "2026-03-06T15:32:03+01:00",
-    "file_size": 2756937
+    "updated_on": "2026-03-09T23:34:16+01:00",
+    "file_size": 2770344
   },
   {
     "id": "media-master",
