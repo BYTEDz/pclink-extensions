@@ -134,10 +134,29 @@
         70% { transform: scale(1.2); box-shadow: 0 0 0 10px transparent; }
         100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
       }
+
+      .nav-btn {
+        margin-top: 24px;
+        padding: 12px 24px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        width: 100%;
+      }
+
+      .nav-btn:hover { opacity: 0.9; }
+      .nav-btn.secondary { background: var(--surface); color: var(--text); border: var(--card-border); }
+
+      #nested-content { display: none; }
+      #back-hint { display: none; }
     </style>
   </head>
   <body>
-    <div class="status-container">
+    <div class="status-container" id="main-content">
       <h1>Immersive Elite</h1>
       <p class="subtitle">
         PCLink Extension Framework v3.5 is powering this edge-to-edge experience.
@@ -161,14 +180,48 @@
           <span>Touchpad Overlay</span>
         </div>
       </div>
+
+      <button class="nav-btn" onclick="openNestedContent()">Try System Back Button</button>
     </div>
 
-    <div class="hint-card">
+    <div class="status-container" id="nested-content">
+      <h1>Nested Page</h1>
+      <p class="subtitle">
+        Press your device's <b>Back Button</b> to return!
+      </p>
+      <div style="padding: 20px; font-size: 3rem;">🔙</div>
+      <button class="nav-btn secondary" onclick="goBack()">Or click here to go back</button>
+    </div>
+
+    <div class="hint-card" id="back-hint">
+        <div class="pulsing-dot" style="background: #4CAF50"></div>
+        System Back Navigation is Active
+    </div>
+
+    <div class="hint-card" id="main-hint">
       <div class="pulsing-dot"></div>
       Explore controls via the movable bubble
     </div>
 
     <script>
+      function openNestedContent() {
+        // Demonstrate History API support
+        history.pushState({page: 'nested'}, "Nested Content", "?page=nested");
+        updateUI();
+      }
+
+      function goBack() {
+        history.back();
+      }
+
+      function updateUI() {
+        const isNested = window.location.search.includes('page=nested');
+        document.getElementById('main-content').style.display = isNested ? 'none' : 'block';
+        document.getElementById('nested-content').style.display = isNested ? 'block' : 'none';
+        document.getElementById('back-hint').style.display = isNested ? 'flex' : 'none';
+      }
+
+      window.addEventListener('popstate', updateUI);
       window.addEventListener("theme-changed", (e) => {
         console.log("Elite Theme Sync active", e.detail);
       });
