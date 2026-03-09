@@ -16,60 +16,24 @@
             --surface: rgba(0, 0, 0, 0.05); --card-border: 1px solid rgba(0, 0, 0, 0.08);
         }
         
-        body { 
-            margin: 0; padding: 4px 6px; 
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--text); overflow: hidden; 
-            -webkit-user-select: none; user-select: none;
-            opacity: 0; transition: opacity 0.2s;
-        }
+        body { margin: 0; padding: 4px 6px; font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; -webkit-user-select: none; user-select: none; opacity: 0; transition: opacity 0.2s; }
         body.ready { opacity: 1; }
         
         .widget-container { display: flex; flex-direction: column; gap: 6px; }
-        
-        .status-header {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: var(--card-border);
-            padding: 8px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
+        .status-header { background: var(--surface); border-radius: var(--radius); border: var(--card-border); padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; }
         .main-info { display: flex; align-items: center; gap: 8px; }
         .icon { width: 18px; height: 18px; fill: var(--primary); }
         .count { font-size: 14px; font-weight: 800; }
         .label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2px; }
 
-        .health-bar {
-            height: 3px; background: var(--surface); border-radius: var(--radius);
-            overflow: hidden; border: none; margin: -2px 2px 2px 2px;
-        }
+        .health-bar { height: 3px; background: var(--surface); border-radius: var(--radius); overflow: hidden; border: none; margin: -2px 2px 2px 2px; }
         .health-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; width: 0%; border-radius: var(--radius); }
 
-        .shortcut-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
+        .shortcut-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         
-        .btn {
-            background: var(--surface);
-            border: var(--card-border);
-            border-radius: calc(var(--radius) * 0.8);
-            padding: 8px 2px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            color: var(--text-muted);
-        }
-        
+        .btn { background: var(--surface); border: var(--card-border); border-radius: calc(var(--radius) * 0.8); padding: 8px 2px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; transition: transform 0.1s; color: var(--text-muted); }
         .btn:active { transform: scale(0.95); background: var(--primary-muted); color: var(--primary); }
-        .btn-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+        .btn-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2px; }
         .btn-icon { width: 13px; height: 13px; fill: currentColor; }
     </style>
 </head>
@@ -95,9 +59,10 @@
 
         <div class="shortcut-grid">
             <div class="btn" onclick="bulk('start')"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><div class="btn-label">Start</div></div>
+            <div class="btn" onclick="bulk('restart')"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 17.197l-1.353-1.503A7.25 7.25 0 1 1 18.995 12h2.003a9.25 9.25 0 0 0-8.998-9.25zM12 7l-4 4h3v4h2v-4h3l-4-4z"/></svg><div class="btn-label">Restart</div></div>
             <div class="btn" onclick="bulk('stop')"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg><div class="btn-label">Stop</div></div>
             <div class="btn" onclick="prune()"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg><div class="btn-label">Prune</div></div>
-            <div class="btn" onclick="openFull()"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><div class="btn-label">Fleet</div></div>
+            <div class="btn" onclick="openFull()"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><div class="btn-label">Pro</div></div>
         </div>
     </div>
 
@@ -123,7 +88,7 @@
             } catch(e) {}
         }
         async function bulk(t) { fetch(`/extensions/vessel-forge/containers/bulk/${t}`, { method: 'POST' }).then(() => refresh()); }
-        async function prune() { if(confirm("Nuke unused?")) fetch(`/extensions/vessel-forge/system/prune`, { method: 'POST' }).then(() => refresh()); }
+        async function prune() { if(confirm("Deep clean system? (Removes all unattached Containers, Networks, Volumes & Images)")) fetch(`/extensions/vessel-forge/system/prune`, { method: 'POST' }).then(() => refresh()); }
         function openFull() { if (window.PCLinkWidget) window.PCLinkWidget.postMessage('open'); }
         window.onload = () => { document.body.classList.add('ready'); refresh(); setInterval(refresh, 8000); };
     </script>

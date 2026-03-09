@@ -1,7 +1,7 @@
 name: vessel-forge
 display_name: Vessel Forge
-version: 1.0.0
-description: Advanced container fleet orchestration and image forging. Monitor stats, manage vessels, and pull images across architectures (ARM/x86).
+version: 1.1.0
+description: Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.
 author: BYTEDz
 license: MIT
 pclink_version: ">=3.6.0"
