@@ -325,6 +325,30 @@
     "file_size": 14355
   },
   {
+    "id": "web-controller",
+    "name": "Browser Deck",
+    "version": "1.0.0",
+    "description": "Remote browser control with tab management, navigation, and link beaming.",
+    "author": "BYTEDz",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-1.0.0.zip",
+    "permissions": [
+      "input.inject"
+    ],
+    "added_on": "2026-03-24T22:27:10+01:00",
+    "updated_on": "2026-03-24T22:27:10+01:00",
+    "file_size": 9872
+  },
+  {
     "id": "window-arranger",
     "name": "Window Arranger",
     "version": "1.0.0",
@@ -367,6 +391,30 @@
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
     "file_size": 16555
+  },
+  {
+    "id": "ppt-controller",
+    "name": "Slideshow Master",
+    "version": "1.0.0",
+    "description": "Professional remote control for slideshows and presentations.",
+    "author": "BYTEDz",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/ppt-controller/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/ppt-controller-1.0.0.zip",
+    "permissions": [
+      "input.inject"
+    ],
+    "added_on": "2026-03-24T22:27:10+01:00",
+    "updated_on": "2026-03-24T22:27:10+01:00",
+    "file_size": 8101
   },
   {
     "id": "clipboard-history",
