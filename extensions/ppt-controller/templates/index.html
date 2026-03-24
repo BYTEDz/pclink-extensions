@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; user-select: none; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+
+        /* Main Slide Card */
+        .slide-card {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, var(--primary), var(--primary-muted));
+            border-radius: var(--radius);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: var(--card-shadow);
+            border: var(--card-border);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .slide-card:active { transform: scale(0.98); }
+        .slide-card i { color: white; width: 56px; height: 56px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); opacity: 0.9; }
+
+        /* Navigation Grid */
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .nav-btn {
+            background: var(--surface);
+            border: var(--card-border);
+            color: var(--text);
+            padding: 20px;
+            border-radius: var(--radius);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            font-weight: 800; font-size: 1rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s;
+        }
+        .nav-btn:active { transform: translateY(2px); opacity: 0.7; }
+        .nav-btn.primary { background: var(--primary); color: white; border: none; }
+        .nav-btn i { width: 28px; height: 28px; }
+
+        /* Utility Actions bar */
+        .actions-bar {
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: var(--radius);
+            padding: 8px;
+            display: flex; justify-content: space-around;
+            box-shadow: var(--card-shadow);
+        }
+        .action-icon {
+            background: none; border: none; color: var(--text-muted); padding: 12px; border-radius: calc(var(--radius) / 2);
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .action-icon:active { background: var(--glass); color: var(--primary); }
+        .action-icon.danger { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slide-card" onclick="control('next')">
+            <i data-lucide="presentation"></i>
+            <span style="position:absolute; bottom:12px; right:12px; color:white; font-size:0.7rem; font-weight:800; opacity:0.8;">TAP FOR NEXT →</span>
+        </div>
+
+        <div class="nav-grid">
+            <button class="nav-btn" onclick="control('prev')">
+                <i data-lucide="chevron-left"></i>
+                PREV
+            </button>
+            <button class="nav-btn primary" onclick="control('next')">
+                <i data-lucide="chevron-right"></i>
+                NEXT
+            </button>
+        </div>
+
+        <div class="nav-grid">
+             <button class="nav-btn" onclick="control('start_current')">
+                <i data-lucide="play"></i>
+                RESUME
+            </button>
+            <button class="nav-btn" onclick="control('start')">
+                <i data-lucide="monitor-play"></i>
+                START
+            </button>
+        </div>
+
+        <div class="actions-bar">
+            <button class="action-icon" onclick="control('black')" title="Black Screen"><i data-lucide="monitor-dot"></i></button>
+            <button class="action-icon" onclick="control('white')" title="White Screen"><i data-lucide="maximize"></i></button>
+            <button class="action-icon" onclick="control('laser')" title="Laser Pointer Tool"><i data-lucide="mouse-pointer-2"></i></button>
+            <button class="action-icon danger" onclick="control('stop')" title="Exit Presentation"><i data-lucide="power"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        async function control(action) {
+            try {
+                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
+                if (window.navigator.vibrate) window.navigator.vibrate(15);
+            } catch (e) { console.error('Action failed:', e); }
+        }
+        lucide.createIcons();
+    </script>
+</body>
+</html>

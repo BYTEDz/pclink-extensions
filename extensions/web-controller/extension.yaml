@@ -1,0 +1,19 @@
+name: web-controller
+display_name: Browser Deck
+version: 1.0.0
+description: Remote browser control with tab management, navigation, and link beaming.
+author: BYTEDz
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Productivity
+supported_platforms:
+  - windows
+  - linux
+  - macos
+permissions:
+  - input.inject
+ui_capabilities:
+  prevent_sleep: true

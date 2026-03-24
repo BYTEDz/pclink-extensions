@@ -15,6 +15,8 @@ The following is a verified list of officially supported extensions. These are m
 | 🛠️   | **Dev Assistant**     | Developer orchestration tool for Git, NPM, and Flutter.            | Developer    | 🪟 🐧 🍎  |
 | 📶   | **WiFi Sharer**       | One-tap credential sharing via secure local QR generation.         | Utility      | 🪟        |
 | 🧪   | **Capabilities Demo** | Showcase of Fullscreen, Rotation, Keyboard, and Mouse UI features. | Developer    | 🪟 🐧 🍎  |
+| 📽️   | **Slideshow Master**  | Remote slide navigation and presentation tools.                    | Productivity | 🪟 🐧 🍎  |
+| 🌐   | **Browser Deck**      | Mobile dashboard for full browser navigation and control.          | Productivity | 🪟 🐧 🍎  |
 
 ---
 

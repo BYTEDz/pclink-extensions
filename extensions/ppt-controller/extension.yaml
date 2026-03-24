@@ -1,0 +1,19 @@
+name: ppt-controller
+display_name: Slideshow Master
+version: 1.0.0
+description: Professional remote control for slideshows and presentations.
+author: BYTEDz
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Productivity
+supported_platforms:
+  - windows
+  - linux
+  - macos
+permissions:
+  - input.inject
+ui_capabilities:
+  prevent_sleep: true

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; user-select: none; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+
+        /* Compact Navigation Pad */
+        .navigation-pad {
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: grid;
+            grid-template-areas: ". up ." "left reset right" ". down .";
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+        }
+        .nav-btn {
+            background: var(--primary-faint); border: none; color: var(--text);
+            width: 64px; height: 64px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; cursor: pointer;
+        }
+        .nav-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
+        .nav-btn.center { background: none; color: var(--text-muted); width: 56px; height: 56px; opacity: 0.5; }
+
+        /* Action Rows */
+        .actions-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .action-card {
+            background: var(--surface); border: var(--card-border); border-radius: var(--radius); padding: 12px 4px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text);
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.1s;
+        }
+        .action-card:active { transform: scale(0.95); background: var(--glass); }
+        .action-card i { width: 20px; height: 20px; color: var(--primary); }
+        .action-card.danger { color: #f44336; }
+        .action-card.danger i { color: #f44336; }
+
+        /* Compact Beam Section */
+        .beam-section {
+            background: var(--surface); border: var(--card-border); border-radius: var(--radius); padding: 16px;
+            display: flex; flex-direction: column; gap: 10px; box-shadow: var(--card-shadow);
+        }
+        .beam-section input {
+            width: 100%; padding: 12px; background: var(--bg); border: var(--card-border); border-radius: calc(var(--radius) / 2);
+            color: var(--text); font-family: inherit; font-size: 0.9rem;
+        }
+        .beam-section button {
+            background: var(--primary); border: none; color: white; padding: 12px; border-radius: calc(var(--radius) / 2);
+            font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Scroll Pad -->
+        <div class="navigation-pad">
+            <button class="nav-btn" style="grid-area: up;" onclick="control('scroll_up')"><i data-lucide="chevrons-up"></i></button>
+            <button class="nav-btn" style="grid-area: left;" onclick="control('back')"><i data-lucide="arrow-left"></i></button>
+            <button class="nav-btn center" style="grid-area: reset;" onclick="control('refresh')"><i data-lucide="rotate-cw"></i></button>
+            <button class="nav-btn" style="grid-area: right;" onclick="control('forward')"><i data-lucide="arrow-right"></i></button>
+            <button class="nav-btn" style="grid-area: down;" onclick="control('scroll_down')"><i data-lucide="chevrons-down"></i></button>
+        </div>
+
+        <div class="actions-row">
+            <div class="action-card" onclick="control('new_tab')"><i data-lucide="plus"></i>New</div>
+            <div class="action-card" onclick="control('prev_tab')"><i data-lucide="chevron-left"></i>Prev</div>
+            <div class="action-card" onclick="control('next_tab')"><i data-lucide="chevron-right"></i>Next</div>
+            <div class="action-card danger" onclick="control('close_tab')"><i data-lucide="x"></i>Close</div>
+        </div>
+
+        <div class="actions-row">
+            <div class="action-card" onclick="control('scroll_top')"><i data-lucide="arrow-up-circle"></i>Top</div>
+            <div class="action-card" onclick="control('scroll_bottom')"><i data-lucide="arrow-down-circle"></i>Btm</div>
+            <div class="action-card" onclick="control('zoom_in')"><i data-lucide="zoom-in"></i>In</div>
+            <div class="action-card" onclick="control('zoom_out')"><i data-lucide="zoom-out"></i>Out</div>
+        </div>
+
+        <div class="beam-section">
+            <input type="text" id="beam-url" placeholder="Paste URL to beam..." onkeydown="if(event.key==='Enter') beam()">
+            <button onclick="beam()">BEAM TO BROWSER</button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        async function control(action) {
+            try {
+                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
+                if (window.navigator.vibrate) window.navigator.vibrate(15);
+            } catch (e) { console.error('Action failed:', e); }
+        }
+        async function beam() {
+            const urlInput = document.getElementById('beam-url');
+            let url = urlInput.value.trim();
+            if(!url) return;
+            if(!url.startsWith('http')) url = 'https://' + url;
+            try {
+                await fetch(`${apiPath}/beam`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                urlInput.value = '';
+            } catch (e) { console.error('Beam failed:', e); }
+        }
+        lucide.createIcons();
+    </script>
+</body>
+</html>
