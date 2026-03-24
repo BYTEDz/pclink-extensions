@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,96 +11,229 @@
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; user-select: none; }
-        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 
-        /* Main Slide Card */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        /* Unified Card Style */
+        .card-base {
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Main Slide Card (The "Viewport") */
         .slide-card {
             aspect-ratio: 16/9;
             background: linear-gradient(135deg, var(--primary), var(--primary-muted));
             border-radius: var(--radius);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             box-shadow: var(--card-shadow);
             border: var(--card-border);
             position: relative;
             cursor: pointer;
             transition: transform 0.1s;
         }
-        .slide-card:active { transform: scale(0.98); }
-        .slide-card i { color: white; width: 56px; height: 56px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); opacity: 0.9; }
 
-        /* Navigation Grid */
-        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .nav-btn {
+        .slide-card:active {
+            transform: scale(0.98);
+        }
+
+        .slide-card i {
+            color: white;
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+            opacity: 0.9;
+        }
+
+        .slide-hint {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 900;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        /* Main Navigation (Symmetrical 2x2 Grid) */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .nav-card {
             background: var(--surface);
             border: var(--card-border);
+            border-radius: var(--radius);
+            padding: 24px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             color: var(--text);
-            padding: 20px;
-            border-radius: var(--radius);
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            font-weight: 800; font-size: 1rem;
-            box-shadow: var(--card-shadow);
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.1s;
         }
-        .nav-btn:active { transform: translateY(2px); opacity: 0.7; }
-        .nav-btn.primary { background: var(--primary); color: white; border: none; }
-        .nav-btn i { width: 28px; height: 28px; }
 
-        /* Utility Actions bar */
-        .actions-bar {
+        .nav-card:active {
+            transform: scale(0.96);
+            background: var(--glass);
+        }
+
+        .nav-card i {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+
+        /* Highlighted Next Button */
+        .nav-card.primary {
+            background: var(--primary-faint);
+            border-color: var(--primary);
+        }
+
+        /* Bottom Utility Row (Symmetrical 4-column) */
+        .actions-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .action-card {
             background: var(--surface);
             border: var(--card-border);
             border-radius: var(--radius);
-            padding: 8px;
-            display: flex; justify-content: space-around;
-            box-shadow: var(--card-shadow);
+            padding: 12px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--text);
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.1s;
         }
-        .action-icon {
-            background: none; border: none; color: var(--text-muted); padding: 12px; border-radius: calc(var(--radius) / 2);
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+
+        .action-card:active {
+            transform: scale(0.95);
+            background: var(--glass);
         }
-        .action-icon:active { background: var(--glass); color: var(--primary); }
-        .action-icon.danger { color: #f44336; }
+
+        .action-card i {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+
+        .action-card.danger {
+            color: #f44336;
+        }
+
+        .action-card.danger i {
+            color: #f44336;
+        }
+
+        .action-card:active i {
+            color: var(--primary);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
+        <!-- Main Visual Target -->
         <div class="slide-card" onclick="control('next')">
             <i data-lucide="presentation"></i>
-            <span style="position:absolute; bottom:12px; right:12px; color:white; font-size:0.7rem; font-weight:800; opacity:0.8;">TAP FOR NEXT →</span>
+            <span class="slide-hint">NEXT SLIDE →</span>
         </div>
 
+        <!-- Primary Controls -->
         <div class="nav-grid">
-            <button class="nav-btn" onclick="control('prev')">
+            <div class="nav-card" onclick="control('prev')">
                 <i data-lucide="chevron-left"></i>
-                PREV
-            </button>
-            <button class="nav-btn primary" onclick="control('next')">
+                Previous
+            </div>
+            <div class="nav-card primary" onclick="control('next')">
                 <i data-lucide="chevron-right"></i>
-                NEXT
-            </button>
+                Next
+            </div>
         </div>
 
+        <!-- Secondary Playback Controls -->
         <div class="nav-grid">
-             <button class="nav-btn" onclick="control('start_current')">
+            <div class="nav-card" onclick="control('start_current')">
                 <i data-lucide="play"></i>
-                RESUME
-            </button>
-            <button class="nav-btn" onclick="control('start')">
+                Resume
+            </div>
+            <div class="nav-card" onclick="control('start')">
                 <i data-lucide="monitor-play"></i>
-                START
-            </button>
+                Start
+            </div>
         </div>
 
-        <div class="actions-bar">
-            <button class="action-icon" onclick="control('black')" title="Black Screen"><i data-lucide="monitor-dot"></i></button>
-            <button class="action-icon" onclick="control('white')" title="White Screen"><i data-lucide="maximize"></i></button>
-            <button class="action-icon" onclick="control('laser')" title="Laser Pointer Tool"><i data-lucide="mouse-pointer-2"></i></button>
-            <button class="action-icon danger" onclick="control('stop')" title="Exit Presentation"><i data-lucide="power"></i></button>
+        <!-- Symmetrical Utility Row -->
+        <div class="actions-row">
+            <div class="action-card" onclick="control('black')">
+                <i data-lucide="monitor-dot"></i>
+                Black
+            </div>
+            <div class="action-card" onclick="control('white')">
+                <i data-lucide="maximize"></i>
+                White
+            </div>
+            <div class="action-card" onclick="control('laser')">
+                <i data-lucide="mouse-pointer-2"></i>
+                Laser
+            </div>
+            <div class="action-card danger" onclick="control('stop')">
+                <i data-lucide="power"></i>
+                Exit
+            </div>
         </div>
     </div>
 
@@ -114,4 +248,5 @@
         lucide.createIcons();
     </script>
 </body>
+
 </html>
