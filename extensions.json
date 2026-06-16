@@ -36,7 +36,7 @@
       "darwin"
     ],
     "min_pclink_version": ">=3.6.0",
-    "min_server_version": "4.3.0",
+    "min_server_version": "4.4.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.0.0.zip",
@@ -44,7 +44,7 @@
       "theme.read"
     ],
     "added_on": "2026-03-06T15:17:43+01:00",
-    "updated_on": "2026-06-16T19:53:20+01:00",
+    "updated_on": "2026-06-16T20:15:50+01:00",
     "file_size": 60051
   },
   {
@@ -92,7 +92,7 @@
   {
     "id": "speed-test",
     "name": "PC Speed Test",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Test your PC's internet download and upload speed directly from your phone.",
     "author": "BYTEDz",
     "category": "Utility",
@@ -102,14 +102,14 @@
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
+    "min_server_version": "4.4.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.1.0.zip",
     "permissions": [],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 92187
+    "updated_on": "2026-06-16T20:15:50+01:00",
+    "file_size": 25675
   },
   {
     "id": "media-master",
