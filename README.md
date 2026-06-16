@@ -8,38 +8,38 @@
 [![Extensions Catalog](https://img.shields.io/badge/Extensions-Browse%20Catalog-brightgreen)](EXTENSIONS.md)
 
 **The official repository for [PCLink](https://github.com/BYTEDz/PCLink) extensions.**  
-Enhance your remote control experience with custom features, automation, and improved workflows.
+This repository contains extensions that provide additional features, automation capabilities, and workflow integrations for the PCLink ecosystem.
 
 </div>
 
 ---
 
-## 📜 Documentation
+## <img src="https://api.iconify.design/lucide:book-open.svg?color=%23888888" width="18" height="18" alt="Documentation" valign="middle" /> Documentation
 
-**Complete documentation is available in the [PCLink Wiki](https://github.com/BYTEDz/PCLink/wiki)**
+**Complete technical documentation is available in the [PCLink Wiki](https://github.com/BYTEDz/PCLink/wiki)**
 
-- 🏗️ [Extension Development Guide](https://github.com/BYTEDz/PCLink/wiki/Extension-Development) - Build your first extension
-- 🔌 [Theme SDK](https://github.com/BYTEDz/PCLink/wiki/Theme-SDK) - Style your extension's web UI
-- 🤝 [Contributing Guide](CONTRIBUTING.md) - How to submit new extensions
-- 📦 [Marketplace Architecture](https://github.com/BYTEDz/PCLink/wiki/Marketplace-Architecture) - How the decentralized ecosystem works
-
----
-
-## 🚀 Quick Start
-
-### 💻 Installing Extensions
-
-1. **Browse the Marketplace**: Open the PCLink mobile app and go to the **Extensions** screen.
-2. **Download & Install**: Tap the **"Store"** icon to browse the official library and install with one click.
-3. **Manual Install**: Alternatively, download a `.zip` from the [Releases](https://github.com/BYTEDz/pclink-extensions/releases) and use the **"Install from File"** option in the app.
-
-### 🏗️ Creating Extensions
-
-Join our community of developers and build your own tools! Use our [Starter Template](templates/starter-template/) to get running in seconds.
+- <img src="https://api.iconify.design/lucide:code.svg?color=%23888888" width="14" height="14" alt="Code" valign="middle" /> [Extension Development Guide](https://github.com/BYTEDz/PCLink/wiki/Extension-Development) - Guide for building extensions
+- <img src="https://api.iconify.design/lucide:palette.svg?color=%23888888" width="14" height="14" alt="Theme" valign="middle" /> [Theme SDK](https://github.com/BYTEDz/PCLink/wiki/Theme-SDK) - Styling specifications for extension web UIs
+- <img src="https://api.iconify.design/lucide:git-pull-request.svg?color=%23888888" width="14" height="14" alt="Contributing" valign="middle" /> [Contributing Guide](CONTRIBUTING.md) - Guidelines for submitting extensions
+- <img src="https://api.iconify.design/lucide:cpu.svg?color=%23888888" width="14" height="14" alt="Architecture" valign="middle" /> [Marketplace Architecture](https://github.com/BYTEDz/PCLink/wiki/Marketplace-Architecture) - Overview of the registry ecosystem
 
 ---
 
-## 📁 Repository Structure
+## <img src="https://api.iconify.design/lucide:terminal.svg?color=%23888888" width="18" height="18" alt="Terminal" valign="middle" /> Quick Start
+
+### <img src="https://api.iconify.design/lucide:download.svg?color=%23888888" width="16" height="16" alt="Download" valign="middle" /> Installing Extensions
+
+1. **Browse the Marketplace**: Open the PCLink client application and navigate to the **Extensions** menu.
+2. **Installation**: Select the target extension from the official directory to install it directly.
+3. **Manual Installation**: Alternatively, download the compressed archive (`.zip` format) from the [Releases](https://github.com/BYTEDz/pclink-extensions/releases) page and load it via the manual installation option in the client.
+
+### <img src="https://api.iconify.design/lucide:plus.svg?color=%23888888" width="16" height="16" alt="Plus" valign="middle" /> Creating Extensions
+
+Developers can create custom integrations using the provided [Starter Template](templates/starter-template/) as a baseline for development.
+
+---
+
+## <img src="https://api.iconify.design/lucide:folder-tree.svg?color=%23888888" width="18" height="18" alt="Folder Tree" valign="middle" /> Repository Structure
 
 ```text
 pclink-extensions/
@@ -52,18 +52,18 @@ pclink-extensions/
 
 ---
 
-## 📜 Repository Standards
+## <img src="https://api.iconify.design/lucide:check-square.svg?color=%23888888" width="18" height="18" alt="Standards" valign="middle" /> Repository Standards
 
-To maintain high quality, all extensions in this repository must follow these requirements:
+Extensions submitted to this repository must adhere to the following specifications:
 
-- **Structured Metadata**: Every extension must have a valid `extension.yaml`.
-- **Iconography**: High-quality icons (PNG/SVG) should be placed in `static/icon.png`.
-- **Security First**: Dangerous permissions must be explicitly declared and justified.
-- **Performance**: Extensions should be lightweight and avoid heavy background processing.
+- **Metadata Specification**: Every extension must include a valid `extension.yaml` file.
+- **Asset Requirements**: Extension icons must be provided in PNG or SVG format and located at `static/icon.png`.
+- **Security Compliance**: Sensitive or privileged permissions must be explicitly declared and documented in the configuration.
+- **Resource Optimization**: Extensions must be designed for a low resource footprint and avoid unoptimized background execution.
 
 ---
 
-## 👨‍💻 Maintainers
+## <img src="https://api.iconify.design/lucide:users.svg?color=%23888888" width="18" height="18" alt="Maintainers" valign="middle" /> Maintainers
 
 <table>
   <tr>
@@ -76,8 +76,8 @@ To maintain high quality, all extensions in this repository must follow these re
       <br />
       <sub>Creator & Lead Developer</sub>
       <br />
-      <a href="mailto:support@bytedz.com">📧</a>
-      <a href="https://github.com/AzharZouhir">💻</a>
+      <a href="mailto:support@bytedz.com"><img src="https://api.iconify.design/lucide:mail.svg?color=%23888888" width="14" height="14" alt="Email" valign="middle" /></a>
+      <a href="https://github.com/AzharZouhir"><img src="https://api.iconify.design/lucide:github.svg?color=%23888888" width="14" height="14" alt="GitHub" valign="middle" /></a>
     </td>
   </tr>
 </table>
@@ -86,6 +86,6 @@ To maintain high quality, all extensions in this repository must follow these re
 
 <div align="center">
 
-🕊️ Free Palestine • 🇩🇿 Made with ❤️ in Algeria
+Free Palestine • Developed in Algeria
 
 </div>
