@@ -4,12 +4,7 @@ from fastapi import APIRouter, Body
 from typing import Dict, Optional
 from pclink.core.extension_base import ExtensionBase
 
-# Import the bundled speedtest library
-try:
-    import speedtest
-    HAS_SPEEDTEST = True
-except ImportError:
-    HAS_SPEEDTEST = False
+import speedtest
 
 class Extension(ExtensionBase):
     def __init__(self, *args, **kwargs):
@@ -38,8 +33,6 @@ class Extension(ExtensionBase):
             if self.results["status"] == "testing":
                 return {"status": "error", "message": "Test already in progress"}
             
-            if not HAS_SPEEDTEST:
-                return {"status": "error", "message": "Speedtest library not found"}
 
             self.results["mode"] = "internet"
             self.results["status"] = "testing"
