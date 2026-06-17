@@ -321,6 +321,28 @@
     "file_size": 11039
   },
   {
+    "id": "file-downloader",
+    "name": "File Downloader",
+    "version": "1.0.0",
+    "description": "A lightweight file downloader with pause/resume support.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.5.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-1.0.0.zip",
+    "permissions": [
+      "filesystem.write"
+    ],
+    "added_on": "2026-06-18T00:38:17+01:00",
+    "updated_on": "2026-06-18T00:38:17+01:00",
+    "file_size": 51104
+  },
+  {
     "id": "clean-master",
     "name": "Clean Master",
     "version": "1.0.0",
