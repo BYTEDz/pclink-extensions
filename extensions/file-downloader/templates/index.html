@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PCLink Downloader</title>
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-radius: var(--radius);
+            transition: transform 0.1s ease;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+        }
+
+        .input-field {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-muted);
+            border-radius: 10px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+        }
+
+        .status-downloading {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .status-paused {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .progress-bar-bg {
+            background: var(--bg);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen pb-32">
+    <div class="max-w-md mx-auto px-4 pt-6 flex flex-col gap-4">
+
+        <!-- Main Downloads Panel (Search Bar & List Container) -->
+        <div id="downloadListContainer" class="flex flex-col gap-4">
+            <!-- Controls Toolbar -->
+            <div id="searchToolbar" class="flex items-center justify-between gap-3">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="triggerFilterChange()" placeholder="Search..."
+                        class="input-field w-full pl-9 pr-4 py-2 text-xs" style="background: var(--surface);">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="pauseAll()"
+                        class="btn-secondary w-8 h-8 flex items-center justify-center text-amber-400" title="Pause All">
+                        <i class="fas fa-pause text-xs"></i>
+                    </button>
+                    <button onclick="resumeAll()"
+                        class="btn-secondary w-8 h-8 flex items-center justify-center text-emerald-400"
+                        title="Resume All">
+                        <i class="fas fa-play text-xs"></i>
+                    </button>
+                    <button onclick="clearCompleted()"
+                        class="btn-secondary w-8 h-8 flex items-center justify-center text-rose-400"
+                        title="Clear Completed">
+                        <i class="fas fa-broom text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Download List Content -->
+            <div id="downloadList" class="flex flex-col gap-3">
+                <!-- Tasks Render Here -->
+            </div>
+        </div>
+
+        <!-- Consistent Settings Tab Panel -->
+        <div id="settingsPanel" class="hidden flex flex-col gap-4 animate-in fade-in duration-200">
+            <div class="card p-4 flex flex-col gap-4">
+                <div class="flex items-center gap-2 border-b border-card-border/30 pb-3">
+                    <i class="fas fa-sliders text-indigo-400 text-base"></i>
+                    <h3 class="font-bold text-sm">Download Settings</h3>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold opacity-80">Default Destination Folder</span>
+                    </div>
+                    <div id="pathDisplay"
+                        class="font-mono text-[11px] bg-neutral-800/20 px-2.5 py-2 border border-card-border/40 truncate select-all"
+                        style="border-radius: var(--radius);" title="Default save directory">
+                        Loading directory...
+                    </div>
+                    <div class="flex gap-2 mt-1">
+                        <input type="text" id="pathInput" class="input-field flex-1 px-3 py-1.5 text-xs font-mono"
+                            placeholder="Absolute local folder path...">
+                        <button onclick="saveDownloadPath()"
+                            class="btn-primary px-4 py-1.5 font-bold text-xs flex items-center gap-1.5 shrink-0">
+                            <i class="fas fa-save text-[10px]"></i> Save
+                        </button>
+                    </div>
+                    <p class="text-[10px] opacity-50 mt-1">
+                        Ensure the path exists and your process has proper write permissions.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Floating Action Button (FAB) -->
+    <button id="addFab" onclick="openAddOverlay()"
+        class="btn-primary fixed right-6 bottom-24 w-12 h-12 shadow-2xl flex items-center justify-center text-lg z-40 transition-transform active:scale-95 hover:scale-105"
+        style="border-radius: var(--radius);">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Full-Screen Input Overlay -->
+    <div id="addOverlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div
+            class="card w-full max-w-md p-6 flex flex-col gap-4 relative transform scale-95 transition-transform duration-200">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-lg">Add Downloads</h3>
+                <button onclick="closeAddOverlay()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs opacity-60 -mt-2">Enter link or paste multiple links (one per line):</p>
+            <textarea id="urlInput" placeholder="Paste links here..."
+                class="input-field w-full px-4 py-3 text-sm resize-none h-40" rows="5"></textarea>
+            <div class="flex gap-2 justify-end">
+                <button onclick="closeAddOverlay()" class="btn-secondary px-4 py-2 text-sm font-bold">Cancel</button>
+                <button onclick="smartAdd()" class="btn-primary px-6 py-2 text-sm font-bold flex items-center gap-2">
+                    <i class="fas fa-plus text-xs"></i> Add Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Unified Dialog Modal -->
+    <div id="customDialog"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div
+            class="card w-full max-w-sm p-6 flex flex-col gap-4 relative transform scale-95 transition-transform duration-200">
+            <div class="flex items-center gap-3 border-b border-card-border/30 pb-3">
+                <i id="dialogIcon" class="fas fa-question-circle text-indigo-400 text-lg"></i>
+                <h3 id="dialogTitle" class="font-bold text-sm">Alert</h3>
+            </div>
+            <p id="dialogMessage" class="text-xs opacity-80 leading-relaxed"></p>
+            <div class="flex gap-2 justify-end mt-2">
+                <button id="dialogCancelBtn" onclick="closeCustomDialog(false)"
+                    class="btn-secondary px-4 py-2 text-xs font-bold">Cancel</button>
+                <button id="dialogConfirmBtn" onclick="closeCustomDialog(true)"
+                    class="btn-primary px-5 py-2 text-xs font-bold">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Bottom Tab & Status Bar -->
+    <div class="fixed bottom-0 left-0 right-0 z-50 shadow-2xl" style="background: var(--surface);">
+        <div class="max-w-md mx-auto">
+            <!-- Tabs Menu -->
+            <div class="flex items-center justify-around px-2 py-2">
+                <!-- Tab: All -->
+                <button onclick="setFilter('all')" id="tab-all"
+                    class="flex flex-col items-center justify-center py-1 flex-1 gap-1 transition-all duration-200">
+                    <i class="fas fa-layer-group text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">All</span>
+                </button>
+
+                <!-- Tab: Active -->
+                <button onclick="setFilter('active')" id="tab-active"
+                    class="flex flex-col items-center justify-center py-1 flex-1 gap-1 transition-all duration-200 relative">
+                    <i class="fas fa-arrow-down text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">Active</span>
+                    <span id="badge-active"
+                        class="absolute -top-1 right-3 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-[8px] font-extrabold px-1.5 py-0.5 leading-none hidden"
+                        style="border-radius: var(--radius);">0</span>
+                </button>
+
+                <!-- Tab: Completed -->
+                <button onclick="setFilter('completed')" id="tab-completed"
+                    class="flex flex-col items-center justify-center py-1 flex-1 gap-1 transition-all duration-200 relative">
+                    <i class="fas fa-circle-check text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">Done</span>
+                    <span id="badge-completed"
+                        class="absolute -top-1 right-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[8px] font-extrabold px-1.5 py-0.5 leading-none hidden"
+                        style="border-radius: var(--radius);">0</span>
+                </button>
+
+                <!-- Tab: Error -->
+                <button onclick="setFilter('error')" id="tab-error"
+                    class="flex flex-col items-center justify-center py-1 flex-1 gap-1 transition-all duration-200 relative">
+                    <i class="fas fa-circle-exclamation text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">Errors</span>
+                    <span id="badge-error"
+                        class="absolute -top-1 right-3 bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px] font-extrabold px-1.5 py-0.5 leading-none hidden"
+                        style="border-radius: var(--radius);">0</span>
+                </button>
+
+                <!-- Tab: Settings (Consistent Gear Icon) -->
+                <button onclick="setFilter('settings')" id="tab-settings"
+                    class="flex flex-col items-center justify-center py-1 flex-1 gap-1 transition-all duration-200">
+                    <i class="fas fa-cog text-sm"></i>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">Settings</span>
+                </button>
+            </div>
+
+            <!-- Global Status Speed Strip -->
+            <div class="text-[10px] uppercase font-bold text-center py-1.5 flex items-center justify-center gap-1.5"
+                style="background: var(--bg);">
+                <i class="fas fa-bolt text-indigo-400 text-[9px]"></i>
+                <span class="opacity-60">Total Speed:</span>
+                <span id="totalSpeed" class="text-indigo-400 font-extrabold">0 B/s</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeFilter = 'all';
+        let openLinkPanes = new Set();
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let dialogResolve = null;
+
+        // Custom modal Promise handler
+        function showCustomDialog({ title = 'Notification', message = '', isConfirm = false, icon = 'fa-info-circle', confirmText = 'OK', cancelText = 'Cancel' }) {
+            return new Promise((resolve) => {
+                dialogResolve = resolve;
+
+                const dialog = document.getElementById('customDialog');
+                const titleEl = document.getElementById('dialogTitle');
+                const msgEl = document.getElementById('dialogMessage');
+                const iconEl = document.getElementById('dialogIcon');
+                const confirmBtn = document.getElementById('dialogConfirmBtn');
+                const cancelBtn = document.getElementById('dialogCancelBtn');
+
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                iconEl.className = `fas ${icon} text-lg`;
+
+                confirmBtn.textContent = confirmText;
+                cancelBtn.textContent = cancelText;
+
+                if (isConfirm) {
+                    cancelBtn.classList.remove('hidden');
+                    if (icon.includes('fa-trash') || icon.includes('fa-triangle-exclamation')) {
+                        iconEl.className = `fas ${icon} text-lg text-rose-400`;
+                    } else {
+                        iconEl.className = `fas ${icon} text-lg text-amber-400`;
+                    }
+                } else {
+                    cancelBtn.classList.add('hidden');
+                    iconEl.className = `fas ${icon} text-lg text-indigo-400`;
+                }
+
+                dialog.classList.remove('hidden');
+                setTimeout(() => {
+                    dialog.classList.remove('opacity-0');
+                    dialog.firstElementChild.classList.remove('scale-95');
+                }, 10);
+            });
+        }
+
+        function closeCustomDialog(approved) {
+            const dialog = document.getElementById('customDialog');
+            dialog.classList.add('opacity-0');
+            dialog.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                dialog.classList.add('hidden');
+                if (dialogResolve) {
+                    dialogResolve(approved);
+                    dialogResolve = null;
+                }
+            }, 200);
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${apiPath}/downloads/config`);
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+
+                const currentDir = data.download_dir || 'Not Configured';
+                document.getElementById('pathDisplay').textContent = currentDir;
+                document.getElementById('pathInput').value = currentDir;
+            } catch (e) {
+                console.error('Failed to load configuration settings', e);
+                document.getElementById('pathDisplay').textContent = 'Error loading default directory';
+            }
+        }
+
+        async function saveDownloadPath() {
+            const newPath = document.getElementById('pathInput').value.trim();
+            if (!newPath) return;
+
+            try {
+                const response = await fetch(`${apiPath}/downloads/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ download_dir: newPath })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('pathDisplay').textContent = result.download_dir;
+                    showCustomDialog({
+                        title: 'Settings Saved',
+                        message: 'Default download directory updated successfully.',
+                        icon: 'fa-circle-check'
+                    });
+                } else {
+                    showCustomDialog({
+                        title: 'Error Saving Settings',
+                        message: result.detail || 'Failed to update configuration directory.',
+                        icon: 'fa-circle-exclamation'
+                    });
+                }
+            } catch (e) {
+                showCustomDialog({
+                    title: 'Network Error',
+                    message: 'Network or transmission error occurred while updating settings.',
+                    icon: 'fa-wifi'
+                });
+            }
+        }
+
+        function openAddOverlay() {
+            const overlay = document.getElementById('addOverlay');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.firstElementChild.classList.remove('scale-95');
+            }, 10);
+            document.getElementById('urlInput').focus();
+        }
+
+        function closeAddOverlay() {
+            const overlay = document.getElementById('addOverlay');
+            overlay.classList.add('opacity-0');
+            overlay.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.getElementById('urlInput').value = '';
+            }, 200);
+        }
+
+        async function smartAdd() {
+            const urlInput = document.getElementById('urlInput');
+            const text = urlInput.value.trim();
+            if (!text) return;
+
+            const urls = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            if (urls.length === 0) return;
+
+            try {
+                if (urls.length === 1) {
+                    const response = await fetch(`${apiPath}/downloads/add`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: urls[0] })
+                    });
+                    if (!response.ok) throw new Error();
+                } else {
+                    const response = await fetch(`${apiPath}/downloads/bulk-add`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ urls })
+                    });
+                    if (!response.ok) throw new Error();
+                }
+                closeAddOverlay();
+                refreshDownloads();
+            } catch (e) {
+                showCustomDialog({
+                    title: 'Input Error',
+                    message: 'Failed to add download target. Please verify the links and try again.',
+                    icon: 'fa-circle-exclamation'
+                });
+            }
+        }
+
+        async function refreshDownloads() {
+            if (activeFilter === 'settings') return; // Pause polling when settings tab is active
+
+            try {
+                const response = await fetch(`${apiPath}/downloads`);
+                const data = await response.json();
+                renderDownloads(data);
+            } catch (e) { console.error('Conn lost', e); }
+        }
+
+        function triggerFilterChange() { refreshDownloads(); }
+
+        function formatSpeed(bytesPerSec) {
+            if (!bytesPerSec || bytesPerSec <= 0) return '0 B/s';
+            const k = 1024;
+            const sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s'];
+            const i = Math.floor(Math.log(bytesPerSec) / Math.log(k));
+            return parseFloat((bytesPerSec / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            if (!bytes) return 'Unknown';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatETA(bytesDownloaded, totalSize, speed) {
+            if (!speed || speed <= 0 || !totalSize || bytesDownloaded >= totalSize) return '--:--';
+            const remainingBytes = totalSize - bytesDownloaded;
+            const totalSeconds = remainingBytes / speed;
+            if (totalSeconds === Infinity) return '--:--';
+            if (totalSeconds < 60) return Math.round(totalSeconds) + 's left';
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.round(totalSeconds % 60);
+            if (minutes < 60) return `${minutes}m ${seconds}s left`;
+            const hours = Math.floor(minutes / 60);
+            const remMinutes = minutes % 60;
+            return `${hours}h ${remMinutes}m left`;
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const map = {
+                'zip': 'fa-file-archive text-amber-500', 'rar': 'fa-file-archive text-amber-500',
+                'pdf': 'fa-file-pdf text-rose-500', 'exe': 'fa-file-code text-indigo-400',
+                'jpg': 'fa-file-image text-blue-400', 'png': 'fa-file-image text-blue-400'
+            };
+            return map[ext] || 'fa-file text-slate-400';
+        }
+
+        function setFilter(filter) {
+            activeFilter = filter;
+            const tabs = ['all', 'active', 'completed', 'error', 'settings'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === filter) {
+                    btn.style.color = 'var(--primary)';
+                    btn.classList.remove('opacity-50');
+                } else {
+                    btn.style.color = 'var(--text)';
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Adjust interface layout depending on active tab selection
+            const downloadListContainer = document.getElementById('downloadListContainer');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const addFab = document.getElementById('addFab');
+
+            if (filter === 'settings') {
+                downloadListContainer.classList.add('hidden');
+                settingsPanel.classList.remove('hidden');
+                addFab.classList.add('hidden');
+            } else {
+                downloadListContainer.classList.remove('hidden');
+                settingsPanel.classList.add('hidden');
+                addFab.classList.remove('hidden');
+                refreshDownloads();
+            }
+        }
+
+        function renderDownloads(downloads) {
+            const list = document.getElementById('downloadList');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            let totalSpeed = 0, activeCount = 0, pausedCount = 0, completedCount = 0, errorCount = 0;
+            Object.values(downloads).forEach(task => {
+                if (task.status === 'downloading') { totalSpeed += task.speed; activeCount++; }
+                else if (task.status === 'paused') pausedCount++;
+                else if (task.status === 'completed') completedCount++;
+                else if (task.status === 'error') errorCount++;
+            });
+
+            document.getElementById('totalSpeed').textContent = formatSpeed(totalSpeed);
+
+            const activeTabCount = activeCount + pausedCount;
+            const activeBadge = document.getElementById('badge-active');
+            if (activeTabCount > 0) {
+                activeBadge.textContent = activeTabCount;
+                activeBadge.classList.remove('hidden');
+            } else {
+                activeBadge.classList.add('hidden');
+            }
+
+            const completedBadge = document.getElementById('badge-completed');
+            if (completedCount > 0) {
+                completedBadge.textContent = completedCount;
+                completedBadge.classList.remove('hidden');
+            } else {
+                completedBadge.classList.add('hidden');
+            }
+
+            const errorBadge = document.getElementById('badge-error');
+            if (errorCount > 0) {
+                errorBadge.textContent = errorCount;
+                errorBadge.classList.remove('hidden');
+            } else {
+                errorBadge.classList.add('hidden');
+            }
+
+            const filteredTasks = Object.values(downloads).filter(task => {
+                const matchesSearch = !searchQuery || task.filename.toLowerCase().includes(searchQuery);
+                if (!matchesSearch) return false;
+
+                if (activeFilter === 'all') return true;
+                if (activeFilter === 'active') return task.status === 'downloading' || task.status === 'paused';
+                if (activeFilter === 'completed') return task.status === 'completed';
+                if (activeFilter === 'error') return task.status === 'error';
+                return true;
+            });
+
+            if (filteredTasks.length === 0) {
+                list.innerHTML = `<div class="card p-8 text-center opacity-50"><p class="text-xs">No downloads in this section</p></div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            filteredTasks.forEach(task => {
+                let badgeClass = 'status-paused';
+                let icon = 'fa-pause';
+                let barColor = 'var(--primary)';
+                let actionButtons = '';
+
+                if (task.status === 'downloading') {
+                    badgeClass = 'status-downloading';
+                    icon = 'fa-arrow-down fa-bounce';
+                    barColor = 'var(--primary)';
+                    actionButtons = `
+                        <button onclick="togglePause('${task.id}', '${task.status}')" class="btn-secondary px-2 py-1 text-[10px] font-bold">
+                            <i class="fas fa-pause mr-1"></i> Pause
+                        </button>
+                    `;
+                }
+                else if (task.status === 'paused') {
+                    badgeClass = 'status-paused';
+                    icon = 'fa-pause';
+                    barColor = '#f59e0b';
+                    actionButtons = `
+                        <button onclick="togglePause('${task.id}', '${task.status}')" class="btn-secondary px-2 py-1 text-[10px] font-bold">
+                            <i class="fas fa-play mr-1"></i> Resume
+                        </button>
+                    `;
+                }
+                else if (task.status === 'completed') {
+                    badgeClass = 'status-completed';
+                    icon = 'fa-check';
+                    barColor = '#10b981';
+                    actionButtons = '';
+                }
+                else if (task.status === 'error') {
+                    badgeClass = 'status-error';
+                    icon = 'fa-exclamation-triangle';
+                    barColor = '#ef4444';
+                    actionButtons = `
+                        <button onclick="togglePause('${task.id}', 'paused')" class="btn-secondary px-2 py-1 text-[10px] font-bold text-amber-500">
+                            <i class="fas fa-redo mr-1"></i> Retry
+                        </button>
+                    `;
+                }
+
+                const progress = task.progress.toFixed(1);
+                const fileIcon = getFileIcon(task.filename);
+                const savePath = task.save_path || 'Processing path...';
+
+                const card = document.createElement('div');
+                card.className = 'card p-4 flex flex-col gap-3 transition-all';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-8 h-8 bg-bg border border-card-border flex items-center justify-center shrink-0" style="border-radius: var(--radius);">
+                                <i class="fas ${fileIcon} text-xs"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h3 class="font-bold text-sm truncate" title="${task.filename}">${task.filename}</h3>
+                                <p class="text-[10px] opacity-50 truncate">${task.url}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge ${badgeClass} flex items-center gap-1">
+                            <i class="fas ${icon} text-[8px]"></i> ${task.status}
+                        </span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-[10px] font-medium opacity-70">
+                            <span>${progress}%</span>
+                            <span>${task.status === 'downloading' ? formatSpeed(task.speed) : ''}</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${progress}%; background-color: ${barColor};"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="text-[10px] opacity-60">
+                            ${formatBytes(task.bytes_downloaded)} / ${formatBytes(task.total_size)}
+                            ${task.status === 'downloading' ? `<span class="ml-2 text-indigo-400 font-bold">${formatETA(task.bytes_downloaded, task.total_size, task.speed)}</span>` : ''}
+                            ${task.error ? `<span class="ml-2 text-rose-400 font-bold">${task.error}</span>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            ${actionButtons}
+                            <button onclick="deleteDownload('${task.id}')" class="btn-secondary px-2 py-1 text-[10px] font-bold text-rose-400" title="Remove download">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Absolute save path info row -->
+                    <div class="text-[9px] opacity-40 truncate flex items-center gap-1 mt-1 border-t border-card-border/20 pt-2 select-all" title="Location: ${savePath}">
+                        <i class="fas fa-location-dot text-[8px] opacity-80"></i>
+                        <span class="font-mono truncate">${savePath}</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        async function togglePause(id, currentStatus) {
+            const endpoint = currentStatus === 'paused' ? 'resume' : 'pause';
+            await fetch(`${apiPath}/downloads/${endpoint}/${id}`, { method: 'POST' });
+            refreshDownloads();
+        }
+
+        async function deleteDownload(id) {
+            const confirmed = await showCustomDialog({
+                title: 'Confirm Delete',
+                message: 'Are you sure you want to remove this download task and delete its file?',
+                isConfirm: true,
+                icon: 'fa-trash-can',
+                confirmText: 'Delete',
+                cancelText: 'Cancel'
+            });
+
+            if (confirmed) {
+                await fetch(`${apiPath}/downloads/${id}`, { method: 'DELETE' });
+                refreshDownloads();
+            }
+        }
+
+        async function pauseAll() { await fetch(`${apiPath}/downloads/pause-all`, { method: 'POST' }); refreshDownloads(); }
+        async function resumeAll() { await fetch(`${apiPath}/downloads/resume-all`, { method: 'POST' }); refreshDownloads(); }
+        async function clearCompleted() { await fetch(`${apiPath}/downloads/clear-completed`, { method: 'POST' }); refreshDownloads(); }
+
+        // Initialize view
+        setFilter('all');
+        loadConfig();
+        setInterval(refreshDownloads, 1000);
+    </script>
+</body>
+
+</html>

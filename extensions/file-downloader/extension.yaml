@@ -1,0 +1,23 @@
+name: file-downloader
+display_name: "File Downloader"
+version: "1.0.0"
+author: BYTEDz
+license: MIT
+description: "A lightweight file downloader with pause/resume support."
+entry_point: "extension.py"
+ui_entry: "templates/index.html"
+icon: "icon.svg"
+theme_aware_icon: true
+pclink_version: ">=3.5.0"
+category: Utility
+min_server_version: "1.0.0"
+permissions: ["filesystem.write"]
+ui_capabilities:
+  allow_fullscreen: false
+  allow_touchpad_overlay: false
+  allow_keyboard: false
+  allow_mouse: false
+  allow_rotate: false
+  prevent_sleep: false
+  orientation: "auto"
+dashboard_widgets: []
