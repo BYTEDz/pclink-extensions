@@ -8,9 +8,9 @@ entry_point: "extension.py"
 ui_entry: "templates/index.html"
 icon: "icon.svg"
 theme_aware_icon: true
-pclink_version: ">=3.5.0"
+pclink_version: ">=3.6.0"
 category: Utility
-min_server_version: "1.0.0"
+min_server_version: "3.6.0"
 permissions: ["filesystem.write"]
 ui_capabilities:
   allow_fullscreen: false
@@ -21,3 +21,7 @@ ui_capabilities:
   prevent_sleep: false
   orientation: "auto"
 dashboard_widgets: []
+supported_platforms:
+  - windows
+  - linux
+  - macos
