@@ -6,206 +6,286 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Capabilities Demo</title>
+    <title>Core Capabilities Showcase</title>
     <script src="/ui/static/extension-theme.js"></script>
     <style>
       :root {
-        --animation-speed: 0.6s;
+        --animation-speed: 0.4s;
       }
 
       body {
         padding: 24px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 24px;
         min-height: 100vh;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         text-align: center;
-        overflow: hidden;
         background: radial-gradient(circle at top right, var(--primary-faint), transparent);
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
       }
 
-      .status-container {
-        padding: 40px 24px;
+      .container {
+        padding: 32px 24px;
         border-radius: calc(var(--radius) * 1.5);
         background: var(--surface);
         border: var(--card-border);
-        max-width: 450px;
+        max-width: 500px;
         width: 100%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: var(--card-shadow);
         animation: slideUp var(--animation-speed) cubic-bezier(0.2, 0.8, 0.2, 1);
-        position: relative;
         backdrop-filter: blur(10px);
       }
 
       @keyframes slideUp {
-        from { opacity: 0; transform: translateY(30px); }
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
-      }
-
-      .icon-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        margin-top: 32px;
-      }
-
-      .cap-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-        padding: 20px;
-        background: var(--primary-faint);
-        border-radius: var(--radius);
-        border: 1px solid var(--primary-muted);
-        transition: all 0.3s ease;
-        animation: fadeIn 1s ease both;
-      }
-
-      .cap-item:nth-child(1) { animation-delay: 0.2s; }
-      .cap-item:nth-child(2) { animation-delay: 0.3s; }
-      .cap-item:nth-child(3) { animation-delay: 0.4s; }
-      .cap-item:nth-child(4) { animation-delay: 0.5s; }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-      }
-
-      .cap-item:hover {
-        transform: translateY(-5px);
-        background: var(--surface-hover);
-        border-color: var(--primary);
-      }
-
-      .cap-item b {
-        font-size: 1.1rem;
-        color: var(--primary);
-        display: block;
-      }
-
-      .cap-item span {
-        font-size: 0.8rem;
-        color: var(--text-muted);
       }
 
       h1 {
         margin: 0;
         color: var(--primary);
-        font-size: 2rem;
+        font-size: 1.75rem;
         font-weight: 800;
         letter-spacing: -0.02em;
       }
-      
+
       p.subtitle {
         color: var(--text-muted);
-        font-size: 1rem;
-        margin-top: 12px;
-        line-height: 1.5;
+        font-size: 0.95rem;
+        margin-top: 8px;
+        margin-bottom: 32px;
+        line-height: 1.6;
       }
 
-      .hint-card {
-        margin-top: 32px;
-        font-size: 0.9rem;
+      .section-label {
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
         color: var(--text-muted);
-        padding: 12px 20px;
-        background: var(--surface);
-        border-radius: 100px;
-        border: var(--card-border);
-        animation: fadeIn 1s ease 0.8s both;
+        letter-spacing: 0.05em;
+        margin: 24px 0 12px 0;
+        opacity: 0.6;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+
+      .feature-card {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        padding: 16px;
+        background: var(--primary-faint);
+        border-radius: var(--radius);
+        border: 1px solid var(--primary-muted);
+        transition: all 0.2s ease;
+        text-align: left;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .feature-card b {
+        font-size: 0.9rem;
+        color: var(--primary);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .feature-card span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      .btn-group {
+        display: flex;
+        flex-direction: column;
         gap: 10px;
       }
 
-      .pulsing-dot {
-        width: 8px;
-        height: 8px;
-        background: var(--primary);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 var(--primary-muted); }
-        70% { transform: scale(1.2); box-shadow: 0 0 0 10px transparent; }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
-      }
-
       .nav-btn {
-        margin-top: 24px;
-        padding: 12px 24px;
+        padding: 12px 20px;
         background: var(--primary);
         color: white;
         border: none;
         border-radius: var(--radius);
         font-weight: 600;
         cursor: pointer;
-        transition: opacity 0.2s;
+        transition: all 0.2s;
         width: 100%;
+        font-size: 0.9rem;
       }
 
-      .nav-btn:hover { opacity: 0.9; }
+      .nav-btn:active { transform: scale(0.98); }
       .nav-btn.secondary { background: var(--surface); color: var(--text); border: var(--card-border); }
+      .nav-btn.ghost { background: transparent; color: var(--text-muted); border: 1px dashed var(--card-border); }
 
-      #nested-content { display: none; }
-      #back-hint { display: none; }
+      /* Tab Styles */
+      .tab-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        background: var(--primary-faint);
+        padding: 4px;
+        border-radius: var(--radius);
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: calc(var(--radius) - 2px);
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .tab-btn.active {
+        background: var(--surface);
+        color: var(--primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      #nested-content, #tab-content-2, #tab-content-3 { display: none; }
     </style>
   </head>
   <body>
-    <div class="status-container" id="main-content">
-      <h1>Immersive Elite</h1>
-      <p class="subtitle">
-        PCLink Extension Framework v3.5 is powering this edge-to-edge experience.
-      </p>
+    <div class="container" id="main-content">
+      <h1>Framework Capabilities</h1>
+      <p class="subtitle">Testing high-fidelity synchronization and native-bridge hooks.</p>
 
-      <div class="icon-grid">
-        <div class="cap-item">
-          <b>🖥️ View</b>
-          <span>True Fullscreen</span>
+      <div class="section-label">Core Systems</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <b>Visual Sync</b>
+          <span>Dynamic fonts, colors, and density.</span>
         </div>
-        <div class="cap-item">
-          <b>🔄 Orientation</b>
-          <span>Dynamic Rotation</span>
+        <div class="feature-card">
+          <b>Safe Areas</b>
+          <span>Notch-aware content padding.</span>
         </div>
-        <div class="cap-item">
-          <b>⌨️ Input</b>
-          <span>Seamless Keyboard</span>
+        <div class="feature-card">
+          <b>Safe-Back</b>
+          <span>Intercepted history navigation.</span>
         </div>
-        <div class="cap-item">
-          <b>🖱️ Precision</b>
-          <span>Touchpad Overlay</span>
+        <div class="feature-card">
+          <b>Native UI</b>
+          <span>Custom intercepted browser dialogs.</span>
         </div>
       </div>
 
-      <button class="nav-btn" onclick="openNestedContent()">Try System Back Button</button>
+      <div class="section-label">Virtual Tab Demo</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(1)">Main</button>
+        <button class="tab-btn" onclick="switchTab(2)">Tab 2</button>
+        <button class="tab-btn" onclick="switchTab(3)">Tab 3</button>
+      </div>
+
+      <div id="tab-view-1">
+        <p class="subtitle">Currently on <b>Main Tab</b>. Try switching tabs and using the system back button!</p>
+        <div class="btn-group">
+          <button class="nav-btn secondary" onclick="openNestedContent()">Navigate to Sub-Page (History)</button>
+        </div>
+      </div>
+
+      <div id="tab-view-2" style="display:none">
+        <p class="subtitle">Welcome to <b>Tab 2</b>. This is a "virtual" view. Back navigation will take you to Tab 1.</p>
+      </div>
+
+      <div id="tab-view-3" style="display:none">
+        <p class="subtitle">Welcome to <b>Tab 3</b>. Back navigation will take you to Tab 2.</p>
+      </div>
+
+      <div class="section-label">Dialog Interception</div>
+      <div class="btn-group">
+        <button class="nav-btn secondary" onclick="alert('This is a theme-aware alert!')">Trigger Alert</button>
+        <button class="nav-btn secondary" onclick="testConfirm()">Trigger Confirm</button>
+        <button class="nav-btn secondary" onclick="testPrompt()">Trigger Prompt</button>
+      </div>
+
+      <div class="section-label">Hook Testing</div>
+      <div class="btn-group">
+        <button id="blockBackBtn" class="nav-btn ghost" onclick="toggleBackBlocker()">Block Back Button: OFF</button>
+      </div>
     </div>
 
-    <div class="status-container" id="nested-content">
-      <h1>Nested Page</h1>
-      <p class="subtitle">
-        Press your device's <b>Back Button</b> to return!
-      </p>
-      <div style="padding: 20px; font-size: 3rem;">🔙</div>
-      <button class="nav-btn secondary" onclick="goBack()">Or click here to go back</button>
-    </div>
-
-    <div class="hint-card" id="back-hint">
-        <div class="pulsing-dot" style="background: #4CAF50"></div>
-        System Back Navigation is Active
-    </div>
-
-    <div class="hint-card" id="main-hint">
-      <div class="pulsing-dot"></div>
-      Explore controls via the movable bubble
+    <div class="container" id="nested-content">
+      <h1>Nested View</h1>
+      <p class="subtitle">This page exists in the browser history stack.</p>
+      <div style="padding: 40px 0; font-size: 4rem; opacity: 0.3;">📄</div>
+      <div class="btn-group">
+        <button class="nav-btn secondary" onclick="goBack()">Go Back to Main</button>
+      </div>
     </div>
 
     <script>
+      let isBackBlocked = false;
+      let currentTab = 1;
+      const tabStack = [1];
+
+      function switchTab(tabId) {
+        if (tabId === currentTab) return;
+        
+        // Push to our virtual stack
+        tabStack.push(tabId);
+        currentTab = tabId;
+
+        // Update UI
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+          btn.classList.toggle('active', idx + 1 === tabId);
+        });
+
+        document.getElementById('tab-view-1').style.display = tabId === 1 ? 'block' : 'none';
+        document.getElementById('tab-view-2').style.display = tabId === 2 ? 'block' : 'none';
+        document.getElementById('tab-view-3').style.display = tabId === 3 ? 'block' : 'none';
+      }
+
+      // IMPLEMENTATION OF VIRTUAL TAB HANDLING
+      window.pclink.onBackRequest = () => {
+        // 1. Check if the native back button is blocked by the toggle
+        if (isBackBlocked) {
+          alert('Back navigation is currently blocked by the extension!');
+          return false;
+        }
+
+        // 2. Handle Virtual Tab Stack
+        if (tabStack.length > 1) {
+          // Pop current tab and go back to previous
+          tabStack.pop();
+          const prevTab = tabStack[tabStack.length - 1];
+          
+          // We must call switchTab without pushing to the stack again
+          const oldTab = currentTab;
+          currentTab = prevTab; 
+          
+          // Manually trigger the UI update since switchTab pushes to stack
+          document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx + 1 === prevTab);
+          });
+          document.getElementById('tab-view-1').style.display = prevTab === 1 ? 'block' : 'none';
+          document.getElementById('tab-view-2').style.display = prevTab === 2 ? 'block' : 'none';
+          document.getElementById('tab-view-3').style.display = prevTab === 3 ? 'block' : 'none';
+          
+          console.log(`Virtual Back: ${oldTab} -> ${prevTab}`);
+          return false; // Intercept the back request (don't exit app/navigate history)
+        }
+
+        // 3. Otherwise, allow standard browser history navigation or exit
+        return true;
+      };
+
       function openNestedContent() {
-        // Demonstrate History API support
         history.pushState({page: 'nested'}, "Nested Content", "?page=nested");
         updateUI();
       }
@@ -214,17 +294,34 @@
         history.back();
       }
 
+      function toggleBackBlocker() {
+        isBackBlocked = !isBackBlocked;
+        const btn = document.getElementById('blockBackBtn');
+        btn.textContent = `Block Back Button: ${isBackBlocked ? 'ON' : 'OFF'}`;
+        btn.className = isBackBlocked ? 'nav-btn' : 'nav-btn ghost';
+        
+        // We update the hook logic inside onBackRequest, but since onBackRequest
+        // is a property on window.pclink, we can just leave the function definition
+        // and it will read the updated isBackBlocked variable.
+      }
+
       function updateUI() {
         const isNested = window.location.search.includes('page=nested');
         document.getElementById('main-content').style.display = isNested ? 'none' : 'block';
         document.getElementById('nested-content').style.display = isNested ? 'block' : 'none';
-        document.getElementById('back-hint').style.display = isNested ? 'flex' : 'none';
       }
 
       window.addEventListener('popstate', updateUI);
-      window.addEventListener("theme-changed", (e) => {
-        console.log("Elite Theme Sync active", e.detail);
-      });
+
+      async function testConfirm() {
+          const confirmed = await window.confirm('Would you like to test the theme synchronization?');
+          alert(confirmed ? 'You accepted!' : 'You cancelled!');
+      }
+
+      async function testPrompt() {
+          const name = await window.prompt('What is your name?', 'PCLink User');
+          alert(name ? `Hello, ${name}!` : 'You cancelled the prompt!');
+      }
     </script>
   </body>
 </html>
