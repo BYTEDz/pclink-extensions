@@ -70,7 +70,7 @@
   {
     "id": "capabilities-demo",
     "name": "Capabilities Demo",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay.",
     "author": "BYTEDz",
     "category": "Developer",
@@ -83,11 +83,11 @@
     "min_server_version": "1.0.0",
     "theme_aware_icon": false,
     "icon_url": null,
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.1.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.2.0.zip",
     "permissions": [],
     "added_on": "2026-03-04T15:03:33+01:00",
-    "updated_on": "2026-03-09T15:54:24+01:00",
-    "file_size": 9457
+    "updated_on": "2026-06-20T00:09:57+01:00",
+    "file_size": 13653
   },
   {
     "id": "speed-test",
