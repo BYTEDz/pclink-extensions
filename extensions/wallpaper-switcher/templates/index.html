@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .header { text-align: center; padding: 16px 0; }
+        .header i { color: var(--primary); width: 48px; height: 48px; }
+        .header h1 { margin: 10px 0 4px; font-size: 1.6rem; font-weight: 900; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+        .tab-bar {
+            display: flex; background: var(--surface); border-radius: var(--radius);
+            padding: 4px; border: 1px solid var(--card-border);
+        }
+        .tab {
+            flex: 1; padding: 10px; text-align: center; border-radius: calc(var(--radius) - 4px);
+            font-weight: 600; font-size: 0.85rem; cursor: pointer; color: var(--text-muted);
+            transition: 0.15s; border: none; background: none;
+        }
+        .tab.active { background: var(--primary); color: var(--on-primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .wallpaper-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+        .wp-card {
+            border-radius: var(--radius); overflow: hidden; cursor: pointer;
+            border: 2px solid var(--card-border); transition: 0.15s; position: relative;
+        }
+        .wp-card:active { border-color: var(--primary); transform: scale(0.97); }
+        .wp-card.active { border-color: var(--primary); }
+        .wp-preview {
+            width: 100%; aspect-ratio: 16/9;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .wp-name {
+            padding: 8px 10px; font-size: 0.8rem; font-weight: 600;
+            background: var(--surface); text-align: center;
+        }
+        .upload-area {
+            border: 2px dashed var(--card-border); border-radius: var(--radius);
+            padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.15s;
+        }
+        .upload-area:active { border-color: var(--primary); background: var(--primary-faint); }
+        .upload-area i { color: var(--text-muted); width: 48px; height: 48px; margin-bottom: 8px; }
+        .upload-area p { color: var(--text-muted); margin: 0; }
+        .url-row { display: flex; gap: 8px; }
+        .url-row input {
+            flex: 1; padding: 14px 16px; border-radius: var(--radius);
+            border: 1px solid var(--card-border); background: var(--surface);
+            color: var(--text); font-size: 0.9rem; outline: none;
+        }
+        .url-row input:focus { border-color: var(--primary); }
+        .url-row button {
+            padding: 14px 20px; border-radius: var(--radius); border: none;
+            background: var(--primary); color: var(--on-primary); font-weight: 700; cursor: pointer;
+        }
+        .url-row button:active { opacity: 0.7; }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg); padding: 10px 20px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; z-index: 100; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i data-lucide="wallpaper"></i>
+            <h1>Wallpaper Switcher</h1>
+            <p>Change your PC desktop background</p>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="switchTab('builtin', this)">Built-in</button>
+            <button class="tab" onclick="switchTab('upload', this)">Upload</button>
+            <button class="tab" onclick="switchTab('url', this)">From URL</button>
+        </div>
+
+        <div class="tab-content active" id="tab-builtin">
+            <div class="wallpaper-grid" id="builtinGrid"></div>
+        </div>
+
+        <div class="tab-content" id="tab-upload">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <i data-lucide="upload-cloud"></i>
+                <p>Tap to upload an image</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" onchange="uploadImage(event)">
+            <div id="uploadPreview" style="display:none;margin-top:8px">
+                <img id="previewImg" style="width:100%;border-radius:var(--radius);max-height:300px;object-fit:cover">
+                <button class="url-row" style="width:100%;margin-top:8px" onclick="setUploadedWallpaper()">
+                    <i data-lucide="check" size="16"></i> Set as Wallpaper
+                </button>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-url">
+            <div class="url-row">
+                <input type="text" id="urlInput" placeholder="https://example.com/wallpaper.jpg">
+                <button onclick="setUrlWallpaper()">
+                    <i data-lucide="link" size="16"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let uploadedB64 = '';
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        async function loadBuiltins() {
+            try {
+                const res = await fetch(`${apiPath}/builtins`);
+                const data = await res.json();
+                const grid = document.getElementById('builtinGrid');
+                grid.innerHTML = data.wallpapers.map((wp, i) =>
+                    `<div class="wp-card" onclick="setBuiltin(${i}, this)">
+                        <div class="wp-preview" style="background:${wp.style}"></div>
+                        <div class="wp-name">${wp.name}</div>
+                    </div>`
+                ).join('');
+            } catch (e) {
+                showToast('Failed to load builtins');
+            }
+        }
+
+        async function setBuiltin(index, el) {
+            try {
+                document.querySelectorAll('.wp-card').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+                const res = await fetch(`${apiPath}/set-builtin`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({index})
+                });
+                const data = await res.json();
+                if (data.success) showToast('Set to: ' + data.name);
+                else showToast('Failed: ' + (data.error || 'unknown'));
+            } catch (e) {
+                showToast('Failed to set wallpaper');
+            }
+        }
+
+        function uploadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const b64 = e.target.result.split(',')[1];
+                uploadedB64 = b64;
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('uploadPreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function setUploadedWallpaper() {
+            if (!uploadedB64) return;
+            try {
+                const res = await fetch(`${apiPath}/set-image`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({image: uploadedB64})
+                });
+                const data = await res.json();
+                if (data.success) showToast('Wallpaper set!');
+                else showToast('Failed');
+            } catch (e) {
+                showToast('Failed to set');
+            }
+        }
+
+        async function setUrlWallpaper() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) return;
+            try {
+                const res = await fetch(`${apiPath}/set-url`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url})
+                });
+                const data = await res.json();
+                if (data.success) showToast('Downloaded and set!');
+                else showToast('Failed');
+            } catch (e) {
+                showToast('Failed to fetch URL');
+            }
+        }
+
+        lucide.createIcons();
+        loadBuiltins();
+    </script>
+</body>
+</html>

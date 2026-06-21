@@ -1,0 +1,17 @@
+name: remote-exec
+display_name: Remote Exec
+version: 1.0.0
+author: "Community"
+description: "Run shell commands and scripts on your PC from your phone. Save presets, view live output, and manage your PC remotely."
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Developer
+supported_platforms:
+  - windows
+  - linux
+  - darwin
+permissions:
+  - system

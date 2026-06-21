@@ -463,5 +463,127 @@
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
     "file_size": 16555
+  },
+  {
+    "id": "package-manager",
+    "name": "Package Hub",
+    "version": "1.0.0",
+    "description": "Cross-platform package manager hub. Update all your packages from one place — supports winget, choco, scoop, apt, pacman, dnf, snap, flatpak, brew, mas, and more.",
+    "author": "Community",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/package-manager/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/package-manager-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-06-21T00:00:00+01:00",
+    "updated_on": "2026-06-21T00:00:00+01:00",
+    "file_size": 100836
+  },
+  {
+    "id": "remote-exec",
+    "name": "Remote Exec",
+    "version": "1.0.0",
+    "description": "Run shell commands and scripts on your PC from your phone. Save presets, view live output, and manage your PC remotely.",
+    "author": "Community",
+    "category": "Developer",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/remote-exec/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/remote-exec-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-06-21T00:00:00+01:00",
+    "updated_on": "2026-06-21T00:00:00+01:00",
+    "file_size": 12644
+  },
+  {
+    "id": "screen-capture",
+    "name": "Screen Capture",
+    "version": "1.0.0",
+    "description": "Capture your PC screen from your phone — full screen or region select. View, download, or save screenshots remotely.",
+    "author": "Community",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/screen-capture/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/screen-capture-1.0.0.zip",
+    "permissions": [
+      "filesystem.write"
+    ],
+    "added_on": "2026-06-21T00:00:00+01:00",
+    "updated_on": "2026-06-21T00:00:00+01:00",
+    "file_size": 11649
+  },
+  {
+    "id": "text-beamer",
+    "name": "Text Beamer",
+    "version": "1.0.0",
+    "description": "Beam text from your phone and have it typed on your PC keyboard — great for passwords, URLs, code snippets, and chat messages.",
+    "author": "Community",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/text-beamer/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/text-beamer-1.0.0.zip",
+    "permissions": [
+      "input.inject"
+    ],
+    "added_on": "2026-06-21T00:00:00+01:00",
+    "updated_on": "2026-06-21T00:00:00+01:00",
+    "file_size": 10650
+  },
+  {
+    "id": "wallpaper-switcher",
+    "name": "Wallpaper Switcher",
+    "version": "1.0.0",
+    "description": "Change your PC desktop wallpaper from your phone. Browse built-in collections, upload custom images, or fetch wallpapers from URLs.",
+    "author": "Community",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wallpaper-switcher/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wallpaper-switcher-1.0.0.zip",
+    "permissions": [
+      "system",
+      "filesystem.read",
+      "filesystem.write"
+    ],
+    "added_on": "2026-06-21T00:00:00+01:00",
+    "updated_on": "2026-06-21T00:00:00+01:00",
+    "file_size": 16466
   }
 ]

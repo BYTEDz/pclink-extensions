@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .header { text-align: center; padding: 16px 0; }
+        .header i { color: var(--primary); width: 48px; height: 48px; }
+        .header h1 { margin: 10px 0 4px; font-size: 1.6rem; font-weight: 900; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+        .env-bar {
+            display: flex; gap: 8px; padding: 10px 14px;
+            background: var(--surface); border: 1px solid var(--card-border);
+            border-radius: var(--radius); font-size: 0.75rem; color: var(--text-muted);
+            align-items: center; flex-wrap: wrap;
+        }
+        .env-bar i { width: 14px; height: 14px; }
+        .input-row { display: flex; gap: 8px; }
+        .input-row input {
+            flex: 1; padding: 14px 16px; border-radius: var(--radius);
+            border: 1px solid var(--card-border); background: var(--surface);
+            color: var(--text); font-family: monospace; font-size: 0.9rem; outline: none;
+        }
+        .input-row input:focus { border-color: var(--primary); }
+        .input-row button {
+            padding: 14px 20px; border-radius: var(--radius); border: none;
+            background: var(--primary); color: var(--on-primary); font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .input-row button:active { opacity: 0.7; }
+        .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .preset-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+        .preset-btn {
+            padding: 8px 14px; border-radius: 100px; border: 1px solid var(--card-border);
+            background: var(--surface); color: var(--text-muted); font-size: 0.75rem;
+            font-weight: 600; cursor: pointer; font-family: monospace;
+        }
+        .preset-btn:active { background: var(--primary-faint); color: var(--primary); border-color: var(--primary); }
+        .output-box {
+            background: #1a1a1a; border-radius: var(--radius); padding: 16px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.8rem;
+            line-height: 1.5; min-height: 120px; max-height: 400px;
+            overflow: auto; white-space: pre-wrap; word-break: break-all;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .output-box .stdout { color: #a8d8a8; }
+        .output-box .stderr { color: #f8a8a8; }
+        .output-box .error { color: #f8a8a8; }
+        .output-box .info { color: #888; }
+        .status-bar {
+            display: flex; gap: 12px; font-size: 0.75rem; color: var(--text-muted);
+            align-items: center; flex-wrap: wrap;
+        }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        }
+        .status-dot.success { background: #4caf50; }
+        .status-dot.error { background: #f44336; }
+        .status-dot.running { background: #ff9800; animation: pulse 0.8s infinite; }
+        @keyframes pulse { 50% { opacity: 0.4; } }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg); padding: 10px 20px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i data-lucide="terminal"></i>
+            <h1>Remote Exec</h1>
+            <p>Run commands on your PC</p>
+        </div>
+
+        <div class="env-bar">
+            <i data-lucide="monitor"></i>
+            <span id="envLabel">Loading...</span>
+        </div>
+
+        <div class="preset-grid">
+            <div class="preset-btn" onclick="setCommand('ipconfig')">ipconfig</div>
+            <div class="preset-btn" onclick="setCommand('ping 8.8.8.8')">ping</div>
+            <div class="preset-btn" onclick="setCommand('netstat -an')">netstat</div>
+            <div class="preset-btn" onclick="setCommand('dir')">dir</div>
+            <div class="preset-btn" onclick="setCommand('whoami')">whoami</div>
+            <div class="preset-btn" onclick="setCommand('systeminfo')">systeminfo</div>
+            <div class="preset-btn" onclick="setCommand('tasklist')">tasklist</div>
+        </div>
+
+        <div class="input-row">
+            <input type="text" id="cmdInput" placeholder="Enter command..." spellcheck="false"
+                   onkeydown="if(event.key==='Enter') runCommand()">
+            <button id="runBtn" onclick="runCommand()">
+                <i data-lucide="play" size="16"></i> Run
+            </button>
+        </div>
+
+        <div class="output-box" id="outputBox">
+            <span class="info">Ready. Enter a command above.</span>
+        </div>
+
+        <div class="status-bar">
+            <span><span class="status-dot" id="statusDot"></span> <span id="statusText">Idle</span></span>
+            <span id="returnCodeLabel"></span>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const presets = JSON.parse(localStorage.getItem('re_presets') || '[]');
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        async function loadEnv() {
+            try {
+                const res = await fetch(`${apiPath}/env`);
+                const data = await res.json();
+                document.getElementById('envLabel').textContent = `${data.os} | ${data.cwd}`;
+            } catch (e) {
+                document.getElementById('envLabel').textContent = 'Could not load environment info';
+            }
+        }
+
+        function setCommand(cmd) {
+            document.getElementById('cmdInput').value = cmd;
+            document.getElementById('cmdInput').focus();
+        }
+
+        async function runCommand() {
+            const cmd = document.getElementById('cmdInput').value.trim();
+            if (!cmd) return;
+
+            const btn = document.getElementById('runBtn');
+            const output = document.getElementById('outputBox');
+            const dot = document.getElementById('statusDot');
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px"></div>';
+            dot.className = 'status-dot running';
+            document.getElementById('statusText').textContent = 'Running...';
+            document.getElementById('returnCodeLabel').textContent = '';
+
+            try {
+                const res = await fetch(`${apiPath}/exec`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: cmd, shell: true, timeout: 30})
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    output.innerHTML = `<span class="error">${escapeHtml(data.error)}</span>`;
+                    dot.className = 'status-dot error';
+                    document.getElementById('statusText').textContent = 'Error';
+                    return;
+                }
+
+                let html = '';
+                if (data.stdout) html += `<span class="stdout">${escapeHtml(data.stdout)}</span>`;
+                if (data.stderr) html += `<span class="stderr">${escapeHtml(data.stderr)}</span>`;
+                if (!data.stdout && !data.stderr) html += '<span class="info">(no output)</span>';
+                output.innerHTML = html;
+                output.scrollTop = output.scrollHeight;
+
+                dot.className = 'status-dot ' + (data.success ? 'success' : 'error');
+                document.getElementById('statusText').textContent = data.success ? 'Success' : 'Failed';
+                document.getElementById('returnCodeLabel').textContent = `Exit: ${data.returncode}`;
+
+                if (data.stderr) showToast('Command completed with stderr');
+            } catch (e) {
+                output.innerHTML = `<span class="error">${escapeHtml(e.message)}</span>`;
+                dot.className = 'status-dot error';
+                document.getElementById('statusText').textContent = 'Connection error';
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="play" size="16"></i> Run';
+            lucide.createIcons();
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        loadEnv();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
