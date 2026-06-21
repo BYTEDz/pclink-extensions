@@ -1,0 +1,19 @@
+name: wallpaper-switcher
+display_name: Wallpaper Switcher
+version: 1.0.0
+author: "Community"
+description: "Change your PC desktop wallpaper from your phone. Browse built-in collections, upload custom images, or fetch wallpapers from URLs."
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Utility
+supported_platforms:
+  - windows
+  - linux
+  - darwin
+permissions:
+  - system
+  - filesystem.read
+  - filesystem.write

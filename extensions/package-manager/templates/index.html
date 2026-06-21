@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 12px; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+        .header { text-align: center; padding: 12px 0 4px; }
+        .header i { color: var(--primary); width: 40px; height: 40px; }
+        .header h1 { margin: 8px 0 2px; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.8rem; }
+
+        .tab-strip { display: flex; background: var(--surface); border-radius: var(--radius); padding: 3px; border: 1px solid var(--card-border); }
+        .tab-strip button { flex: 1; padding: 9px; border: none; background: none; border-radius: calc(var(--radius) - 4px); font-weight: 700; font-size: 0.82rem; cursor: pointer; color: var(--text-muted); }
+        .tab-strip button.active { background: var(--primary); color: var(--on-primary); }
+
+        .page { display: none; flex-direction: column; gap: 10px; }
+        .page.active { display: flex; }
+
+        .manager-card { background: var(--surface); border: 1px solid var(--card-border); border-radius: var(--radius); overflow: hidden; }
+        .manager-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+        .manager-head:active { opacity: 0.7; }
+        .manager-icon {
+            width: 36px; height: 36px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .manager-icon.detected { background: var(--primary-faint); color: var(--primary); }
+        .manager-icon.missing { background: rgba(255,68,68,0.1); color: #f44; }
+        .manager-info { flex: 1; min-width: 0; }
+        .manager-info h3 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+        .badge-row { display: flex; gap: 5px; margin-top: 3px; flex-wrap: wrap; }
+        .badge { font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.installed { background: #4caf50; color: #fff; }
+        .badge.missing { background: #f44336; color: #fff; }
+        .badge.platform { background: var(--primary-faint); color: var(--text-muted); }
+        .badge.searchable { background: var(--primary-faint); color: var(--primary); }
+        .manager-arrow { color: var(--text-muted); transition: transform 0.2s; }
+        .manager-arrow.open { transform: rotate(180deg); }
+
+        .manager-body { display: none; border-top: 1px solid var(--card-border); padding: 0 16px 12px; }
+        .manager-body.open { display: block; }
+
+        .pm-actions { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+        .pm-btn {
+            padding: 7px 12px; border-radius: calc(var(--radius) * 0.6); border: none;
+            font-weight: 600; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 4px;
+        }
+        .pm-btn:active { opacity: 0.7; }
+        .pm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pm-btn.primary { background: var(--primary); color: var(--on-primary); }
+        .pm-btn.secondary { background: var(--primary-faint); color: var(--primary); border: 1px solid var(--primary-muted); }
+        .pm-btn.ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--card-border); }
+        .pm-btn.success { background: #4caf50; color: #fff; }
+
+        .search-section { margin: 6px 0; }
+        .search-row { display: flex; gap: 6px; }
+        .search-row input {
+            flex: 1; padding: 9px 12px; border-radius: calc(var(--radius) * 0.6);
+            border: 1px solid var(--card-border); background: var(--bg);
+            color: var(--text); font-size: 0.82rem; outline: none;
+        }
+        .search-row input:focus { border-color: var(--primary); }
+
+        .section-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin: 8px 0 4px; }
+
+        .pkg-list { display: flex; flex-direction: column; gap: 3px; max-height: 260px; overflow-y: auto; }
+        .pkg-item {
+            display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+            border-radius: calc(var(--radius) * 0.5); background: var(--bg); border: 1px solid var(--card-border);
+        }
+        .pkg-item label { flex: 1; min-width: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .pkg-item input[type="checkbox"] { accent-color: var(--primary); width: 15px; height: 15px; flex-shrink: 0; }
+        .pkg-name { font-weight: 600; font-size: 0.8rem; }
+        .pkg-versions { font-size: 0.68rem; color: var(--text-muted); }
+        .pkg-versions span { color: #4caf50; font-weight: 600; }
+        .pkg-btn {
+            padding: 5px 10px; border-radius: 100px; border: none; font-weight: 600;
+            font-size: 0.68rem; cursor: pointer; flex-shrink: 0;
+        }
+        .pkg-btn:active { opacity: 0.6; }
+        .pkg-btn:disabled { opacity: 0.3; }
+        .pkg-btn.upgrade { background: var(--primary-faint); color: var(--primary); }
+        .pkg-btn.install { background: #4caf50; color: #fff; }
+
+        .empty-state { text-align: center; padding: 16px; color: var(--text-muted); font-size: 0.78rem; }
+
+        .loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; color: var(--text-muted); font-size: 0.8rem; }
+        .spinner { width: 16px; height: 16px; border: 2px solid var(--card-border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .output-box {
+            margin-top: 6px; padding: 8px; background: #1a1a1a; border-radius: calc(var(--radius) * 0.5);
+            font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.65rem; line-height: 1.4;
+            max-height: 160px; overflow: auto; white-space: pre-wrap; word-break: break-all; color: #ccc; display: none;
+        }
+        .output-box.show { display: block; }
+
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg); padding: 10px 20px;
+            border-radius: 100px; font-size: 0.8rem; font-weight: 600; z-index: 100;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        .install-hint { font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; word-break: break-all; }
+        .install-hint code { background: var(--primary-faint); padding: 2px 6px; border-radius: 4px; font-size: 0.62rem; }
+        .select-all-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 0.78rem; color: var(--text-muted); }
+        .select-all-row input { accent-color: var(--primary); }
+        .count-badge { font-size: 0.62rem; color: var(--text-muted); padding: 2px 8px; background: var(--bg); border-radius: 100px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i data-lucide="package"></i>
+            <h1>Package Hub</h1>
+            <p id="platformLabel">Detecting platform...</p>
+        </div>
+
+        <div class="tab-strip">
+            <button class="active" onclick="switchPage('managers',this)">Managers</button>
+            <button onclick="switchPage('install',this)">Install</button>
+            <button onclick="switchPage('about',this)">About</button>
+        </div>
+
+        <!-- Page: Managers -->
+        <div class="page active" id="page-managers">
+            <div class="manager-grid" id="managerGrid">
+                <div class="loading"><div class="spinner"></div> Scanning package managers...</div>
+            </div>
+        </div>
+
+        <!-- Page: Quick Install -->
+        <div class="page" id="page-install">
+            <div class="manager-card">
+                <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--card-border)">Quick Install</div>
+                <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+                    <select id="pmSelect" style="padding:10px 12px;border-radius:calc(var(--radius)*0.6);border:1px solid var(--card-border);background:var(--surface);color:var(--text);font-size:0.85rem"></select>
+                    <div class="search-row">
+                        <input type="text" id="quickPkg" placeholder="Package name or ID..." onkeydown="if(event.key==='Enter') installQuick()">
+                        <button class="pm-btn success" onclick="installQuick()" style="padding:9px 16px">
+                            <i data-lucide="download" size="14"></i> Install
+                        </button>
+                    </div>
+                    <div class="output-box" id="quickOutput"></div>
+                </div>
+            </div>
+
+            <div class="manager-card">
+                <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--card-border)">
+                    Search Packages
+                    <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted);margin-left:6px">Pick a manager above</span>
+                </div>
+                <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+                    <div class="search-row">
+                        <input type="text" id="searchQuery" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
+                        <button class="pm-btn primary" onclick="doSearch()">
+                            <i data-lucide="search" size="14"></i>
+                        </button>
+                    </div>
+                    <div class="pkg-list" id="searchResults">
+                        <div class="empty-state">Select a manager and search for packages</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: About -->
+        <div class="page" id="page-about">
+            <div class="manager-card" style="padding:16px;display:flex;flex-direction:column;gap:8px">
+                <h3 style="margin:0">Package Hub v1.0</h3>
+                <p style="margin:0;font-size:0.82rem;color:var(--text-muted)">
+                    Cross-platform package manager hub supporting winget, choco, scoop,
+                    apt, pacman, dnf, snap, flatpak, brew, mas, and macports.
+                </p>
+                <div style="font-size:0.78rem;color:var(--text-muted)" id="aboutPlatform"></div>
+                <div style="font-size:0.78rem;color:var(--text-muted)" id="aboutPms"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let managers = [];
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        function escapeHtml(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        // -----------------------------------------------------------------------
+        // Navigation
+        // -----------------------------------------------------------------------
+        function switchPage(name, btn) {
+            document.querySelectorAll('.tab-strip button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('page-' + name).classList.add('active');
+            if (name === 'install') populatePmSelect();
+        }
+
+        // -----------------------------------------------------------------------
+        // Init
+        // -----------------------------------------------------------------------
+        async function init() {
+            try {
+                const res = await fetch(`${apiPath}/managers`);
+                const data = await res.json();
+                managers = data.managers;
+                document.getElementById('platformLabel').textContent = `${data.platform} · ${data.arch}`;
+                document.getElementById('aboutPlatform').textContent = `Platform: ${data.platform} ${data.arch}`;
+                document.getElementById('aboutPms').textContent = `Detected: ${data.managers.filter(m=>m.detected).length}/${data.managers.length} managers`;
+                renderManagers(data.managers);
+                populatePmSelect();
+            } catch (e) {
+                document.getElementById('managerGrid').innerHTML = '<div class="empty-state">Failed to load package managers</div>';
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Render manager cards
+        // -----------------------------------------------------------------------
+        function renderManagers(mgs) {
+            const grid = document.getElementById('managerGrid');
+            grid.innerHTML = mgs.map(pm => {
+                const cls = pm.detected ? 'detected' : 'missing';
+                const letter = pm.display.charAt(0).toUpperCase();
+                const badges = `<span class="badge ${pm.detected ? 'installed' : 'missing'}">${pm.detected ? 'Installed' : 'Not Found'}</span>
+                                <span class="badge platform">${pm.id}</span>
+                                ${pm.can_search ? '<span class="badge searchable">search</span>' : ''}`;
+                const body = pm.detected ? `
+                    <div class="pm-actions">
+                        <button class="pm-btn primary" onclick="refreshOutdated('${pm.id}')"><i data-lucide="refresh-cw" size="13"></i> Check</button>
+                        <button class="pm-btn secondary" onclick="upgradeSelected('${pm.id}')" id="upgradeSel-${pm.id}" disabled><i data-lucide="check-square" size="13"></i> Upgrade Selected</button>
+                        <button class="pm-btn secondary" onclick="upgradeAll('${pm.id}')"><i data-lucide="upload" size="13"></i> Upgrade All</button>
+                        ${pm.can_update_self ? `<button class="pm-btn ghost" onclick="updateSelf('${pm.id}')"><i data-lucide="tool" size="13"></i> Self</button>` : ''}
+                    </div>
+                    <div class="search-section">
+                        <div class="search-row">
+                            <input type="text" id="search-${pm.id}" placeholder="Search packages..." onkeydown="if(event.key==='Enter') searchPkg('${pm.id}')">
+                            <button class="pm-btn primary" onclick="searchPkg('${pm.id}')"><i data-lucide="search" size="13"></i></button>
+                        </div>
+                        <div class="pkg-list" id="searchResults-${pm.id}" style="display:none;margin-top:4px;max-height:180px"></div>
+                        <div style="display:flex;gap:6px;margin-top:4px">
+                            <input type="text" id="install-${pm.id}" placeholder="Install package..." style="flex:1;padding:7px 10px;border-radius:calc(var(--radius)*0.6);border:1px solid var(--card-border);background:var(--bg);color:var(--text);font-size:0.75rem;outline:none" onkeydown="if(event.key==='Enter') installPkg('${pm.id}')">
+                            <button class="pm-btn success" onclick="installPkg('${pm.id}')" style="font-size:0.68rem"><i data-lucide="download" size="12"></i></button>
+                        </div>
+                    </div>
+                    <div class="section-label">Outdated Packages</div>
+                    <div class="pkg-list" id="pkgs-${pm.id}"><div class="empty-state">Tap "Check" to list outdated packages</div></div>
+                    <div class="output-box" id="output-${pm.id}"></div>` : `
+                    <p style="color:var(--text-muted);font-size:0.78rem;padding:8px 0"><i data-lucide="info" size="14"></i> Not installed on this system.</p>
+                    <div class="install-hint"><code>${escapeHtml(pm.install_hint)}</code></div>
+                    ${pm.id === 'winget' ? `<button class="pm-btn primary" onclick="repairWinget()" style="margin-top:8px;width:100%;justify-content:center"><i data-lucide="wrench" size="13"></i> Repair Winget (fresh Windows)</button>` : ''}`;
+                return `<div class="manager-card" data-pm-id="${pm.id}">
+                    <div class="manager-head" onclick="toggleManager('${pm.id}')">
+                        <div class="manager-icon ${cls}">${letter}</div>
+                        <div class="manager-info"><h3>${escapeHtml(pm.display)}</h3><div class="badge-row">${badges}</div></div>
+                        <i data-lucide="chevron-down" class="manager-arrow" size="20"></i>
+                    </div>
+                    <div class="manager-body" id="body-${pm.id}">${body}</div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // -----------------------------------------------------------------------
+        // Toggle manager
+        // -----------------------------------------------------------------------
+        function toggleManager(id) {
+            const body = document.getElementById('body-' + id);
+            const arrow = document.querySelector(`[data-pm-id="${id}"] .manager-arrow`);
+            const isOpen = body.classList.toggle('open');
+            arrow.classList.toggle('open', isOpen);
+            if (isOpen) refreshOutdated(id);
+        }
+
+        // -----------------------------------------------------------------------
+        // Refresh outdated
+        // -----------------------------------------------------------------------
+        async function refreshOutdated(id) {
+            const list = document.getElementById('pkgs-' + id);
+            const output = document.getElementById('output-' + id);
+            output.classList.remove('show');
+            list.innerHTML = '<div class="loading"><div class="spinner"></div> Checking...</div>';
+            try {
+                const res = await fetch(`${apiPath}/outdated/${id}`);
+                const data = await res.json();
+                if (!data.success) { list.innerHTML = `<div class="empty-state">${escapeHtml(data.error)}</div>`; return; }
+                const pkgs = data.packages || [];
+                if (pkgs.length === 0) { list.innerHTML = '<div class="empty-state"><i data-lucide="check-circle" size="18"></i><br>All packages up to date!</div>'; lucide.createIcons(); return; }
+                let html = `<div class="select-all-row"><input type="checkbox" id="selectAll-${id}" onchange="toggleSelectAll('${id}')"><label for="selectAll-${id}">Select All</label><span class="count-badge">${pkgs.length} outdated</span></div>`;
+                pkgs.forEach(pkg => {
+                    html += `<div class="pkg-item"><label><input type="checkbox" class="pkg-cb-${id}" data-pkg="${escapeHtml(pkg.id)}" onchange="updateSelectBtn('${id}')"><div><div class="pkg-name">${escapeHtml(pkg.name)}</div><div class="pkg-versions">${escapeHtml(pkg.installed)} → <span>${escapeHtml(pkg.available)}</span></div></div></label><button class="pkg-btn upgrade" onclick="upgradeOne('${id}','${escapeHtml(pkg.id)}')">Upgrade</button></div>`;
+                });
+                list.innerHTML = html; lucide.createIcons(); updateSelectBtn(id);
+            } catch (e) { list.innerHTML = `<div class="empty-state">Error: ${escapeHtml(e.message)}</div>`; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Selection helpers
+        // -----------------------------------------------------------------------
+        function toggleSelectAll(id) {
+            const checked = document.getElementById('selectAll-' + id).checked;
+            document.querySelectorAll('.pkg-cb-' + id).forEach(cb => cb.checked = checked);
+            updateSelectBtn(id);
+        }
+        function updateSelectBtn(id) {
+            const cbs = document.querySelectorAll('.pkg-cb-' + id + ':checked');
+            const btn = document.getElementById('upgradeSel-' + id);
+            if (btn) { btn.disabled = cbs.length === 0; btn.innerHTML = `<i data-lucide="check-square" size="13"></i> Upgrade Selected (${cbs.length})`; }
+            lucide.createIcons();
+        }
+
+        // -----------------------------------------------------------------------
+        // Search within a PM (inline)
+        // -----------------------------------------------------------------------
+        let searchTimeout;
+        async function searchPkg(id) {
+            const q = document.getElementById('search-' + id).value.trim();
+            if (!q) return;
+            const resList = document.getElementById('searchResults-' + id);
+            resList.style.display = 'block';
+            resList.innerHTML = '<div class="loading"><div class="spinner"></div> Searching...</div>';
+            try {
+                const res = await fetch(`${apiPath}/search/${id}/${encodeURIComponent(q)}`);
+                const data = await res.json();
+                if (!data.success || !data.packages.length) { resList.innerHTML = '<div class="empty-state">No results found</div>'; return; }
+                resList.innerHTML = data.packages.slice(0, 20).map(pkg =>
+                    `<div class="pkg-item"><div style="flex:1"><div class="pkg-name">${escapeHtml(pkg.name)}</div><div class="pkg-versions">${escapeHtml(pkg.version || '?')}</div></div><button class="pkg-btn install" onclick="installOne('${id}','${escapeHtml(pkg.id)}')">Install</button></div>`
+                ).join('');
+            } catch (e) { resList.innerHTML = '<div class="empty-state">Search failed</div>'; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Install one from search
+        // -----------------------------------------------------------------------
+        async function installOne(id, pkg) {
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show');
+            output.textContent = 'Installing ' + pkg + '...';
+            try {
+                const res = await fetch(`${apiPath}/install/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({package: pkg})});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Installed' : 'Failed');
+                showToast(data.success ? pkg + ' installed' : 'Failed: ' + pkg);
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Install from quick-install bar
+        // -----------------------------------------------------------------------
+        async function installPkg(id) {
+            const pkg = document.getElementById('install-' + id).value.trim();
+            if (!pkg) return;
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show'); output.textContent = 'Installing ' + pkg + '...';
+            try {
+                const res = await fetch(`${apiPath}/install/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({package: pkg})});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Installed' : 'Failed');
+                showToast(data.success ? pkg + ' installed' : 'Failed: ' + pkg);
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Upgrade one
+        // -----------------------------------------------------------------------
+        async function upgradeOne(id, pkg) {
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show'); output.textContent = 'Upgrading ' + pkg + '...';
+            try {
+                const res = await fetch(`${apiPath}/upgrade/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({package: pkg})});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Done' : 'Failed');
+                showToast(data.success ? pkg + ' upgraded' : 'Failed: ' + pkg);
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+            setTimeout(() => refreshOutdated(id), 1000);
+        }
+
+        // -----------------------------------------------------------------------
+        // Upgrade selected
+        // -----------------------------------------------------------------------
+        async function upgradeSelected(id) {
+            const cbs = document.querySelectorAll('.pkg-cb-' + id + ':checked');
+            const pkgs = Array.from(cbs).map(cb => cb.getAttribute('data-pkg'));
+            if (!pkgs.length) return;
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show'); output.textContent = 'Upgrading ' + pkgs.length + ' package(s)...\n';
+            try {
+                const res = await fetch(`${apiPath}/upgrade-selected/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({packages: pkgs})});
+                const data = await res.json();
+                let log = '';
+                (data.results || []).forEach(r => { log += (r.success ? '[OK] ' : '[FAIL] ') + r.package + '\n'; if (r.stderr) log += '  ' + r.stderr + '\n'; });
+                output.textContent = log || 'Done';
+                showToast(data.results.filter(r=>r.success).length + '/' + pkgs.length + ' upgraded');
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+            setTimeout(() => refreshOutdated(id), 1500);
+        }
+
+        // -----------------------------------------------------------------------
+        // Upgrade all
+        // -----------------------------------------------------------------------
+        async function upgradeAll(id) {
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show'); output.textContent = 'Upgrading all packages... (this may take a while)';
+            try {
+                const res = await fetch(`${apiPath}/upgrade-all/${id}`, {method:'POST'});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'All upgraded' : 'Failed');
+                showToast(data.success ? 'All packages upgraded' : 'Upgrade had errors');
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+            setTimeout(() => refreshOutdated(id), 2500);
+        }
+
+        // -----------------------------------------------------------------------
+        // Update self
+        // -----------------------------------------------------------------------
+        async function updateSelf(id) {
+            const output = document.getElementById('output-' + id);
+            output.classList.add('show'); output.textContent = 'Updating ' + id + '...';
+            try {
+                const res = await fetch(`${apiPath}/update-self/${id}`, {method:'POST'});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Updated' : 'Failed');
+                if (!data.success && data.method) output.textContent += '\nTried: ' + data.method;
+                showToast(data.success ? id + ' updated' : 'Update failed');
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Quick Install tab
+        // -----------------------------------------------------------------------
+        function populatePmSelect() {
+            const sel = document.getElementById('pmSelect');
+            const detected = managers.filter(m => m.detected);
+            sel.innerHTML = detected.map(m => `<option value="${m.id}">${m.display}</option>`).join('');
+        }
+
+        async function installQuick() {
+            const id = document.getElementById('pmSelect').value;
+            const pkg = document.getElementById('quickPkg').value.trim();
+            if (!pkg) return;
+            const output = document.getElementById('quickOutput');
+            output.classList.add('show'); output.textContent = 'Installing ' + pkg + ' via ' + id + '...';
+            try {
+                const res = await fetch(`${apiPath}/install/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({package: pkg})});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Installed successfully' : 'Installation failed');
+                showToast(data.success ? pkg + ' installed' : 'Failed: ' + pkg);
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        async function doSearch() {
+            const id = document.getElementById('pmSelect').value;
+            const q = document.getElementById('searchQuery').value.trim();
+            if (!q) return;
+            const results = document.getElementById('searchResults');
+            results.innerHTML = '<div class="loading"><div class="spinner"></div> Searching...</div>';
+            try {
+                const res = await fetch(`${apiPath}/search/${id}/${encodeURIComponent(q)}`);
+                const data = await res.json();
+                if (!data.success || !data.packages.length) { results.innerHTML = '<div class="empty-state">No results found</div>'; return; }
+                results.innerHTML = data.packages.slice(0, 30).map(pkg =>
+                    `<div class="pkg-item"><div style="flex:1"><div class="pkg-name">${escapeHtml(pkg.name)}</div><div class="pkg-versions">${escapeHtml(pkg.version || '?')}</div></div><button class="pkg-btn install" onclick="installQuickFromSearch('${id}','${escapeHtml(pkg.id)}')">Install</button></div>`
+                ).join('');
+            } catch(e) { results.innerHTML = '<div class="empty-state">Search failed</div>'; }
+        }
+
+        // -----------------------------------------------------------------------
+        // Repair winget on fresh builds
+        // -----------------------------------------------------------------------
+        async function repairWinget() {
+            const output = document.getElementById('output-winget') || document.createElement('div');
+            if (!output.id) { output.id = 'output-winget'; output.className = 'output-box'; document.querySelector('[data-pm-id="winget"] .manager-body').appendChild(output); }
+            output.classList.add('show'); output.textContent = 'Attempting to repair/install winget...\n';
+            try {
+                const res = await fetch(`${apiPath}/repair-winget`, {method:'POST'});
+                const data = await res.json();
+                let txt = '';
+                (data.steps || []).forEach(s => txt += (s.success ? '[OK] ' : '[--] ') + s.step + '\n' + (s.output ? '  ' + s.output + '\n' : ''));
+                txt += '\n' + (data.success ? 'Winget is now available!' : 'Winget still not found. Download manually from: https://github.com/microsoft/winget-cli/releases/latest');
+                output.textContent = txt;
+                if (data.success) setTimeout(() => location.reload(), 1500);
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        async function installQuickFromSearch(id, pkg) {
+            const output = document.getElementById('quickOutput');
+            output.classList.add('show'); output.textContent = 'Installing ' + pkg + '...';
+            try {
+                const res = await fetch(`${apiPath}/install/${id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({package: pkg})});
+                const data = await res.json();
+                output.textContent = data.stdout || data.stderr || (data.success ? 'Installed' : 'Failed');
+                showToast(data.success ? pkg + ' installed' : 'Failed');
+            } catch(e) { output.textContent = 'Error: ' + e.message; }
+        }
+
+        lucide.createIcons();
+        init();
+    </script>
+</body>
+</html>

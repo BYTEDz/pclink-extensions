@@ -1,0 +1,17 @@
+name: package-manager
+display_name: Package Hub
+version: 1.0.0
+author: "Community"
+description: "Cross-platform package manager hub. Update all your packages from one place — supports winget, choco, scoop, apt, pacman, dnf, snap, flatpak, brew, mas, and more. Cherry-pick upgrades, batch update all, install new package managers, and keep them current."
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: System
+supported_platforms:
+  - windows
+  - linux
+  - darwin
+permissions:
+  - system

@@ -1,0 +1,17 @@
+name: screen-capture
+display_name: Screen Capture
+version: 1.0.0
+author: "Community"
+description: "Capture your PC screen from your phone — full screen or region select. View, download, or save screenshots remotely."
+pclink_version: ">=3.2.0"
+entry_point: extension.py
+ui_entry: templates/index.html
+icon: icon.svg
+theme_aware_icon: true
+category: Utility
+supported_platforms:
+  - windows
+  - linux
+  - darwin
+permissions:
+  - filesystem.write
