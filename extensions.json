@@ -24,48 +24,192 @@
     "file_size": 9991
   },
   {
-    "id": "vessel-forge",
-    "name": "Vessel Forge",
-    "version": "2.0.0",
-    "description": "Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.",
-    "author": "BYTEDz",
-    "category": "System",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "darwin"
-    ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "4.4.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.0.0.zip",
-    "permissions": [
-      "theme.read"
-    ],
-    "added_on": "2026-03-06T15:17:43+01:00",
-    "updated_on": "2026-06-16T20:15:50+01:00",
-    "file_size": 60051
-  },
-  {
-    "id": "window-arranger",
-    "name": "Window Arranger",
+    "id": "url-beam",
+    "name": "URL Beam",
     "version": "1.0.0",
-    "description": "Remote window snapping and management for multi-monitor setups.",
+    "description": "Instantly open links from your phone in your PC browser.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
-      "windows"
+      "windows",
+      "linux",
+      "macos"
     ],
     "min_pclink_version": ">=3.2.0",
     "min_server_version": "1.0.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/window-arranger/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/url-beam/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
     "permissions": [],
     "added_on": "2026-01-12T22:02:13+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 3841
+    "file_size": 3624
+  },
+  {
+    "id": "wifi-sharer",
+    "name": "WiFi Sharer",
+    "version": "1.0.0",
+    "description": "Share your WiFi credentials easily via QR code.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "3.2.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 14089
+  },
+  {
+    "id": "file-downloader",
+    "name": "File Downloader",
+    "version": "1.0.0",
+    "description": "A lightweight file downloader with pause/resume support.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.6.0",
+    "min_server_version": "3.6.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-1.0.0.zip",
+    "permissions": [
+      "filesystem.write"
+    ],
+    "added_on": "2026-06-18T00:38:17+01:00",
+    "updated_on": "2026-06-18T00:50:06+01:00",
+    "file_size": 51157
+  },
+  {
+    "id": "web-controller",
+    "name": "Browser Deck",
+    "version": "1.0.0",
+    "description": "Remote browser control with tab management, navigation, and link beaming.",
+    "author": "BYTEDz",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "1.0.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-1.0.0.zip",
+    "permissions": [
+      "input.inject"
+    ],
+    "added_on": "2026-03-24T22:27:10+01:00",
+    "updated_on": "2026-03-24T22:40:08+01:00",
+    "file_size": 11039
+  },
+  {
+    "id": "night-owl",
+    "name": "Night Owl",
+    "version": "1.0.0",
+    "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "3.2.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T15:08:26+01:00",
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 12340
+  },
+  {
+    "id": "clipboard-history",
+    "name": "Clipboard History",
+    "version": "1.2.0",
+    "description": "Keep track of your clipboard history and sync it with your phone.",
+    "author": "BYTEDz",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "3.2.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.2.0.zip",
+    "permissions": [
+      "clipboard"
+    ],
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-03-09T20:03:32+01:00",
+    "file_size": 23083
+  },
+  {
+    "id": "media-master",
+    "name": "Media Master Pro",
+    "version": "2.1.0",
+    "description": "Modern media controller with seek support and a premium mobile UI.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.6.0",
+    "min_server_version": "3.5.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.1.0.zip",
+    "permissions": [
+      "theme.read",
+      "input",
+      "media"
+    ],
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-07-27T13:22:32+01:00",
+    "file_size": 19084
+  },
+  {
+    "id": "network-guard",
+    "name": "Network Guard",
+    "version": "1.0.0",
+    "description": "Real-time network monitor and firewall. See which apps are using your bandwidth and control them with one tap.",
+    "author": "BYTEDz",
+    "category": "Security",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "3.2.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-1.0.0.zip",
+    "permissions": [
+      "system"
+    ],
+    "added_on": "2026-01-03T15:08:26+01:00",
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 14355
   },
   {
     "id": "capabilities-demo",
@@ -90,50 +234,51 @@
     "file_size": 13653
   },
   {
-    "id": "speed-test",
-    "name": "PC Speed Test",
-    "version": "1.1.0",
-    "description": "Test your PC's internet download and upload speed directly from your phone.",
+    "id": "process-manager",
+    "name": "Task Manager",
+    "version": "1.0.0",
+    "description": "Monitor running processes and remotely kill frozen applications.",
     "author": "BYTEDz",
-    "category": "Utility",
+    "category": "System",
     "supported_platforms": [
       "windows",
       "linux",
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "4.4.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.1.0.zip",
-    "permissions": [],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-06-16T20:15:50+01:00",
-    "file_size": 25675
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-1.0.0.zip",
+    "permissions": [
+      "system.read",
+      "system.manage"
+    ],
+    "added_on": "2026-01-12T20:17:14+01:00",
+    "updated_on": "2026-03-06T15:17:43+01:00",
+    "file_size": 12735
   },
   {
-    "id": "media-master",
-    "name": "Media Master Pro",
-    "version": "2.1.0",
-    "description": "Modern media controller with seek support and a premium mobile UI.",
+    "id": "audio-mixer",
+    "name": "Audio Mixer",
+    "version": "1.0.0",
+    "description": "Control volume for individual applications.",
     "author": "BYTEDz",
-    "category": "Utility",
+    "category": "Media",
     "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
+      "windows"
     ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "3.5.0",
+    "min_pclink_version": ">=3.2.0",
+    "min_server_version": "3.2.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.1.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
     "permissions": [
-      "theme.read"
+      "audio"
     ],
-    "added_on": "2026-01-12T22:02:13+01:00",
+    "added_on": "2025-12-31T23:29:18+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 19065
+    "file_size": 16109
   },
   {
     "id": "quick-notes",
@@ -182,94 +327,70 @@
     "file_size": 23399
   },
   {
-    "id": "clipboard-history",
-    "name": "Clipboard History",
-    "version": "1.2.0",
-    "description": "Keep track of your clipboard history and sync it with your phone.",
+    "id": "vessel-forge",
+    "name": "Vessel Forge",
+    "version": "2.0.0",
+    "description": "Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.",
     "author": "BYTEDz",
-    "category": "Productivity",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "min_pclink_version": ">=3.6.0",
+    "min_server_version": "4.4.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.0.0.zip",
+    "permissions": [
+      "theme.read"
+    ],
+    "added_on": "2026-03-06T15:17:43+01:00",
+    "updated_on": "2026-06-16T20:15:50+01:00",
+    "file_size": 60051
+  },
+  {
+    "id": "speed-test",
+    "name": "PC Speed Test",
+    "version": "1.1.0",
+    "description": "Test your PC's internet download and upload speed directly from your phone.",
+    "author": "BYTEDz",
+    "category": "Utility",
     "supported_platforms": [
       "windows",
       "linux",
       "macos"
     ],
     "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
+    "min_server_version": "4.4.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.2.0.zip",
-    "permissions": [
-      "clipboard"
-    ],
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.1.0.zip",
+    "permissions": [],
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-09T20:03:32+01:00",
-    "file_size": 23083
+    "updated_on": "2026-06-16T20:15:50+01:00",
+    "file_size": 25675
   },
   {
-    "id": "wifi-sharer",
-    "name": "WiFi Sharer",
+    "id": "window-arranger",
+    "name": "Window Arranger",
     "version": "1.0.0",
-    "description": "Share your WiFi credentials easily via QR code.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 14089
-  },
-  {
-    "id": "night-owl",
-    "name": "Night Owl",
-    "version": "1.0.0",
-    "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 12340
-  },
-  {
-    "id": "url-beam",
-    "name": "URL Beam",
-    "version": "1.0.0",
-    "description": "Instantly open links from your phone in your PC browser.",
+    "description": "Remote window snapping and management for multi-monitor setups.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
+      "windows"
     ],
     "min_pclink_version": ">=3.2.0",
     "min_server_version": "1.0.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/url-beam/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/window-arranger/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
     "permissions": [],
     "added_on": "2026-01-12T22:02:13+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 3624
+    "file_size": 3841
   },
   {
     "id": "dev-assistant",
@@ -297,54 +418,6 @@
     "file_size": 19235
   },
   {
-    "id": "web-controller",
-    "name": "Browser Deck",
-    "version": "1.0.0",
-    "description": "Remote browser control with tab management, navigation, and link beaming.",
-    "author": "BYTEDz",
-    "category": "Productivity",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-1.0.0.zip",
-    "permissions": [
-      "input.inject"
-    ],
-    "added_on": "2026-03-24T22:27:10+01:00",
-    "updated_on": "2026-03-24T22:40:08+01:00",
-    "file_size": 11039
-  },
-  {
-    "id": "file-downloader",
-    "name": "File Downloader",
-    "version": "1.0.0",
-    "description": "A lightweight file downloader with pause/resume support.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "3.6.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-1.0.0.zip",
-    "permissions": [
-      "filesystem.write"
-    ],
-    "added_on": "2026-06-18T00:38:17+01:00",
-    "updated_on": "2026-06-18T00:50:06+01:00",
-    "file_size": 51157
-  },
-  {
     "id": "clean-master",
     "name": "Clean Master",
     "version": "1.0.0",
@@ -368,77 +441,6 @@
     "added_on": "2026-01-03T15:08:26+01:00",
     "updated_on": "2026-03-06T15:17:43+01:00",
     "file_size": 12260
-  },
-  {
-    "id": "audio-mixer",
-    "name": "Audio Mixer",
-    "version": "1.0.0",
-    "description": "Control volume for individual applications.",
-    "author": "BYTEDz",
-    "category": "Media",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
-    "permissions": [
-      "audio"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 16109
-  },
-  {
-    "id": "process-manager",
-    "name": "Task Manager",
-    "version": "1.0.0",
-    "description": "Monitor running processes and remotely kill frozen applications.",
-    "author": "BYTEDz",
-    "category": "System",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-1.0.0.zip",
-    "permissions": [
-      "system.read",
-      "system.manage"
-    ],
-    "added_on": "2026-01-12T20:17:14+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 12735
-  },
-  {
-    "id": "network-guard",
-    "name": "Network Guard",
-    "version": "1.0.0",
-    "description": "Real-time network monitor and firewall. See which apps are using your bandwidth and control them with one tap.",
-    "author": "BYTEDz",
-    "category": "Security",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 14355
   },
   {
     "id": "gamer-hud",
