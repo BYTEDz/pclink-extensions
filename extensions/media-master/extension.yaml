@@ -17,6 +17,8 @@ supported_platforms:
   - macos
 permissions:
   - theme.read
+  - input
+  - media
 
 dashboard_widgets:
   - id: controls
