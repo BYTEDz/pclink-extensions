@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .header { text-align: center; padding: 24px 0 8px; }
+        .header i { color: var(--primary); width: 48px; height: 48px; }
+        .header h1 { margin: 12px 0 4px; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+        textarea {
+            width: 100%; padding: 16px; border-radius: var(--radius);
+            border: 1px solid var(--card-border); background: var(--surface);
+            color: var(--text); font-family: inherit; font-size: 1rem;
+            resize: vertical; min-height: 120px; outline: none;
+        }
+        textarea:focus { border-color: var(--primary); }
+        .btn-row { display: flex; gap: 12px; }
+        .btn {
+            flex: 1; padding: 16px; border-radius: var(--radius); border: none;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--primary); color: var(--on-primary); transition: opacity 0.15s;
+        }
+        .btn:active { opacity: 0.7; }
+        .btn-secondary {
+            background: var(--surface); color: var(--text); border: 1px solid var(--card-border);
+        }
+        .hotkey-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+        }
+        .hotkey-btn {
+            padding: 12px 8px; border-radius: calc(var(--radius) * 0.6);
+            border: 1px solid var(--card-border); background: var(--surface);
+            color: var(--text-muted); font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; text-align: center; transition: 0.15s;
+        }
+        .hotkey-btn:active { background: var(--primary-faint); color: var(--primary); border-color: var(--primary); }
+        .history { margin-top: 4px; }
+        .history h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .history-item {
+            padding: 10px 12px; background: var(--surface); border: 1px solid var(--card-border);
+            border-radius: calc(var(--radius) * 0.6); margin-bottom: 6px;
+            font-size: 0.85rem; word-break: break-all; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .history-item:hover { border-color: var(--primary-muted); }
+        .history-item small { color: var(--text-muted); font-size: 0.7rem; }
+        .clear-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg); padding: 10px 20px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i data-lucide="text-cursor-input"></i>
+            <h1>Text Beamer</h1>
+            <p>Type text on your PC remotely</p>
+        </div>
+
+        <textarea id="textInput" placeholder="Type or paste text here..."></textarea>
+
+        <div class="btn-row">
+            <button class="btn" onclick="beamText()">
+                <i data-lucide="send" size="18"></i> Beam Text
+            </button>
+            <button class="btn btn-secondary" onclick="clearInput()">
+                <i data-lucide="trash-2" size="18"></i>
+            </button>
+        </div>
+
+        <div class="hotkey-grid">
+            <div class="hotkey-btn" onclick="sendHotkey(['enter'])">Enter</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['tab'])">Tab</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['space'])">Space</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['backspace'])">Bksp</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'c'])">Ctrl+C</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'v'])">Ctrl+V</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'z'])">Ctrl+Z</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 's'])">Ctrl+S</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'a'])">Ctrl+A</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'shift', 'esc'])">TaskMgr</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['alt', 'tab'])">Alt+Tab</div>
+            <div class="hotkey-btn" onclick="sendHotkey(['ctrl', 'alt', 'del'])">CAD</div>
+        </div>
+
+        <div class="history" id="historySection" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h3>History</h3>
+                <button class="clear-btn" onclick="clearHistory()">
+                    <i data-lucide="trash-2" size="14"></i>
+                </button>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const history = JSON.parse(localStorage.getItem('tb_history') || '[]');
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 1800);
+        }
+
+        async function beamText() {
+            const text = document.getElementById('textInput').value;
+            if (!text) return;
+            try {
+                await fetch(`${apiPath}/type`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text})
+                });
+                showToast('Beamed ' + text.length + ' chars');
+                history.unshift({text, time: Date.now()});
+                if (history.length > 20) history.pop();
+                localStorage.setItem('tb_history', JSON.stringify(history));
+                renderHistory();
+            } catch (e) {
+                showToast('Failed to beam text');
+            }
+        }
+
+        async function sendHotkey(keys) {
+            try {
+                await fetch(`${apiPath}/hotkey`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({keys})
+                });
+                showToast(keys.join('+'));
+            } catch (e) {
+                showToast('Failed');
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('textInput').value = '';
+        }
+
+        function renderHistory() {
+            const section = document.getElementById('historySection');
+            const list = document.getElementById('historyList');
+            if (history.length === 0) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+            list.innerHTML = history.map((item, i) =>
+                `<div class="history-item" onclick="restoreText(${i})">
+                    <span>${escapeHtml(item.text.substring(0, 60))}</span>
+                    <small>${new Date(item.time).toLocaleTimeString()}</small>
+                </div>`
+            ).join('');
+        }
+
+        function restoreText(i) {
+            document.getElementById('textInput').value = history[i].text;
+        }
+
+        function clearHistory() {
+            history.length = 0;
+            localStorage.removeItem('tb_history');
+            renderHistory();
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        lucide.createIcons();
+        renderHistory();
+    </script>
+</body>
+</html>

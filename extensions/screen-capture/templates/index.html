@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/ui/static/extension-theme.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .header { text-align: center; padding: 16px 0; }
+        .header i { color: var(--primary); width: 48px; height: 48px; }
+        .header h1 { margin: 10px 0 4px; font-size: 1.6rem; font-weight: 900; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+        .btn-primary {
+            width: 100%; padding: 16px; border-radius: var(--radius); border: none;
+            background: var(--primary); color: var(--on-primary); font-weight: 700; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary:active { opacity: 0.7; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .preview-area {
+            background: var(--surface); border: 2px dashed var(--card-border);
+            border-radius: var(--radius); min-height: 200px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+        .preview-area img { max-width: 100%; max-height: 60vh; display: block; }
+        .preview-placeholder { color: var(--text-muted); text-align: center; }
+        .preview-placeholder i { width: 48px; height: 48px; margin-bottom: 8px; }
+        .action-bar { display: flex; gap: 12px; }
+        .action-btn {
+            flex: 1; padding: 12px; border-radius: var(--radius); border: 1px solid var(--card-border);
+            background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .action-btn:active { background: var(--primary-faint); }
+        .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg); padding: 10px 20px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .spinner {
+            width: 32px; height: 32px; border: 3px solid var(--card-border);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .meta { font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i data-lucide="camera"></i>
+            <h1>Screen Capture</h1>
+            <p>Capture your PC screen remotely</p>
+        </div>
+
+        <button class="btn-primary" id="captureBtn" onclick="captureScreen()">
+            <i data-lucide="camera" size="20"></i> Capture Full Screen
+        </button>
+
+        <div class="preview-area" id="previewArea">
+            <div class="preview-placeholder" id="placeholder">
+                <i data-lucide="image"></i>
+                <p>Tap capture to see preview</p>
+            </div>
+            <img id="previewImage" style="display:none" alt="Screenshot preview"/>
+        </div>
+
+        <div class="action-bar" id="actionBar" style="display:none">
+            <button class="action-btn" onclick="saveScreenshot()">
+                <i data-lucide="save" size="16"></i> Save to PC
+            </button>
+            <button class="action-btn" onclick="downloadScreenshot()">
+                <i data-lucide="download" size="16"></i> Download
+            </button>
+            <button class="action-btn" onclick="copyScreenshot()">
+                <i data-lucide="clipboard" size="16"></i> Copy
+            </button>
+        </div>
+
+        <div class="meta" id="metaInfo"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        let currentImageB64 = '';
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        async function captureScreen() {
+            const btn = document.getElementById('captureBtn');
+            const placeholder = document.getElementById('placeholder');
+            const img = document.getElementById('previewImage');
+            const actionBar = document.getElementById('actionBar');
+            const meta = document.getElementById('metaInfo');
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Capturing...';
+            placeholder.style.display = 'none';
+            img.style.display = 'none';
+            actionBar.style.display = 'none';
+            meta.textContent = '';
+
+            try {
+                const res = await fetch(`${apiPath}/capture`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    currentImageB64 = data.image;
+                    img.src = 'data:image/png;base64,' + data.image;
+                    img.style.display = 'block';
+                    actionBar.style.display = 'flex';
+                    meta.textContent = `${data.width} x ${data.height} px`;
+                    showToast('Screen captured!');
+                } else {
+                    showToast('Capture failed');
+                }
+            } catch (e) {
+                placeholder.style.display = 'block';
+                showToast('Error: ' + e.message);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="camera" size="20"></i> Capture Full Screen';
+            lucide.createIcons();
+        }
+
+        async function saveScreenshot() {
+            if (!currentImageB64) return;
+            try {
+                const res = await fetch(`${apiPath}/save`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({image: currentImageB64, folder: ''})
+                });
+                const data = await res.json();
+                if (data.success) showToast('Saved to: ' + data.path);
+            } catch (e) {
+                showToast('Save failed');
+            }
+        }
+
+        function downloadScreenshot() {
+            if (!currentImageB64) return;
+            const a = document.createElement('a');
+            a.href = 'data:image/png;base64,' + currentImageB64;
+            a.download = 'screenshot_' + new Date().toISOString().slice(0,19).replace(/[T:]/g, '_') + '.png';
+            a.click();
+            showToast('Downloaded!');
+        }
+
+        async function copyScreenshot() {
+            if (!currentImageB64) return;
+            try {
+                const blob = await (await fetch('data:image/png;base64,' + currentImageB64)).blob();
+                await navigator.clipboard.write([
+                    new ClipboardItem({'image/png': blob})
+                ]);
+                showToast('Copied to clipboard!');
+            } catch (e) {
+                showToast('Copy not supported');
+            }
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
