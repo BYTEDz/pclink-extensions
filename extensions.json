@@ -1,335 +1,823 @@
 [
   {
+    "id": "audio-mixer",
+    "name": "Audio Mixer",
+    "version": "2.1.0",
+    "description": "Control volume and mute states for individual applications on Windows and Linux (PipeWire / PulseAudio).",
+    "author": "BYTEDz",
+    "category": "Media",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-2.1.0.pclink",
+    "sha256": "4323fd71259210a1295605779a9bd90d5a06999c83ccd39d3daf7bd045206a88",
+    "permissions": [
+      "media.control",
+      "media.read",
+      "system.exec",
+      "storage.local"
+    ],
+    "declared_permissions": [
+      "media.control",
+      "media.read",
+      "system.exec",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "audio-mixer-main",
+          "title": "Audio Mixer",
+          "icon": "sliders",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "audio-mixer-widget",
+          "title": "App Audio Mixer",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 256,
+        "max_cpu_percent": 50,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 33865
+  },
+  {
+    "id": "clipboard-history",
+    "name": "Clipboard History",
+    "version": "2.0.0",
+    "description": "Capture and sync PC clipboard history in real-time. Send and copy clips seamlessly between phone and computer.",
+    "author": "BYTEDz",
+    "category": "Productivity",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-2.0.0.pclink",
+    "sha256": "ef475cc734711bddb82ddb9fdf5c88b02552d43c4860b0cc575c925b59ba1f11",
+    "permissions": [
+      "storage.local",
+      "system.exec",
+      "notifications"
+    ],
+    "declared_permissions": [
+      "storage.local",
+      "system.exec",
+      "notifications"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "clipboard-history-main",
+          "title": "Clipboard History",
+          "icon": "clipboard",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "clipboard-widget",
+          "title": "PC Clipboard",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 128,
+        "max_cpu_percent": 30,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 35311
+  },
+  {
+    "id": "energy-pulse",
+    "name": "Energy Pulse",
+    "version": "2.2.0",
+    "description": "Remote Linux power profile management via power-profiles-daemon.",
+    "author": "BYTEDz",
+    "category": "System",
+    "supported_platforms": [
+      "linux"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-2.2.0.pclink",
+    "sha256": "2a2ea753c3a1280a6df3e99bcdb86c0d83e5ab68db909d65d0d029d37300ddaf",
+    "permissions": [
+      "system.exec"
+    ],
+    "declared_permissions": [
+      "system.exec"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "energy-pulse-main",
+          "title": "Energy Pulse",
+          "icon": "zap",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "energy-status",
+          "title": "Battery & Power",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "none"
+    },
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 20412
+  },
+  {
+    "id": "file-downloader",
+    "name": "File Downloader",
+    "version": "2.1.0",
+    "description": "High-performance concurrent download manager with automatic resume, state persistence, network recovery, and live dashboard widgets.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-2.1.0.pclink",
+    "sha256": "6cc4d9be889d112d3d8a3b39682c8c18ade7a3c62b5afa0a15cfabbf84608f00",
+    "permissions": [
+      "fs.read",
+      "fs.write",
+      "net.fetch",
+      "notifications",
+      "storage.local"
+    ],
+    "declared_permissions": [
+      "fs.read",
+      "fs.write",
+      "net.fetch",
+      "notifications",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "downloader-main",
+          "title": "Downloader",
+          "icon": "download-cloud",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "download-status",
+          "title": "Active Downloads",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 256,
+        "max_cpu_percent": 60,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2026-06-18T00:38:17+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 48613
+  },
+  {
+    "id": "gamer-hud",
+    "name": "Gamer HUD",
+    "version": "2.0.0",
+    "description": "Real-time hardware telemetry and performance HUD. Monitor per-core CPU load, GPU utilization, VRAM, and thermal headroom.",
+    "author": "BYTEDz",
+    "category": "System",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/gamer-hud/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/gamer-hud-2.0.0.pclink",
+    "sha256": "cfc843dd31f2b613ef75b13585162be5ffdfcd84aecdfd15a26612627a48fc64",
+    "permissions": [
+      "system.exec",
+      "storage.local"
+    ],
+    "declared_permissions": [
+      "system.exec",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "gamer-hud-main",
+          "title": "Gamer HUD",
+          "icon": "cpu",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "gamer-hud-widget",
+          "title": "Hardware HUD",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 128,
+        "max_cpu_percent": 40,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2026-01-03T15:08:26+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 26067
+  },
+  {
+    "id": "media-master",
+    "name": "Media Master",
+    "version": "2.2.0",
+    "description": "Modern media controller with live track metadata synchronization and seek shortcuts.",
+    "author": "BYTEDz",
+    "category": "Media",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.2.0.pclink",
+    "sha256": "12f07056c7a2f694abd9f399ea1cdf3b00cd40a624b98347e06683498228748f",
+    "permissions": [
+      "media.read",
+      "media.control",
+      "input.inject"
+    ],
+    "declared_permissions": [
+      "media.read",
+      "media.control",
+      "input.inject"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "media-master-main",
+          "title": "Media Master",
+          "icon": "music",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "controls",
+          "title": "Media Controls",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "none"
+    },
+    "added_on": "2026-01-12T22:02:13+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 19363
+  },
+  {
+    "id": "network-guard",
+    "name": "Network Guard",
+    "version": "2.0.1",
+    "description": "Real-time network traffic monitor and connection manager with per-process bandwidth telemetry and socket inspection.",
+    "author": "BYTEDz",
+    "category": "Security",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-2.0.1.pclink",
+    "sha256": "0605e721fd7eb0a0b3fb92edd5be63f5b3ada3b87f7715bdc901961bdbd16dd4",
+    "permissions": [
+      "system.exec",
+      "storage.local"
+    ],
+    "declared_permissions": [
+      "system.exec",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "network-guard-view",
+          "title": "Network Guard",
+          "icon": "shield",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "network-status",
+          "title": "Network Guard",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 256,
+        "max_cpu_percent": 50,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2026-01-03T15:08:26+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 26053
+  },
+  {
     "id": "ppt-controller",
     "name": "Slideshow Master",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Professional remote control for slideshows and presentations.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows",
       "linux",
-      "macos"
+      "darwin"
     ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/ppt-controller/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/ppt-controller-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/ppt-controller-2.0.0.pclink",
+    "sha256": "5c9860a50b5fb70b519c9c01a03e3bea4fc2ed7d6cb5ae86808091adb2610c7d",
     "permissions": [
       "input.inject"
     ],
-    "added_on": "2026-03-24T22:27:10+01:00",
-    "updated_on": "2026-03-24T22:40:08+01:00",
-    "file_size": 9991
-  },
-  {
-    "id": "url-beam",
-    "name": "URL Beam",
-    "version": "1.0.0",
-    "description": "Instantly open links from your phone in your PC browser.",
-    "author": "BYTEDz",
-    "category": "Productivity",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/url-beam/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/url-beam-1.0.0.zip",
-    "permissions": [],
-    "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 3624
-  },
-  {
-    "id": "wifi-sharer",
-    "name": "WiFi Sharer",
-    "version": "1.0.0",
-    "description": "Share your WiFi credentials easily via QR code.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/wifi-sharer/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/wifi-sharer-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 14089
-  },
-  {
-    "id": "file-downloader",
-    "name": "File Downloader",
-    "version": "1.0.0",
-    "description": "A lightweight file downloader with pause/resume support.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "3.6.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-1.0.0.zip",
-    "permissions": [
-      "filesystem.write"
-    ],
-    "added_on": "2026-06-18T00:38:17+01:00",
-    "updated_on": "2026-06-18T00:50:06+01:00",
-    "file_size": 51157
-  },
-  {
-    "id": "web-controller",
-    "name": "Browser Deck",
-    "version": "1.0.0",
-    "description": "Remote browser control with tab management, navigation, and link beaming.",
-    "author": "BYTEDz",
-    "category": "Productivity",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-1.0.0.zip",
-    "permissions": [
+    "declared_permissions": [
       "input.inject"
     ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "ppt-main-view",
+          "title": "Slideshow Master",
+          "icon": "presentation",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": []
+    },
+    "backend": {
+      "runtime": "none"
+    },
     "added_on": "2026-03-24T22:27:10+01:00",
-    "updated_on": "2026-03-24T22:40:08+01:00",
-    "file_size": 11039
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 10813
   },
   {
-    "id": "night-owl",
-    "name": "Night Owl",
-    "version": "1.0.0",
-    "description": "Control your screen brightness and toggle Night Light mode directly from your phone.",
+    "id": "process-manager",
+    "name": "Task Manager",
+    "version": "2.0.0",
+    "description": "Real-time process monitor and task manager. Inspect memory usage, CPU load, and terminate frozen processes.",
     "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/night-owl/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/night-owl-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 12340
-  },
-  {
-    "id": "clipboard-history",
-    "name": "Clipboard History",
-    "version": "1.2.0",
-    "description": "Keep track of your clipboard history and sync it with your phone.",
-    "author": "BYTEDz",
-    "category": "Productivity",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-1.2.0.zip",
-    "permissions": [
-      "clipboard"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-09T20:03:32+01:00",
-    "file_size": 23083
-  },
-  {
-    "id": "media-master",
-    "name": "Media Master Pro",
-    "version": "2.1.0",
-    "description": "Modern media controller with seek support and a premium mobile UI.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "3.5.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.1.0.zip",
-    "permissions": [
-      "theme.read",
-      "input",
-      "media"
-    ],
-    "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-07-27T13:22:32+01:00",
-    "file_size": 19084
-  },
-  {
-    "id": "network-guard",
-    "name": "Network Guard",
-    "version": "1.0.0",
-    "description": "Real-time network monitor and firewall. See which apps are using your bandwidth and control them with one tap.",
-    "author": "BYTEDz",
-    "category": "Security",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 14355
-  },
-  {
-    "id": "capabilities-demo",
-    "name": "Capabilities Demo",
-    "version": "1.2.0",
-    "description": "Demonstrates new UI capabilities: Fullscreen, Manual Rotation, and Mouse Overlay.",
-    "author": "BYTEDz",
-    "category": "Developer",
+    "category": "System",
     "supported_platforms": [
       "windows",
       "linux",
       "darwin"
     ],
-    "min_pclink_version": ">=3.5.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": false,
-    "icon_url": null,
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/capabilities-demo-1.2.0.zip",
-    "permissions": [],
-    "added_on": "2026-03-04T15:03:33+01:00",
-    "updated_on": "2026-06-20T00:09:57+01:00",
-    "file_size": 13653
-  },
-  {
-    "id": "process-manager",
-    "name": "Task Manager",
-    "version": "1.0.0",
-    "description": "Monitor running processes and remotely kill frozen applications.",
-    "author": "BYTEDz",
-    "category": "System",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
     ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-2.0.0.pclink",
+    "sha256": "a465e726d35a66941bcdb939f27789a172b36bd3563296c88bb1d490aa2b10e9",
     "permissions": [
-      "system.read",
-      "system.manage"
+      "system.exec",
+      "storage.local"
     ],
+    "declared_permissions": [
+      "system.exec",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "process-manager-main",
+          "title": "Task Manager",
+          "icon": "activity",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": []
+    },
+    "backend": {
+      "runtime": "none"
+    },
     "added_on": "2026-01-12T20:17:14+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 12735
-  },
-  {
-    "id": "audio-mixer",
-    "name": "Audio Mixer",
-    "version": "1.0.0",
-    "description": "Control volume for individual applications.",
-    "author": "BYTEDz",
-    "category": "Media",
-    "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-1.0.0.zip",
-    "permissions": [
-      "audio"
-    ],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 16109
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 15916
   },
   {
     "id": "quick-notes",
     "name": "Quick Notes",
-    "version": "1.0.0",
-    "description": "Sync small notes between your phone and PC instantly.",
+    "version": "2.0.0",
+    "description": "Sync small notes between your phone and PC instantly. Pure JS with isolated local storage.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
       "windows",
       "linux",
-      "macos"
+      "darwin"
     ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/quick-notes/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-1.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-2.0.0.pclink",
+    "sha256": "16c63c321042a427a2e16f3105a3acc2a4388e41c863381294df6307792716c5",
     "permissions": [
-      "storage"
+      "storage.local"
     ],
+    "declared_permissions": [
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "quick-notes-main",
+          "title": "Quick Notes",
+          "icon": "edit-3",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": []
+    },
+    "backend": {
+      "runtime": "none"
+    },
     "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 11627
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 14578
   },
   {
-    "id": "energy-pulse",
-    "name": "Energy Pulse Pro",
-    "version": "2.1.0",
-    "description": "Remote power management. Linux optimized with power-profiles-daemon integration.",
+    "id": "speed-test",
+    "name": "Network Speed Engine",
+    "version": "2.0.0",
+    "description": "Measure PC broadband internet speeds and test local Wi-Fi transfer throughput between phone and computer.",
     "author": "BYTEDz",
-    "category": "System",
+    "category": "Utility",
     "supported_platforms": [
-      "linux"
+      "windows",
+      "linux",
+      "darwin"
     ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "3.5.0",
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-2.1.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-2.0.0.pclink",
+    "sha256": "4050a18b6ecd31482dd30cd8e275981e95f3b4ac49bdc6df6761a81388d74426",
     "permissions": [
-      "theme.read"
+      "net.fetch",
+      "system.exec",
+      "storage.local"
     ],
-    "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 23399
+    "declared_permissions": [
+      "net.fetch",
+      "system.exec",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "speed-test-main",
+          "title": "Speed Engine",
+          "icon": "gauge",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "speed-widget",
+          "title": "Speed Test",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 256,
+        "max_cpu_percent": 80,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2025-12-31T23:29:18+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 34325
+  },
+  {
+    "id": "storage-sweeper",
+    "name": "Storage Sweeper",
+    "version": "2.0.0",
+    "description": "Purge temporary cache files, junk data, and free up system disk space across all storage volumes.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/storage-sweeper/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/storage-sweeper-2.0.0.pclink",
+    "sha256": "197955aa5022c242c1c02832d16d7144195f43d170978a68285019ef36d8600a",
+    "permissions": [
+      "fs.read",
+      "fs.write",
+      "fs.all"
+    ],
+    "declared_permissions": [
+      "fs.read",
+      "fs.write",
+      "fs.all"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "storage-sweeper-main",
+          "title": "Storage Sweeper",
+          "icon": "trash-2",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "sweeper-status",
+          "title": "Storage Sweeper",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 256,
+        "max_cpu_percent": 50,
+        "execution_timeout_sec": 60
+      }
+    },
+    "added_on": "2026-09-01T13:40:48+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 23388
   },
   {
     "id": "vessel-forge",
     "name": "Vessel Forge",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.",
     "author": "BYTEDz",
     "category": "System",
@@ -338,132 +826,122 @@
       "linux",
       "darwin"
     ],
-    "min_pclink_version": ">=3.6.0",
-    "min_server_version": "4.4.0",
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.0.0.zip",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.1.0.pclink",
+    "sha256": "8886f6d2646b22e1ab86a159573dfe0618cbbf333af33d157fe2424d6fdbb530",
     "permissions": [
-      "theme.read"
+      "system.exec",
+      "notifications",
+      "storage.local"
     ],
+    "declared_permissions": [
+      "system.exec",
+      "notifications",
+      "storage.local"
+    ],
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "vessel-forge-main",
+          "title": "Vessel Forge",
+          "icon": "box",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "docker-status",
+          "title": "Docker Summary",
+          "type": "webview",
+          "entry_point": "templates/widget.html",
+          "size": {
+            "w": 1,
+            "h": 2
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "extension.py:Extension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 512,
+        "max_cpu_percent": 80,
+        "execution_timeout_sec": 30
+      }
+    },
     "added_on": "2026-03-06T15:17:43+01:00",
-    "updated_on": "2026-06-16T20:15:50+01:00",
-    "file_size": 60051
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 58478
   },
   {
-    "id": "speed-test",
-    "name": "PC Speed Test",
-    "version": "1.1.0",
-    "description": "Test your PC's internet download and upload speed directly from your phone.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "4.4.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-1.1.0.zip",
-    "permissions": [],
-    "added_on": "2025-12-31T23:29:18+01:00",
-    "updated_on": "2026-06-16T20:15:50+01:00",
-    "file_size": 25675
-  },
-  {
-    "id": "window-arranger",
-    "name": "Window Arranger",
-    "version": "1.0.0",
-    "description": "Remote window snapping and management for multi-monitor setups.",
+    "id": "web-controller",
+    "name": "Browser Deck",
+    "version": "2.0.0",
+    "description": "Remote browser deck with tab management, zoom, navigation, and URL beaming.",
     "author": "BYTEDz",
     "category": "Productivity",
     "supported_platforms": [
-      "windows"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "1.0.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/window-arranger/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/window-arranger-1.0.0.zip",
-    "permissions": [],
-    "added_on": "2026-01-12T22:02:13+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 3841
-  },
-  {
-    "id": "dev-assistant",
-    "name": "Dev Assistant",
-    "version": "1.0.0",
-    "description": "A powerful tool for developers to manage Git repositories and run custom project scripts (npm, flutter, etc.) from their phone.",
-    "author": "BYTEDz",
-    "category": "Developer",
-    "supported_platforms": [
       "windows",
       "linux",
-      "macos"
+      "darwin"
     ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
     "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/dev-assistant/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/dev-assistant-1.0.0.zip",
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-2.0.0.pclink",
+    "sha256": "96722f990be49b59479233796235e4437739e3cf113732fcf8f67512f7d4a464",
     "permissions": [
-      "system",
-      "storage"
+      "input.inject",
+      "system.exec"
     ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 19235
-  },
-  {
-    "id": "clean-master",
-    "name": "Clean Master",
-    "version": "1.0.0",
-    "description": "Clean temporary files, empty recycle bin, and free up disk space with one tap.",
-    "author": "BYTEDz",
-    "category": "Utility",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
+    "declared_permissions": [
+      "input.inject",
+      "system.exec"
     ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clean-master/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clean-master-1.0.0.zip",
-    "permissions": [
-      "storage",
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 12260
-  },
-  {
-    "id": "gamer-hud",
-    "name": "Gamer HUD",
-    "version": "1.0.0",
-    "description": "Real-time high-performance dashboard for gamers. Monitor CPU, RAM, and System stats with high refresh rate.",
-    "author": "BYTEDz",
-    "category": "System",
-    "supported_platforms": [
-      "windows",
-      "linux",
-      "macos"
-    ],
-    "min_pclink_version": ">=3.2.0",
-    "min_server_version": "3.2.0",
-    "theme_aware_icon": true,
-    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/gamer-hud/icon.svg",
-    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/gamer-hud-1.0.0.zip",
-    "permissions": [
-      "system"
-    ],
-    "added_on": "2026-01-03T15:08:26+01:00",
-    "updated_on": "2026-03-06T15:17:43+01:00",
-    "file_size": 16555
+    "ui_capabilities": {
+      "prevent_sleep": true,
+      "allow_fullscreen": true
+    },
+    "contributes": {
+      "views": [
+        {
+          "id": "browser-deck-main",
+          "title": "Browser Deck",
+          "icon": "compass",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ],
+      "dashboard_widgets": []
+    },
+    "backend": {
+      "runtime": "none"
+    },
+    "added_on": "2026-03-24T22:27:10+01:00",
+    "updated_on": "2026-09-01T13:40:48+01:00",
+    "file_size": 12876
   }
 ]
