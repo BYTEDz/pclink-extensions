@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .status-header {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .main-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--primary);
+        }
+
+        .count {
+            font-size: 14px;
+            font-weight: 800;
+            font-family: monospace;
+        }
+
+        .label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-clean {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: 0 4px 12px var(--primary-muted);
+        }
+
+        .btn-clean:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="status-header">
+            <div class="main-info">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/>
+                </svg>
+                <div>
+                    <div class="label">Junk Cache</div>
+                    <div style="display: flex; align-items: baseline; gap: 4px;">
+                        <span id="wSize" class="count">0.0</span>
+                        <span style="font-size: 10px; opacity: 0.6;">MB</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-clean" id="wBtn" onclick="quickClean()">Clean</button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+
+        async function syncWidget() {
+            try {
+                const res = await fetch(`${apiPath}/scan`, { credentials: 'include' });
+                if (!res.ok) return;
+                const data = await res.json();
+                document.getElementById('wSize').innerText = data.size_mb;
+                if (data.size_mb === 0) {
+                    document.getElementById('wBtn').innerText = "Done";
+                    document.getElementById('wBtn').style.opacity = "0.6";
+                } else {
+                    document.getElementById('wBtn').innerText = "Clean";
+                    document.getElementById('wBtn').style.opacity = "1";
+                }
+            } catch (e) {}
+        }
+
+        async function quickClean() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            document.getElementById('wBtn').innerText = "...";
+            try {
+                const res = await fetch(`${apiPath}/clean`, { method: 'POST', credentials: 'include' });
+                if (res.ok) {
+                    if (window.pclink && window.pclink.ui) pclink.ui.haptic('success');
+                }
+                syncWidget();
+            } catch (e) {}
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 10000);
+    </script>
+</body>
+</html>

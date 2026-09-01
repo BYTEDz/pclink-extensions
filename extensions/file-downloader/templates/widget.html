@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .speed-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-quick {
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-quick:active {
+            transform: scale(0.95);
+            background: var(--surface-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="stat-card">
+            <div>
+                <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Bandwidth</div>
+                <div id="wSpeed" class="speed-val">0.0 KB/s</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Active</div>
+                <div id="wCount" style="font-size: 12px; font-weight: 800; font-family: monospace;">0 Tasks</div>
+            </div>
+        </div>
+
+        <div class="btn-grid">
+            <button class="btn-quick" onclick="pauseAll()">Pause</button>
+            <button class="btn-quick" onclick="resumeAll()">Resume</button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+        let isFetching = false;
+
+        function formatSpeed(bytesSec) {
+            if (!bytesSec || bytesSec <= 0) return '0.0 KB/s';
+            if (bytesSec > 1024 * 1024) return (bytesSec / (1024 * 1024)).toFixed(1) + ' MB/s';
+            return (bytesSec / 1024).toFixed(1) + ' KB/s';
+        }
+
+        async function syncWidget() {
+            if (isFetching) return;
+            isFetching = true;
+            try {
+                const res = await fetch(`${apiPath}/downloads`, { credentials: 'include' });
+                if (res.ok) {
+                    const tasks = Object.values(await res.json());
+
+                    let speed = 0;
+                    let active = 0;
+                    tasks.forEach(t => {
+                        if (t.status === 'downloading') {
+                            speed += t.speed;
+                            active++;
+                        }
+                    });
+
+                    document.getElementById('wSpeed').innerText = formatSpeed(speed);
+                    document.getElementById('wCount').innerText = `${active} Active`;
+                }
+            } catch (e) {
+            } finally {
+                isFetching = false;
+            }
+        }
+
+        async function pauseAll() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            await fetch(`${apiPath}/downloads/pause-all`, { method: 'POST', credentials: 'include' });
+            syncWidget();
+        }
+
+        async function resumeAll() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            await fetch(`${apiPath}/downloads/resume-all`, { method: 'POST', credentials: 'include' });
+            syncWidget();
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 6000);
+    </script>
+</body>
+</html>

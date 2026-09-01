@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="/ui/static/extension-theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Slideshow Master</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #2563eb;
+            --primary-muted: rgba(37, 99, 235, 0.2);
+            --primary-faint: rgba(37, 99, 235, 0.08);
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --bg: #0b1120;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --danger-faint: rgba(239, 68, 68, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f8fafc;
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.08);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -17,8 +41,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -30,11 +53,15 @@
         }
 
         body {
-            padding: 12px;
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
             align-items: center;
             background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .container {
@@ -43,20 +70,10 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 8px;
         }
 
-        /* Unified Card Style */
-        .card-base {
-            background: var(--surface);
-            border: var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--card-shadow);
-        }
-
-        /* Main Slide Card (The "Viewport") */
         .slide-card {
-            aspect-ratio: 16/9;
+            aspect-ratio: 16 / 9;
             background: linear-gradient(135deg, var(--primary), var(--primary-muted));
             border-radius: var(--radius);
             display: flex;
@@ -67,44 +84,44 @@
             border: var(--card-border);
             position: relative;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
         }
 
         .slide-card:active {
             transform: scale(0.98);
         }
 
-        .slide-card i {
+        .slide-card svg {
             color: white;
             width: 48px;
             height: 48px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-            opacity: 0.9;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            opacity: 0.95;
         }
 
         .slide-hint {
             position: absolute;
             bottom: 12px;
-            right: 12px;
+            right: 14px;
             color: white;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             font-weight: 900;
-            opacity: 0.7;
-            letter-spacing: 1px;
+            opacity: 0.8;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
-        /* Main Navigation (Symmetrical 2x2 Grid) */
         .nav-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .nav-card {
             background: var(--surface);
             border: var(--card-border);
             border-radius: var(--radius);
-            padding: 24px 12px;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -114,28 +131,28 @@
             font-size: 0.8rem;
             font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: 0.1s;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), background 0.15s ease;
+            box-shadow: var(--card-shadow);
         }
 
         .nav-card:active {
             transform: scale(0.96);
-            background: var(--glass);
+            background: var(--surface-hover);
         }
 
-        .nav-card i {
+        .nav-card svg {
             width: 24px;
             height: 24px;
             color: var(--primary);
         }
 
-        /* Highlighted Next Button */
         .nav-card.primary {
             background: var(--primary-faint);
             border-color: var(--primary);
         }
 
-        /* Bottom Utility Row (Symmetrical 4-column) */
         .actions-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -150,49 +167,48 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             color: var(--text);
             font-size: 0.65rem;
             font-weight: 800;
             text-transform: uppercase;
             cursor: pointer;
-            transition: 0.1s;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), background 0.15s ease;
+            box-shadow: var(--card-shadow);
         }
 
         .action-card:active {
-            transform: scale(0.95);
-            background: var(--glass);
+            transform: scale(0.94);
+            background: var(--surface-hover);
         }
 
-        .action-card i {
+        .action-card svg {
             width: 18px;
             height: 18px;
             color: var(--text-muted);
         }
 
         .action-card.danger {
-            color: #f44336;
+            color: var(--danger);
+            background: var(--danger-faint);
+            border-color: rgba(239, 68, 68, 0.2);
         }
 
-        .action-card.danger i {
-            color: #f44336;
-        }
-
-        .action-card:active i {
-            color: var(--primary);
+        .action-card.danger svg {
+            color: var(--danger);
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <!-- Main Visual Target -->
+        <!-- Main Slide Viewport Target -->
         <div class="slide-card" onclick="control('next')">
             <i data-lucide="presentation"></i>
-            <span class="slide-hint">NEXT SLIDE →</span>
+            <span class="slide-hint">Next Slide →</span>
         </div>
 
-        <!-- Primary Controls -->
+        <!-- Primary Navigation Controls -->
         <div class="nav-grid">
             <div class="nav-card" onclick="control('prev')">
                 <i data-lucide="chevron-left"></i>
@@ -212,11 +228,11 @@
             </div>
             <div class="nav-card" onclick="control('start')">
                 <i data-lucide="monitor-play"></i>
-                Start
+                Start (F5)
             </div>
         </div>
 
-        <!-- Symmetrical Utility Row -->
+        <!-- Presentation Utility Controls -->
         <div class="actions-row">
             <div class="action-card" onclick="control('black')">
                 <i data-lucide="monitor-dot"></i>
@@ -238,15 +254,33 @@
     </div>
 
     <script>
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const ACTION_MAP = {
+            'next': async () => pclink.input.pressKey('right'),
+            'prev': async () => pclink.input.pressKey('left'),
+            'start': async () => pclink.input.pressKey('f5'),
+            'start_current': async () => pclink.input.pressKey('f5', ['shift']),
+            'stop': async () => pclink.input.pressKey('esc'),
+            'black': async () => pclink.input.pressKey('b'),
+            'white': async () => pclink.input.pressKey('w'),
+            'laser': async () => pclink.input.pressKey('l', ['ctrl'])
+        };
+
         async function control(action) {
-            try {
-                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
-                if (window.navigator.vibrate) window.navigator.vibrate(15);
-            } catch (e) { console.error('Action failed:', e); }
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic(action === 'stop' ? 'error' : 'selection');
+            }
+
+            const handler = ACTION_MAP[action];
+            if (handler && window.pclink && window.pclink.input) {
+                try {
+                    await handler();
+                } catch (e) {
+                    console.error(`Action '${action}' failed:`, e);
+                }
+            }
         }
+
         lucide.createIcons();
     </script>
 </body>
-
 </html>

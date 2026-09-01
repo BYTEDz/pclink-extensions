@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="/ui/static/extension-theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Browser Deck</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --danger-faint: rgba(239, 68, 68, 0.12);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -17,36 +41,38 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow-x: hidden;
             overscroll-behavior: none;
             touch-action: manipulation;
             user-select: none;
         }
 
         body {
-            padding: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: var(--bg);
         }
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 8px;
         }
 
-        /* Unified Card Style */
         .card-base {
             background: var(--surface);
             border: var(--card-border);
@@ -54,31 +80,30 @@
             box-shadow: var(--card-shadow);
         }
 
-        /* Updated Navigation Pad to match Action Cards */
         .navigation-pad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             padding: 12px;
         }
 
         .nav-btn {
             background: var(--primary-faint);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: calc(var(--radius) * 0.75);
             aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
             cursor: pointer;
-            transition: all 0.1s;
+            transition: transform 0.1s ease, background 0.15s ease;
         }
 
         .nav-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
             background: var(--primary);
-            color: white;
+            color: var(--on-primary);
         }
 
         .nav-btn.center {
@@ -87,16 +112,15 @@
             border: var(--card-border);
         }
 
-        .nav-btn i {
-            width: 28px;
-            height: 28px;
+        .nav-btn.center:active {
+            background: var(--surface-hover);
+            color: var(--text);
         }
 
         .empty-slot {
             visibility: hidden;
         }
 
-        /* Action Rows */
         .actions-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -116,32 +140,35 @@
             font-size: 0.7rem;
             font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: 0.1s;
+            transition: transform 0.1s ease, background 0.15s ease;
+            box-shadow: var(--card-shadow);
         }
 
         .action-card:active {
-            transform: scale(0.95);
-            background: var(--glass);
+            transform: scale(0.94);
+            background: var(--surface-hover);
         }
 
-        .action-card i {
-            width: 20px;
-            height: 20px;
+        .action-card svg {
+            width: 18px;
+            height: 18px;
             color: var(--primary);
         }
 
         .action-card.danger {
-            color: #f44336;
+            color: var(--danger);
+            background: var(--danger-faint);
+            border-color: rgba(239, 68, 68, 0.2);
         }
 
-        .action-card.danger i {
-            color: #f44336;
+        .action-card.danger svg {
+            color: var(--danger);
         }
 
-        /* Compact Beam Section */
         .beam-section {
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -149,93 +176,166 @@
 
         .beam-section input {
             width: 100%;
-            padding: 12px;
-            background: var(--bg);
+            padding: 12px 14px;
+            background: var(--surface-hover);
             border: var(--card-border);
-            border-radius: calc(var(--radius) / 2);
+            border-radius: calc(var(--radius) * 0.7);
             color: var(--text);
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .beam-section input:focus {
+            border-color: var(--primary);
         }
 
         .beam-section button {
             background: var(--primary);
             border: none;
-            color: white;
+            color: var(--on-primary);
             padding: 12px;
-            border-radius: calc(var(--radius) / 2);
-            font-weight: 900;
+            border-radius: calc(var(--radius) * 0.7);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: transform 0.1s ease, opacity 0.2s;
             font-size: 0.8rem;
+            box-shadow: 0 4px 14px var(--primary-muted);
+        }
+
+        .beam-section button:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <!-- New Symmetrical Scroll Pad -->
+        <!-- Directional Scroll & History Pad -->
         <div class="navigation-pad card-base">
             <div class="empty-slot"></div>
-            <div class="nav-btn" onclick="control('scroll_up')"><i data-lucide="chevrons-up"></i></div>
+            <button class="nav-btn" onclick="control('scroll_up')" aria-label="Page Up">
+                <i data-lucide="chevrons-up"></i>
+            </button>
             <div class="empty-slot"></div>
 
-            <div class="nav-btn" onclick="control('back')"><i data-lucide="arrow-left"></i></div>
-            <div class="nav-btn center" onclick="control('refresh')"><i data-lucide="rotate-cw"></i></div>
-            <div class="nav-btn" onclick="control('forward')"><i data-lucide="arrow-right"></i></div>
+            <button class="nav-btn" onclick="control('back')" aria-label="Back">
+                <i data-lucide="arrow-left"></i>
+            </button>
+            <button class="nav-btn center" onclick="control('refresh')" aria-label="Refresh">
+                <i data-lucide="rotate-cw"></i>
+            </button>
+            <button class="nav-btn" onclick="control('forward')" aria-label="Forward">
+                <i data-lucide="arrow-right"></i>
+            </button>
 
             <div class="empty-slot"></div>
-            <div class="nav-btn" onclick="control('scroll_down')"><i data-lucide="chevrons-down"></i></div>
+            <button class="nav-btn" onclick="control('scroll_down')" aria-label="Page Down">
+                <i data-lucide="chevrons-down"></i>
+            </button>
             <div class="empty-slot"></div>
         </div>
 
+        <!-- Tab Controls -->
         <div class="actions-row">
-            <div class="action-card" onclick="control('new_tab')"><i data-lucide="plus"></i>New</div>
-            <div class="action-card" onclick="control('prev_tab')"><i data-lucide="chevron-left"></i>Prev</div>
-            <div class="action-card" onclick="control('next_tab')"><i data-lucide="chevron-right"></i>Next</div>
-            <div class="action-card danger" onclick="control('close_tab')"><i data-lucide="x"></i>Close</div>
+            <button class="action-card" onclick="control('new_tab')">
+                <i data-lucide="plus"></i> New
+            </button>
+            <button class="action-card" onclick="control('prev_tab')">
+                <i data-lucide="chevron-left"></i> Prev
+            </button>
+            <button class="action-card" onclick="control('next_tab')">
+                <i data-lucide="chevron-right"></i> Next
+            </button>
+            <button class="action-card danger" onclick="control('close_tab')">
+                <i data-lucide="x"></i> Close
+            </button>
         </div>
 
+        <!-- Scroll & Zoom Controls -->
         <div class="actions-row">
-            <div class="action-card" onclick="control('scroll_top')"><i data-lucide="arrow-up-circle"></i>Top</div>
-            <div class="action-card" onclick="control('scroll_bottom')"><i data-lucide="arrow-down-circle"></i>Btm</div>
-            <div class="action-card" onclick="control('zoom_in')"><i data-lucide="zoom-in"></i>In</div>
-            <div class="action-card" onclick="control('zoom_out')"><i data-lucide="zoom-out"></i>Out</div>
+            <button class="action-card" onclick="control('scroll_top')">
+                <i data-lucide="arrow-up-circle"></i> Top
+            </button>
+            <button class="action-card" onclick="control('scroll_bottom')">
+                <i data-lucide="arrow-down-circle"></i> Bottom
+            </button>
+            <button class="action-card" onclick="control('zoom_in')">
+                <i data-lucide="zoom-in"></i> In
+            </button>
+            <button class="action-card" onclick="control('zoom_out')">
+                <i data-lucide="zoom-out"></i> Out
+            </button>
         </div>
 
+        <!-- Beam Link to Desktop Browser -->
         <div class="beam-section card-base">
-            <input type="text" id="beam-url" placeholder="Paste URL to beam..."
-                onkeydown="if(event.key==='Enter') beam()">
-            <button onclick="beam()">BEAM TO BROWSER</button>
+            <input type="text" id="beamUrl" placeholder="Paste URL to beam to PC browser..." onkeydown="if(event.key==='Enter') beamUrl()">
+            <button onclick="beamUrl()">Beam to Browser</button>
         </div>
     </div>
 
     <script>
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
+        const ACTION_MAP = {
+            'scroll_down': async () => pclink.input.pressKey('pagedown'),
+            'scroll_up': async () => pclink.input.pressKey('pageup'),
+            'scroll_top': async () => pclink.input.pressKey('home'),
+            'scroll_bottom': async () => pclink.input.pressKey('end'),
+            'back': async () => pclink.input.pressKey('left', ['alt']),
+            'forward': async () => pclink.input.pressKey('right', ['alt']),
+            'refresh': async () => pclink.input.pressKey('f5'),
+            'close_tab': async () => pclink.input.pressKey('w', ['ctrl']),
+            'new_tab': async () => pclink.input.pressKey('t', ['ctrl']),
+            'prev_tab': async () => pclink.input.pressKey('tab', ['ctrl', 'shift']),
+            'next_tab': async () => pclink.input.pressKey('tab', ['ctrl']),
+            'zoom_in': async () => pclink.input.pressKey('=', ['ctrl']),
+            'zoom_out': async () => pclink.input.pressKey('-', ['ctrl']),
+            'zoom_reset': async () => pclink.input.pressKey('0', ['ctrl'])
+        };
+
         async function control(action) {
-            try {
-                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
-                if (window.navigator.vibrate) window.navigator.vibrate(15);
-            } catch (e) { console.error('Action failed:', e); }
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic(action === 'close_tab' ? 'error' : 'selection');
+            }
+
+            const handler = ACTION_MAP[action];
+            if (handler && window.pclink && window.pclink.input) {
+                try {
+                    await handler();
+                } catch (e) {
+                    console.error(`Action '${action}' failed:`, e);
+                }
+            }
         }
-        async function beam() {
-            const urlInput = document.getElementById('beam-url');
-            let url = urlInput.value.trim();
-            if (!url) return;
-            if (!url.startsWith('http')) url = 'https://' + url;
+
+        async function beamUrl() {
+            const input = document.getElementById('beamUrl');
+            let rawUrl = (input.value || '').trim();
+            if (!rawUrl) return;
+
+            if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+                rawUrl = 'https://' + rawUrl;
+            }
+
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('selection');
+            }
+
             try {
-                await fetch(`${apiPath}/beam`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: url })
-                });
-                urlInput.value = '';
-            } catch (e) { console.error('Beam failed:', e); }
+                if (window.pclink && window.pclink.system) {
+                    await pclink.system.exec({
+                        command: `python3 -m webbrowser "${rawUrl}"`
+                    });
+                }
+                input.value = '';
+            } catch (e) {
+                console.error("Failed to beam URL:", e);
+            }
         }
+
         lucide.createIcons();
     </script>
 </body>
-
 </html>

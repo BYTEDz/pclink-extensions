@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+  "id": "quick-notes",
+  "name": "Quick Notes",
+  "version": "2.0.0",
+  "description": "Sync small notes between your phone and PC instantly. Pure JS with isolated local storage.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Productivity",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "quick-notes-main",
+        "title": "Quick Notes",
+        "icon": "edit-3",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": []
+  },
+  "backend": {
+    "runtime": "none"
+  }
+}

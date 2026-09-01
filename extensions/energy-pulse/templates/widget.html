@@ -2,42 +2,39 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
     <style>
         :root {
-            /* Theme fallbacks */
-            --primary: #4CAF50;
-            --primary-muted: rgba(76, 175, 80, 0.2);
             --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --on-primary: #ffffff;
             --text: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.6);
-            --surface: rgba(255, 255, 255, 0.05);
-            --surface-hover: rgba(255, 255, 255, 0.1);
             --card-border: 1px solid rgba(255, 255, 255, 0.08);
             --radius: 12px;
         }
 
-        :root[data-theme="light"] {
-            --text: #1a1a1a;
-            --text-muted: rgba(0, 0, 0, 0.5);
-            --surface: rgba(0, 0, 0, 0.04);
-            --surface-hover: rgba(0, 0, 0, 0.08);
-            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             margin: 0;
-            padding: 4px 6px; 
+            padding: 6px 8px;
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
             overflow: hidden;
-            -webkit-user-select: none;
             user-select: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            -webkit-user-select: none;
         }
-
-        body.ready { opacity: 1; }
 
         .widget-container {
             display: flex;
@@ -45,7 +42,6 @@
             gap: 8px;
         }
 
-        /* Status Row - Synced with Radius */
         .status-row {
             display: flex;
             align-items: center;
@@ -60,103 +56,56 @@
         .info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .icon-svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             fill: var(--primary);
-            filter: drop-shadow(0 0 5px var(--primary-muted));
         }
 
-        .label { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-        .value { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .label { font-size: 13px; font-weight: 700; }
+        .value { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 
         .modes-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
-        /* Mode Buttons - Synced with Radius */
         .mode-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            padding: 12px 4px;
+            gap: 4px;
+            padding: 10px 2px;
             background: var(--surface);
-            border: var(--card-border);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: calc(var(--radius) * 0.8);
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
             color: var(--text-muted);
         }
 
         .mode-btn:active { transform: scale(0.94); }
-        
+
         .mode-btn.active {
             background: var(--primary);
-            color: white;
+            color: var(--on-primary);
             border-color: var(--primary);
             box-shadow: 0 4px 12px var(--primary-muted);
         }
 
-        .mode-btn.active .icon-svg { 
-            fill: white; 
-            filter: none;
+        .mode-btn.active .icon-svg {
+            fill: var(--on-primary);
         }
 
-        .mode-icon-svg { width: 20px; height: 20px; fill: var(--text-muted); }
-        .mode-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Skeleton Styles - Synced with Radius */
-        #skeleton {
-            position: fixed;
-            top: 4px; left: 6px; right: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 100;
-            pointer-events: none;
-        }
-        .skel-box {
-            height: 48px;
-            background: var(--surface);
-            border-radius: var(--radius);
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        .skel-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        .skel-item {
-            height: 64px;
-            background: var(--surface);
-            border-radius: calc(var(--radius) * 0.8);
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-            100% { opacity: 0.3; }
-        }
+        .mode-icon-svg { width: 18px; height: 18px; fill: var(--text-muted); }
+        .mode-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
-    <!-- Loading State -->
-    <div id="skeleton">
-        <div class="skel-box"></div>
-        <div class="skel-grid">
-            <div class="skel-item"></div>
-            <div class="skel-item"></div>
-            <div class="skel-item"></div>
-        </div>
-    </div>
-
-    <!-- Main Widget Content -->
     <div class="widget-container">
         <div class="status-row">
             <div class="info">
@@ -168,13 +117,11 @@
                     <div class="value" id="battery-pct">--%</div>
                 </div>
             </div>
-            <svg class="icon-svg" style="width: 16px; height: 16px; opacity: 0.5;" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
+            <span style="font-size: 10px; font-weight: 800; opacity: 0.4; text-transform: uppercase;">Linux</span>
         </div>
 
         <div class="modes-grid">
-            <div class="mode-btn" onclick="setPlan('saver')" id="plan-saver">
+            <div class="mode-btn" onclick="setPlan('power-saver')" id="plan-saver">
                 <svg class="icon-svg mode-icon-svg" viewBox="0 0 24 24">
                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
                 </svg>
@@ -186,7 +133,7 @@
                 </svg>
                 <span class="mode-label">Auto</span>
             </div>
-            <div class="mode-btn" onclick="setPlan('high')" id="plan-high">
+            <div class="mode-btn" onclick="setPlan('performance')" id="plan-high">
                 <svg class="icon-svg mode-icon-svg" viewBox="0 0 24 24">
                     <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
                 </svg>
@@ -196,87 +143,46 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        
-        function updateUI(config) {
-            if (config.theme === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-
-            // Sync Radius from App
-            if (config.radius) {
-                document.documentElement.style.setProperty('--radius', config.radius + 'px');
-            }
-
-            // Sync Colors
-            if (config.primaryColor) {
-                document.documentElement.style.setProperty('--primary', '#' + config.primaryColor);
-                document.documentElement.style.setProperty('--primary-muted', '#' + config.primaryColor + '33');
-            }
-            if (config.textColor) document.documentElement.style.setProperty('--text', '#' + config.textColor);
-        }
-
-        window.updateTheme = function(theme) {
-            updateUI(theme);
-        };
-
-        // Initial setup
-        updateUI({
-            theme: params.get('theme'),
-            primaryColor: params.get('primary_color'),
-            textColor: params.get('text_color'),
-            radius: params.get('radius')
-        });
-
-        window.onPCLinkResize = function() {
-            if (window.PCLinkWidget) {
-                const height = document.body.scrollHeight;
-                window.PCLinkWidget.postMessage('height:' + height);
-            }
-        };
-
         async function refreshStatus() {
             try {
-                const res = await fetch('/extensions/energy-pulse/status');
-                const data = await res.json();
-                
-                document.getElementById('power-status').innerText = data.power_plugged ? "AC Power" : "On Battery";
-                document.getElementById('battery-pct').innerText = data.percent + '%';
-                
-                // Active mode UI
-                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-                const activeId = `plan-${data.active_plan}`;
-                const activeBtn = document.getElementById(activeId);
-                if (activeBtn) activeBtn.classList.add('active');
-                
-            } catch (e) {
-                console.error("Energy Pulse error:", e);
+                const sysRes = await fetch('/info/system', { credentials: 'include' });
+                if (sysRes.ok) {
+                    const sysData = await sysRes.json();
+                    const hasBattery = sysData.battery && sysData.battery.percent !== undefined;
+                    document.getElementById('power-status').innerText = hasBattery ? (sysData.battery.power_plugged ? "AC Power" : "On Battery") : "AC Power";
+                    document.getElementById('battery-pct').innerText = hasBattery ? (Math.round(sysData.battery.percent) + '%') : "Desktop";
+                }
+
+                if (window.pclink && window.pclink.system) {
+                    const res = await pclink.system.exec({ command: 'powerprofilesctl get' });
+                    if (res.exit_code === 0 && res.stdout) {
+                        const plan = res.stdout.trim();
+                        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                        let activeId = 'plan-balanced';
+                        if (plan === 'power-saver') activeId = 'plan-saver';
+                        else if (plan === 'performance') activeId = 'plan-high';
+                        const el = document.getElementById(activeId);
+                        if (el) el.classList.add('active');
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function setPlan(planName) {
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('selection');
             }
+
+            try {
+                if (window.pclink && window.pclink.system) {
+                    await pclink.system.exec({ command: `powerprofilesctl set ${planName}` });
+                    await refreshStatus();
+                }
+            } catch(e) {}
         }
 
-        async function setPlan(plan) {
-           try {
-               await fetch(`/extensions/energy-pulse/set-plan/${plan}`, { method: 'POST' });
-               refreshStatus();
-           } catch(e) {}
-        }
-
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('skeleton').style.display = 'none';
-                document.body.classList.add('ready');
-                onPCLinkResize();
-                if (window.PCLinkWidget) window.PCLinkWidget.postMessage('loaded');
-            }, 150);
-        });
-
-        setInterval(refreshStatus, 10000);
+        setInterval(refreshStatus, 8000);
         refreshStatus();
-        
-        const observer = new MutationObserver(onPCLinkResize);
-        observer.observe(document.body, { attributes: true, childList: true, subtree: true });
     </script>
 </body>
 </html>

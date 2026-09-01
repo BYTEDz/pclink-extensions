@@ -1,72 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Speed Test</title>
-    <script src="/ui/static/extension-theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Speed Engine</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --success: #10b981;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            background: var(--bg);
-            color: var(--text);
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
             overflow-x: hidden;
-            overflow-y: auto;
         }
 
         body {
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
+            user-select: none;
         }
 
         .header {
             width: 100%;
-            text-align: center;
+            max-width: 440px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
         }
 
-        .brand {
+        .brand-title {
+            font-size: 1.1rem;
             font-weight: 900;
-            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--surface);
+            color: var(--text-muted);
+            border: var(--card-border);
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--primary);
-            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
 
         .tabs {
             display: flex;
             background: var(--surface);
             padding: 4px;
-            border-radius: 14px;
+            border-radius: var(--radius);
             width: 100%;
-            max-width: 320px;
+            max-width: 440px;
             border: var(--card-border);
+            gap: 4px;
         }
 
         .tab {
             flex: 1;
-            padding: 10px;
+            padding: 8px 12px;
             text-align: center;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 800;
             color: var(--text-muted);
             cursor: pointer;
-            border-radius: 11px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: calc(var(--radius) * 0.75);
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tab.active {
@@ -78,8 +127,8 @@
         /* SVG GAUGE */
         .gauge-container {
             position: relative;
-            width: 240px;
-            height: 160px;
+            width: 220px;
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -87,8 +136,8 @@
 
         .gauge-svg {
             transform: rotate(-220deg);
-            width: 240px;
-            height: 240px;
+            width: 220px;
+            height: 220px;
             position: absolute;
             top: -20px;
         }
@@ -96,7 +145,7 @@
         .gauge-track {
             fill: none;
             stroke: var(--surface);
-            stroke-width: 14;
+            stroke-width: 12;
             stroke-linecap: round;
             stroke-dasharray: 440;
             stroke-dashoffset: 176;
@@ -105,49 +154,49 @@
         .gauge-fill {
             fill: none;
             stroke: var(--primary);
-            stroke-width: 14;
+            stroke-width: 12;
             stroke-linecap: round;
             stroke-dasharray: 440;
             stroke-dashoffset: 440;
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0, 0, 1);
             filter: drop-shadow(0 0 10px var(--primary-muted));
         }
 
         .gauge-content {
             z-index: 10;
             text-align: center;
-            margin-top: 45px;
+            margin-top: 40px;
         }
 
         .speed-number {
-            font-size: 58px;
+            font-size: 50px;
             font-weight: 900;
             margin: 0;
             line-height: 1;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
             letter-spacing: -2px;
         }
 
         .speed-unit {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-muted);
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             margin-top: 4px;
         }
 
         .main-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
         }
 
         .stat-card {
             background: var(--surface);
-            padding: 16px;
+            padding: 14px;
             border-radius: var(--radius);
             border: var(--card-border);
             text-align: center;
@@ -155,17 +204,18 @@
         }
 
         .stat-label {
-            font-size: 10px;
+            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             font-weight: 800;
         }
 
         .stat-value {
             font-size: 18px;
-            font-weight: 800;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
             color: var(--text);
         }
 
@@ -173,38 +223,60 @@
             font-size: 10px;
             color: var(--text-muted);
             margin-left: 2px;
+            font-family: sans-serif;
+            font-weight: 700;
+        }
+
+        .btn-start {
+            width: 100%;
+            max-width: 440px;
+            padding: 16px;
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--primary-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-start:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .btn-start:disabled {
+            background: var(--surface);
+            color: var(--text-muted);
+            box-shadow: none;
+            opacity: 0.5;
+            cursor: default;
         }
 
         .history-section {
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-
-        .history-title {
-            font-size: 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
             gap: 8px;
-            margin-left: 8px;
         }
 
         .history-card {
             background: var(--surface);
-            border-radius: var(--radius);
+            border-radius: calc(var(--radius) * 0.75);
             border: var(--card-border);
-            padding: 14px;
+            padding: 12px 14px;
             display: grid;
             grid-template-columns: auto 1fr auto;
             align-items: center;
             gap: 12px;
-            opacity: 0.9;
         }
 
         .history-icon {
@@ -217,127 +289,15 @@
             justify-content: center;
             color: var(--primary);
         }
-
-        .history-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .history-date {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .history-type {
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: capitalize;
-        }
-
-        .history-speeds {
-            text-align: right;
-            font-weight: 800;
-            font-size: 14px;
-        }
-
-        .history-ping {
-            font-size: 10px;
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .btn-start {
-            width: 100%;
-            max-width: 400px;
-            padding: 18px;
-            background: var(--primary);
-            color: var(--on-primary);
-            border: none;
-            border-radius: var(--radius);
-            font-size: 16px;
-            font-weight: 900;
-            cursor: pointer;
-            box-shadow: 0 8px 16px var(--primary-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .btn-start:active:not(:disabled) {
-            transform: scale(0.96);
-        }
-
-        .btn-start:disabled {
-            background: var(--surface);
-            color: var(--text-muted);
-            box-shadow: none;
-            opacity: 0.6;
-        }
-
-        .status-badge {
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 14px;
-            border-radius: 20px;
-            background: var(--hover-overlay);
-            color: var(--text-muted);
-            border: 1px solid var(--divider);
-            text-transform: uppercase;
-        }
-
-        #appLoader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .testing .gauge-fill {
-            animation: pulse-glow 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-glow {
-
-            0%,
-            100% {
-                stroke-opacity: 0.8;
-                filter: drop-shadow(0 0 5px var(--primary-muted));
-            }
-
-            50% {
-                stroke-opacity: 1;
-                filter: drop-shadow(0 0 15px var(--primary));
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Mobile Scrollbar hiding */
-        ::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
-        }
     </style>
 </head>
-
-<body id="body">
-    <div id="appLoader">
-        <div
-            style="width: 40px; height: 40px; border: 4px solid var(--primary-faint); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;">
-        </div>
-    </div>
-
+<body>
     <div class="header">
-        <div class="brand">Network Engine</div>
-        <div id="statusBadge" class="status-badge">Engine Ready</div>
+        <div class="brand-title">
+            <i data-lucide="gauge" style="width: 20px; height: 20px; color: var(--primary);"></i>
+            Speed Engine
+        </div>
+        <div id="statusBadge" class="status-badge">Ready</div>
     </div>
 
     <div class="tabs">
@@ -367,35 +327,24 @@
         </div>
     </div>
 
-    <div class="history-section">
-        <div class="history-title">
-            <i data-lucide="history" style="width: 14px;"></i>
-            Recent Results
-        </div>
-        <div id="historyList" style="display: flex; flex-direction: column; gap: 8px;">
-            <!-- History entries -->
-        </div>
-    </div>
-
     <button id="startBtn" class="btn-start" onclick="startTest()">
-        <i data-lucide="play"></i>
-        <span>INITIATE TEST</span>
+        <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+        <span>Start Speed Test</span>
     </button>
 
+    <div class="history-section">
+        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">Recent Runs</span>
+        <div id="historyList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+    </div>
+
     <script>
-        lucide.createIcons();
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
         let isTesting = false;
         let currentMode = 'internet';
-
-        // History Storage
         let testHistory = JSON.parse(localStorage.getItem('pclink_speed_history') || '[]');
 
         function formatSpeed(mbps) {
-            if (mbps >= 1000) {
-                return { value: (mbps / 1000).toFixed(2), unit: "Gbps" };
-            }
-            return { value: mbps.toFixed(1), unit: "Mbps" };
+            if (mbps >= 1000) return { value: (mbps / 1000).toFixed(2), unit: "Gbps" };
+            return { value: Number(mbps).toFixed(1), unit: "Mbps" };
         }
 
         function setMode(mode) {
@@ -403,11 +352,11 @@
             currentMode = mode;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(mode === 'internet' ? 'tabInternet' : 'tabLan').classList.add('active');
-            updateStatus('Engine Ready');
+            updateStatus('Ready');
         }
 
         function updateGauge(speed) {
-            const maxRef = 1000; // 1Gbps ref
+            const maxRef = 500;
             const circlePerimeter = 2 * Math.PI * 70;
             const visibleArc = 0.61;
             const minOffset = circlePerimeter * (1 - visibleArc);
@@ -417,47 +366,44 @@
             document.getElementById('gaugeFill').style.strokeDashoffset = offset;
         }
 
-        function updateHistory(entry) {
-            testHistory.unshift(entry);
-            if (testHistory.length > 5) testHistory.pop();
-            localStorage.setItem('pclink_speed_history', JSON.stringify(testHistory));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('historyList');
-            if (testHistory.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 20px;">No recent tests</div>';
-                return;
+        /**
+         * Accurate Multi-Sample Ping Probe from Phone to PC
+         */
+        async function measureAccuratePing() {
+            const samples = [];
+            // Run 5 warm micro-probes and drop the cold setup connection
+            for (let i = 0; i < 5; i++) {
+                const t0 = performance.now();
+                try {
+                    await fetch('./ping', { credentials: 'include', cache: 'no-store' });
+                    const dt = performance.now() - t0;
+                    if (i > 0) samples.push(dt); // Ignore cold sample 0
+                } catch (e) {}
             }
-            container.innerHTML = testHistory.map(h => {
-                const dl = formatSpeed(h.download);
-                const ul = formatSpeed(h.upload);
-                const date = new Date(h.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const icon = h.mode === 'internet' ? 'globe' : 'wifi';
-                return `
-                    <div class="history-card">
-                        <div class="history-icon"><i data-lucide="${icon}" style="width: 16px;"></i></div>
-                        <div class="history-info">
-                            <div class="history-type">${h.mode} Test</div>
-                            <div class="history-date">${date} • ${h.ping}ms</div>
-                        </div>
-                        <div class="history-speeds">
-                            <div>${dl.value} <span style="font-size: 9px; color: var(--text-muted)">${dl.unit} ↓</span></div>
-                            <div style="font-size: 11px; opacity: 0.7;">${ul.value} <span style="font-size: 9px; color: var(--text-muted)">${ul.unit} ↑</span></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
+            if (samples.length === 0) return 1.0;
+            samples.sort((a, b) => a - b);
+            return Math.round(samples[Math.floor(samples.length / 2)]); // Median latency
         }
 
         async function startTest() {
+            if (isTesting) return;
+
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            isTesting = true;
+            document.getElementById('startBtn').disabled = true;
+
             if (currentMode === 'internet') {
-                const res = await fetch(apiPath + '/start', { method: 'POST' });
-                if ((await res.json()).status === 'success') {
-                    isTesting = true;
-                    updateUI();
+                try {
+                    const res = await fetch('./start', { method: 'POST', credentials: 'include' });
+                    if (res.ok) {
+                        pollBroadbandUI();
+                    } else {
+                        isTesting = false;
+                        document.getElementById('startBtn').disabled = false;
+                    }
+                } catch (e) {
+                    isTesting = false;
+                    document.getElementById('startBtn').disabled = false;
                 }
             } else {
                 startLanTest();
@@ -465,61 +411,69 @@
         }
 
         async function startLanTest() {
-            isTesting = true;
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('body').classList.add('testing');
             let maxMeasured = 0;
-
             try {
-                updateStatus('LATENCY...');
-                const startPing = Date.now();
-                await fetch(apiPath + '/status');
-                const pingVal = Date.now() - startPing;
+                updateStatus('Measuring Latency...');
+                const phoneToPcPing = await measureAccuratePing();
 
-                updateStatus('DOWNLOADING...');
-                const dlRes = await fetch(apiPath + '/local/download');
+                updateStatus('Testing Download...');
+                const dlRes = await fetch('./local/download', { credentials: 'include' });
                 const reader = dlRes.body.getReader();
                 let received = 0;
-                const startDl = Date.now();
+                const startDl = performance.now();
+
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
                     received += value.length;
-                    const elapsed = (Date.now() - startDl) / 1000;
-                    const mbps = (received * 8) / (1024 * 1024) / elapsed;
+                    const elapsed = (performance.now() - startDl) / 1000;
+                    const mbps = (received * 8) / (1024 * 1024) / Math.max(0.01, elapsed);
                     refreshDisplay(mbps, 0);
                     if (mbps > maxMeasured) maxMeasured = mbps;
                 }
 
-                updateStatus('UPLOADING...');
-                const uploadData = new Uint8Array(20 * 1024 * 1024);
-                const startUl = Date.now();
-                await fetch(apiPath + '/local/upload', { method: 'POST', body: uploadData });
-                const elapsedUl = (Date.now() - startUl) / 1000;
-                const uploadMbps = (uploadData.length * 8) / (1024 * 1024) / elapsedUl;
-                if (uploadMbps > maxMeasured) maxMeasured = uploadMbps;
+                updateStatus('Testing Upload...');
+                const uploadData = new Uint8Array(12 * 1024 * 1024); // 12 MB buffer
+                const startUl = performance.now();
+
+                await fetch('./local/upload', {
+                    method: 'POST',
+                    body: uploadData,
+                    credentials: 'include'
+                });
+
+                const elapsedUl = (performance.now() - startUl) / 1000;
+                const uploadMbps = (uploadData.length * 8) / (1024 * 1024) / Math.max(0.01, elapsedUl);
 
                 const finalDl = maxMeasured;
                 const finalUl = uploadMbps;
 
                 refreshDisplay(finalDl, finalUl);
-                updateHistory({ mode: 'lan', download: finalDl, upload: finalUl, ping: pingVal, timestamp: Date.now() / 1000 });
+                updateStatus('Complete');
 
-                await fetch(apiPath + '/local/results', {
+                if (window.pclink && window.pclink.ui) pclink.ui.haptic('success');
+
+                const entry = {
+                    mode: 'LAN Wi-Fi',
+                    download: finalDl,
+                    upload: finalUl,
+                    ping: phoneToPcPing,
+                    timestamp: Date.now() / 1000
+                };
+                updateHistory(entry);
+
+                await fetch('./local/results', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ download: finalDl, upload: finalUl, ping: pingVal })
+                    body: JSON.stringify({ download: finalDl, upload: finalUl, ping: phoneToPcPing }),
+                    credentials: 'include'
                 });
 
-                isTesting = false;
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('body').classList.remove('testing');
-                updateStatus('ENGINE READY');
             } catch (e) {
-                updateStatus('LINK ERROR');
+                updateStatus('Link Error');
+            } finally {
                 isTesting = false;
                 document.getElementById('startBtn').disabled = false;
-                document.getElementById('body').classList.remove('testing');
             }
         }
 
@@ -537,52 +491,82 @@
             document.getElementById('ulDisplay').innerHTML = `${fUl.value} <span class="stat-unit">${fUl.unit}</span>`;
         }
 
-        async function updateUI() {
+        async function pollBroadbandUI() {
             try {
-                const res = await fetch(apiPath + '/status');
+                const res = await fetch('./status', { credentials: 'include' });
+                if (!res.ok) return;
                 const data = await res.json();
 
                 if (data.status === 'testing') {
-                    const current = (data.download > 0 ? data.download : data.upload);
                     refreshDisplay(data.download, data.upload);
-                    updateStatus(data.phase || 'TESTING...');
-                    document.getElementById('startBtn').disabled = true;
-                    document.getElementById('body').classList.add('testing');
+                    updateStatus(data.phase || 'Testing...');
+                    setTimeout(pollBroadbandUI, 800);
                 } else if (data.status === 'complete') {
                     refreshDisplay(data.download, data.upload);
-                    updateStatus('ENGINE READY');
+                    updateStatus('Complete');
+                    isTesting = false;
                     document.getElementById('startBtn').disabled = false;
-                    document.getElementById('body').classList.remove('testing');
-                    if (isTesting) {
-                        updateHistory({
-                            mode: data.mode,
-                            download: data.download,
-                            upload: data.upload,
-                            ping: data.ping,
-                            timestamp: data.timestamp
-                        });
-                        isTesting = false;
-                    }
-                }
 
-                if (isTesting) setTimeout(updateUI, 1000);
-            } catch (e) { }
+                    if (window.pclink && window.pclink.ui) pclink.ui.haptic('success');
+
+                    updateHistory({
+                        mode: 'Broadband',
+                        download: data.download,
+                        upload: data.upload,
+                        ping: data.ping,
+                        timestamp: data.timestamp
+                    });
+                } else if (data.status === 'error') {
+                    updateStatus(data.error_message || 'Test Error');
+                    isTesting = false;
+                    document.getElementById('startBtn').disabled = false;
+                }
+            } catch (e) {
+                isTesting = false;
+                document.getElementById('startBtn').disabled = false;
+            }
+        }
+
+        function updateHistory(entry) {
+            testHistory.unshift(entry);
+            if (testHistory.length > 5) testHistory.pop();
+            localStorage.setItem('pclink_speed_history', JSON.stringify(testHistory));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (testHistory.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:11px; padding:12px;">No recent speed tests</div>';
+                return;
+            }
+            container.innerHTML = testHistory.map(h => {
+                const dl = formatSpeed(h.download);
+                const ul = formatSpeed(h.upload);
+                const date = new Date(h.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="history-card">
+                        <div class="history-icon"><i data-lucide="${h.mode.includes('LAN') ? 'wifi' : 'globe'}" style="width:16px; height:16px;"></i></div>
+                        <div>
+                            <div style="font-size:12px; font-weight:800;">${h.mode}</div>
+                            <div style="font-size:10px; color:var(--text-muted); font-weight:600;">${date} • ${h.ping} ms</div>
+                        </div>
+                        <div style="text-align:right; font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:900;">
+                            <div>${dl.value} <span style="font-size:9px; color:var(--text-muted); font-family:sans-serif;">${dl.unit} ↓</span></div>
+                            <div style="font-size:10px; opacity:0.7;">${ul.value} <span style="font-size:8px; color:var(--text-muted); font-family:sans-serif;">${ul.unit} ↑</span></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
         }
 
         function updateStatus(text) {
             document.getElementById('statusBadge').textContent = text;
         }
 
-        // Initialize display
+        lucide.createIcons();
         renderHistory();
-        updateUI().then(() => {
-            const loader = document.getElementById('appLoader');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.remove(), 400);
-            }
-        });
     </script>
 </body>
-
 </html>

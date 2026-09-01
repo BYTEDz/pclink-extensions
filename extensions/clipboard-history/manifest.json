@@ -1,0 +1,70 @@
+{
+  "manifest_version": 2,
+  "id": "clipboard-history",
+  "name": "Clipboard History",
+  "version": "2.0.0",
+  "description": "Capture and sync PC clipboard history in real-time. Send and copy clips seamlessly between phone and computer.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Productivity",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "storage.local",
+    "system.exec",
+    "notifications"
+  ],
+  "declared_permissions": [
+    "storage.local",
+    "system.exec",
+    "notifications"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "clipboard-history-main",
+        "title": "Clipboard History",
+        "icon": "clipboard",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "clipboard-widget",
+        "title": "PC Clipboard",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 128,
+      "max_cpu_percent": 30,
+      "execution_timeout_sec": 30
+    }
+  }
+}

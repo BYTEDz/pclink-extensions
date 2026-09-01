@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "id": "energy-pulse",
+  "name": "Energy Pulse",
+  "version": "2.2.0",
+  "description": "Remote Linux power profile management via power-profiles-daemon.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "System",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "system.exec"
+  ],
+  "declared_permissions": [
+    "system.exec"
+  ],
+  "supported_platforms": [
+    "linux"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "energy-pulse-main",
+        "title": "Energy Pulse",
+        "icon": "zap",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "energy-status",
+        "title": "Battery & Power",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "none"
+  }
+}

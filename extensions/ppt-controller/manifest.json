@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+  "id": "ppt-controller",
+  "name": "Slideshow Master",
+  "version": "2.0.0",
+  "description": "Professional remote control for slideshows and presentations.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Productivity",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "input.inject"
+  ],
+  "declared_permissions": [
+    "input.inject"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "ppt-main-view",
+        "title": "Slideshow Master",
+        "icon": "presentation",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": []
+  },
+  "backend": {
+    "runtime": "none"
+  }
+}

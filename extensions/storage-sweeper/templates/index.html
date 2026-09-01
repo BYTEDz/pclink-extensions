@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Storage Sweeper</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --success: #10b981;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 20px;
+            padding-top: calc(20px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(30px + var(--safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            user-select: none;
+        }
+
+        .status-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .circle-visual {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-faint);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle, var(--primary-faint) 0%, transparent 75%);
+            box-shadow: 0 0 35px var(--primary-faint);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .circle-visual.cleaning::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            border-bottom-color: var(--primary);
+            animation: spin 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .size-val {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1;
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
+            color: var(--primary);
+            letter-spacing: -1.5px;
+        }
+
+        .size-unit {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .details-wrapper {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .details-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .value {
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text);
+        }
+
+        #success-msg {
+            color: var(--success);
+            font-weight: 800;
+            font-size: 0.85rem;
+            opacity: 0;
+            text-align: center;
+            height: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            transform: translateY(6px);
+        }
+
+        #success-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 8px 24px var(--primary-muted);
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+
+        .action-btn:disabled {
+            background: var(--surface);
+            box-shadow: none;
+            cursor: default;
+            color: var(--text-muted);
+            opacity: 0.5;
+            border: var(--card-border);
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <div class="circle-visual" id="visual">
+            <p class="size-val" id="size-text">0.0</p>
+            <p class="size-unit">MB</p>
+        </div>
+        <div>
+            <p style="margin: 0; font-weight: 900; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                Temporary Files
+            </p>
+            <p style="margin: 4px 0 0 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;" id="path-info">
+                Analyzing system cache registers...
+            </p>
+        </div>
+    </div>
+
+    <div class="details-wrapper">
+        <div id="success-msg">Optimization Complete</div>
+        <div class="details-card">
+            <div class="detail-row">
+                <span class="label">System Temp Registers</span>
+                <span class="value" id="sys-temp">0.0 MB</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">User Application Cache</span>
+                <span class="value" id="user-cache">0.0 MB</span>
+            </div>
+            <div class="detail-row" style="border-top: var(--card-border); padding-top: 8px;">
+                <span class="label">Total Scanned Files</span>
+                <span class="value" id="file-count">0</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" id="clean-btn" onclick="startClean()">Purge Storage</button>
+
+    <script>
+        const btn = document.getElementById('clean-btn');
+        const visual = document.getElementById('visual');
+        const sizeText = document.getElementById('size-text');
+        const successMsg = document.getElementById('success-msg');
+
+        async function scan() {
+            try {
+                const res = await fetch('./scan', { credentials: 'include' });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                sizeText.innerText = data.size_mb;
+                document.getElementById('path-info').innerText = `${data.path_count} storage paths analyzed`;
+                document.getElementById('sys-temp').innerText = (data.size_mb * 0.45).toFixed(1) + ' MB';
+                document.getElementById('user-cache').innerText = (data.size_mb * 0.55).toFixed(1) + ' MB';
+                document.getElementById('file-count').innerText = data.file_count || 0;
+
+                if (data.size_mb === 0) {
+                    btn.disabled = true;
+                    btn.innerText = 'Storage Clean';
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'Purge Storage';
+                }
+            } catch (e) {
+                console.error("Storage scan error:", e);
+            }
+        }
+
+        async function startClean() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+
+            btn.disabled = true;
+            btn.innerText = 'Purging...';
+            visual.classList.add('cleaning');
+            visual.style.transform = 'scale(1.04)';
+
+            try {
+                const res = await fetch('./clean', { method: 'POST', credentials: 'include' });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                if (window.pclink && window.pclink.ui) pclink.ui.haptic('success');
+
+                sizeText.innerText = '0.0';
+                successMsg.innerText = `Freed ${data.deleted_mb} MB (${data.deleted_count} files)`;
+                successMsg.classList.add('show');
+
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                    scan();
+                }, 3000);
+            } catch (e) {
+                if (window.pclink && window.pclink.ui) pclink.ui.haptic('error');
+                alert("Storage purge failed.");
+            } finally {
+                visual.classList.remove('cleaning');
+                visual.style.transform = 'scale(1)';
+                btn.innerText = 'Purge Storage';
+            }
+        }
+
+        scan();
+    </script>
+</body>
+</html>

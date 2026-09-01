@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Docker Manager Pro</title>
-    <script src="/ui/static/extension-theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Vessel Forge</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
             --primary: #2496ed;
-            --primary-muted: rgba(36, 150, 237, 0.15);
-            --bg: #0f172a;
+            --primary-muted: rgba(36, 150, 237, 0.18);
+            --on-primary: #ffffff;
             --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --surface: rgba(30, 41, 59, 0.5);
-            --surface-hover: #1e293b;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --success: #10b981;
             --card-border: 1px solid rgba(255, 255, 255, 0.08);
-            --radius: 12px;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
         }
 
         :root[data-theme="light"] {
-            --bg: #f8fafc;
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
             --text: #0f172a;
             --text-muted: #64748b;
-            --surface: #ffffff;
-            --surface-hover: #f1f5f9;
-            --card-border: 1px solid rgba(0, 0, 0, 0.1);
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -34,13 +40,23 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
             color: var(--text);
-            margin: 0;
             padding: 16px;
-            min-height: 100vh;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
+            user-select: none;
         }
 
         .container {
@@ -52,20 +68,6 @@
             gap: 16px;
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .tabs-nav {
             display: flex;
             background: var(--surface);
@@ -74,6 +76,7 @@
             border: var(--card-border);
             overflow-x: auto;
             scrollbar-width: none;
+            gap: 4px;
         }
 
         .tabs-nav::-webkit-scrollbar {
@@ -82,16 +85,17 @@
 
         .tab-btn {
             flex: 1;
-            padding: 10px 14px;
+            padding: 10px 12px;
             border: none;
             background: none;
             color: var(--text-muted);
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.75rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            border-radius: calc(var(--radius) * 0.8);
-            transition: 0.1s;
+            border-radius: calc(var(--radius) * 0.75);
+            transition: 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -101,7 +105,8 @@
 
         .tab-btn.active {
             background: var(--primary);
-            color: #fff;
+            color: var(--on-primary);
+            box-shadow: 0 4px 12px var(--primary-muted);
         }
 
         .search-field {
@@ -112,6 +117,7 @@
             border-radius: var(--radius);
             color: var(--text);
             font-weight: 600;
+            font-size: 0.85rem;
             outline: none;
             transition: 0.2s;
         }
@@ -126,37 +132,41 @@
             border-radius: var(--radius);
             padding: 16px;
             position: relative;
-            overflow: hidden;
-            transition: transform 0.2s;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .status-badge {
             font-size: 0.65rem;
             font-weight: 900;
             padding: 3px 8px;
-            border-radius: var(--radius);
+            border-radius: 8px;
             text-transform: uppercase;
-            transition: 0.2s;
+            letter-spacing: 0.5px;
         }
 
         .status-running {
-            background: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.15);
             color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .status-exited {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.15);
             color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .container-name {
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 2px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            letter-spacing: -0.2px;
         }
 
         .container-image {
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
             color: var(--text-muted);
             overflow: hidden;
@@ -165,12 +175,12 @@
         }
 
         .details-grid {
-            margin-top: 12px;
+            margin-top: 8px;
             display: none;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            padding-top: 12px;
-            border-top: 1px solid var(--card-border);
+            padding-top: 10px;
+            border-top: var(--card-border);
         }
 
         .details-item {
@@ -184,6 +194,7 @@
             text-transform: uppercase;
             font-weight: 800;
             color: var(--text-muted);
+            letter-spacing: 0.5px;
         }
 
         .details-value {
@@ -198,33 +209,36 @@
         .card-actions {
             display: flex;
             gap: 8px;
-            margin-top: 14px;
+            margin-top: 8px;
+            border-top: var(--card-border);
+            padding-top: 10px;
         }
 
         .btn-sm {
-            background: var(--bg);
+            background: var(--surface-hover);
             border: var(--card-border);
             color: var(--text);
-            padding: 8px;
-            border-radius: var(--radius);
+            padding: 8px 12px;
+            border-radius: calc(var(--radius) * 0.6);
             cursor: pointer;
             transition: 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             flex: 1;
+            font-weight: 700;
+            font-size: 0.75rem;
         }
 
         .btn-sm:active {
+            transform: scale(0.96);
             background: var(--primary-muted);
             color: var(--primary);
-            border-color: var(--primary);
         }
 
         .btn-nuke:active {
             color: #ef4444;
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
         }
 
         .input-group {
@@ -236,22 +250,21 @@
         .input-pro {
             width: 100%;
             padding: 12px;
-            background: var(--bg);
+            background: var(--surface-hover);
             border: var(--card-border);
-            border-radius: var(--radius);
+            border-radius: calc(var(--radius) * 0.75);
             color: var(--text);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
         }
 
-        select.input-pro {
-            appearance: none;
-            cursor: pointer;
+        .input-pro:focus {
+            border-color: var(--primary);
         }
 
         textarea.input-pro {
-            min-height: 180px;
+            min-height: 140px;
             font-family: monospace;
             font-size: 0.75rem;
         }
@@ -262,79 +275,44 @@
             background: var(--primary);
             border: none;
             border-radius: var(--radius);
-            color: #fff;
+            color: var(--on-primary);
             font-weight: 800;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            margin-top: 10px;
-            transition: 0.2s;
+            margin-top: 8px;
+            transition: 0.15s;
         }
 
         .btn-primary:active {
-            opacity: 0.8;
+            transform: scale(0.98);
         }
 
-        .progress-box {
-            background: var(--primary-muted);
-            border: 1px solid var(--primary);
-            padding: 10px;
-            border-radius: var(--radius);
-            margin-bottom: 12px;
-        }
-
-        .progress-bar-track {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 30%;
-            border-radius: 10px;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(350%);
-            }
-        }
-
-        .modal-bg {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal {
-            background: var(--bg);
+        .template-chip {
+            font-size: 0.7rem;
+            background: var(--surface-hover);
             border: var(--card-border);
-            border-radius: var(--radius);
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.15s;
+        }
+
+        .template-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         #log-view {
             position: fixed;
             inset: 0;
-            background: #000;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
             z-index: 200;
             display: none;
-            padding: 20px;
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
             flex-direction: column;
         }
 
@@ -342,20 +320,24 @@
             flex: 1;
             overflow: auto;
             color: #10b981;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.75rem;
-            margin-top: 16px;
+            margin-top: 14px;
             white-space: pre-wrap;
             word-wrap: break-word;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: var(--card-border);
         }
 
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: calc(20px + var(--safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%);
             background: var(--primary);
-            color: #fff;
+            color: var(--on-primary);
             padding: 10px 20px;
             border-radius: var(--radius);
             font-weight: 800;
@@ -364,33 +346,11 @@
             pointer-events: none;
             opacity: 0;
             transition: 0.3s;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
         .toast.show {
             opacity: 1;
-            bottom: 40px;
-        }
-
-        .template-chip {
-            font-size: 0.65rem;
-            background: var(--bg);
-            border: var(--card-border);
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.1s;
-            font-weight: 600;
-        }
-
-        .template-chip:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .stats-highlight {
-            color: var(--primary);
-            font-weight: 900;
         }
     </style>
 </head>
@@ -398,23 +358,28 @@
 <body>
     <div class="container">
         <nav class="tabs-nav">
-            <button class="tab-btn active" id="btn-containers" onclick="switchTab('containers')"><i data-lucide="layers"
-                    size="14"></i> Fleet</button>
-            <button class="tab-btn" id="btn-deploy" onclick="switchTab('deploy')"><i data-lucide="rocket" size="14"></i>
-                Run</button>
-            <button class="tab-btn" id="btn-images" onclick="switchTab('images')"><i data-lucide="package"
-                    size="14"></i> Images</button>
-            <button class="tab-btn" id="btn-volumes" onclick="switchTab('volumes')"><i data-lucide="hard-drive"
-                    size="14"></i> Vols</button>
-            <button class="tab-btn" id="btn-networks" onclick="switchTab('networks')"><i data-lucide="network"
-                    size="14"></i> Nets</button>
+            <button class="tab-btn active" id="btn-containers" onclick="switchTab('containers')">
+                <i data-lucide="layers" style="width: 14px; height: 14px;"></i> Fleet
+            </button>
+            <button class="tab-btn" id="btn-deploy" onclick="switchTab('deploy')">
+                <i data-lucide="rocket" style="width: 14px; height: 14px;"></i> Run
+            </button>
+            <button class="tab-btn" id="btn-images" onclick="switchTab('images')">
+                <i data-lucide="package" style="width: 14px; height: 14px;"></i> Images
+            </button>
+            <button class="tab-btn" id="btn-volumes" onclick="switchTab('volumes')">
+                <i data-lucide="hard-drive" style="width: 14px; height: 14px;"></i> Vols
+            </button>
+            <button class="tab-btn" id="btn-networks" onclick="switchTab('networks')">
+                <i data-lucide="network" style="width: 14px; height: 14px;"></i> Nets
+            </button>
         </nav>
 
         <div id="active-tasks"></div>
 
         <div id="view-containers">
-            <input type="text" id="search" class="search-field" placeholder="Search fleet..." oninput="refresh()">
-            <div id="containerList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;"></div>
+            <input type="text" id="search" class="search-field" placeholder="Search container fleet..." oninput="refresh()">
+            <div id="containerList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"></div>
         </div>
 
         <div id="view-deploy" style="display: none">
@@ -426,136 +391,74 @@
                     <div class="template-chip" onclick="loadTemplate('portainer')">Portainer</div>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="run-image" class="input-pro" placeholder="Image:tag (nginx:latest)">
+                    <input type="text" id="run-image" class="input-pro" placeholder="Image:tag (e.g. nginx:alpine)">
                     <input type="text" id="run-name" class="input-pro" placeholder="Container Name">
-                    <input type="text" id="run-ports" class="input-pro"
-                        placeholder="Host Port:Container Port (8080:80)">
-                    <input type="text" id="run-volumes" class="input-pro"
-                        placeholder="Host Path:Container Path (/data:/app/data)">
-                    <input type="text" id="run-env" class="input-pro"
-                        placeholder="ENV (MYSQL_ROOT_PASSWORD=123, ENV=prod)">
+                    <input type="text" id="run-ports" class="input-pro" placeholder="Host Port:Container Port (8080:80)">
+                    <input type="text" id="run-volumes" class="input-pro" placeholder="Host Path:Container Path (/data:/app/data)">
+                    <input type="text" id="run-env" class="input-pro" placeholder="ENV Variables (KEY=value, ENV=prod)">
                     <select id="run-restart" class="input-pro">
                         <option value="no">Restart: No</option>
                         <option value="always">Restart: Always</option>
                         <option value="unless-stopped">Restart: Unless Stopped</option>
                     </select>
-                    <textarea id="run-json" class="input-pro" placeholder="Advanced JSON Config"
-                        style="display:none"></textarea>
-                    <button class="btn-sm" onclick="toggleAdv()"
-                        style="font-size: 0.65rem; color: var(--text-muted); border: none; background: transparent; padding:0; justify-content:flex-end;">Switch
-                        Advanced JSON Mode</button>
+                    <textarea id="run-json" class="input-pro" placeholder="Advanced JSON Config" style="display:none"></textarea>
+                    <button class="btn-sm" onclick="toggleAdv()" style="font-size: 0.7rem; color: var(--text-muted); border: none; background: transparent; padding: 0; justify-content: flex-end;">Switch Advanced JSON Mode</button>
                 </div>
                 <button class="btn-primary" id="launch-btn" onclick="deployContainer()">Ignite Container</button>
             </div>
         </div>
 
         <div id="view-images" style="display: none">
-            <div style="display: flex; gap: 6px;"><input type="text" id="pull-input" class="search-field" style="flex:1"
-                    placeholder="Image to pull (e.g. ubuntu:latest)..."><button class="btn-sm"
-                    style="flex:0; width:50px; background:var(--primary); color:#fff; border:none;"
-                    onclick="pullImg()"><i data-lucide="download"></i></button></div>
-            <div id="imageList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;"></div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="pull-input" class="search-field" style="flex:1" placeholder="Image to pull (e.g. redis:alpine)...">
+                <button class="btn-sm" style="flex:0; width:50px; background:var(--primary); color:#fff; border:none;" onclick="pullImg()">
+                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+            <div id="imageList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;"></div>
         </div>
 
         <div id="view-volumes" style="display: none">
-            <div id="volumeList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="volumeList" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
         <div id="view-networks" style="display: none">
-            <div id="networkList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="networkList" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="modal-bg">
-        <div class="modal">
-            <h3 id="modal-title" style="margin:0 0 10px 0">Action</h3>
-            <p id="modal-body" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;"></p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn-sm" onclick="closeModal()">Cancel</button>
-                <button class="btn-primary" style="margin:0; flex:1" id="confirm-exec">Confirm</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Logs Viewer Overlay -->
     <div id="log-view">
-        <div
-            style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--card-border); padding-bottom: 12px;">
-            <h4 id="log-title" style="margin:0; color:#fff;">Logs</h4>
-            <button class="btn-sm"
-                style="flex:0; padding:6px 14px; background: rgba(255,255,255,0.1); border:none; color:#fff;"
-                onclick="closeLogs()">Close</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--card-border); padding-bottom: 12px;">
+            <h4 id="log-title" style="margin:0; font-weight: 800;">Container Logs</h4>
+            <button class="btn-sm" style="flex:0; padding:6px 14px;" onclick="closeLogs()">Close</button>
         </div>
-        <pre id="logText">Streaming logs...</pre>
+        <pre id="logText">Connecting to container log stream...</pre>
     </div>
 
     <div id="toast" class="toast">Action completed</div>
 
     <script>
-        const api = window.location.pathname.replace(/\/ui$/, "");
         let currentTab = 'containers';
         let expanded = new Set();
-        let autoRefresh;
-        let isAtBase = true; // State tracker to prevent infinite history stack
 
-        // --- Seamless History SPA Navigation Engine ---
-        window.addEventListener('popstate', (e) => {
-            const state = e.state || { tab: 'containers' };
+        function showToast(msg) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
 
-            // Popstate resolves closing modals effortlessly
-            document.getElementById('log-view').style.display = state.modal === 'logs' ? 'flex' : 'none';
-            document.getElementById('confirm-modal').style.display = state.modal === 'confirm' ? 'flex' : 'none';
-
-            // Re-evaluate if we returned to the root app state
-            isAtBase = (state.tab === 'containers' && !state.modal);
-
-            if (state.tab && state.tab !== currentTab) {
-                switchTabCore(state.tab);
-            }
-        });
-
-        function switchTabCore(t) {
-            currentTab = t;['containers', 'deploy', 'images', 'volumes', 'networks'].forEach(v => {
+        function switchTab(t) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            currentTab = t;
+            ['containers', 'deploy', 'images', 'volumes', 'networks'].forEach(v => {
                 document.getElementById(`view-${v}`).style.display = v === t ? 'block' : 'none';
                 document.getElementById(`btn-${v}`).classList.toggle('active', v === t);
             });
             refresh();
         }
-
-        function switchTab(t) {
-            if (t === currentTab) return;
-
-            // Logic ensures History Stack never exceeds 2 items (Root -> Tab)
-            if (t === 'containers') {
-                if (!isAtBase) {
-                    history.back(); // Triggers popstate to safely roll back to Base 0
-                    return;
-                }
-            } else {
-                if (isAtBase) {
-                    history.pushState({ tab: t }, '', `#${t}`);
-                    isAtBase = false; // Left Base 0 to Tab 1
-                } else {
-                    history.replaceState({ tab: t }, '', `#${t}`); // Switched between Tab 1s
-                }
-            }
-            switchTabCore(t);
-        }
-
-        // --- UI Interactions ---
-        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-
-        function showModal(title, body, onConfirm) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-body').innerText = body;
-            const btn = document.getElementById('confirm-exec');
-            btn.onclick = () => { onConfirm(); history.back(); }; // Clean state after execution
-
-            // Push Modal State (Level 2)
-            history.pushState({ tab: currentTab, modal: 'confirm' }, '', '#confirm');
-            document.getElementById('confirm-modal').style.display = 'flex';
-        }
-        function closeModal() { history.back(); }
 
         function toggleAdv() {
             const json = document.getElementById('run-json');
@@ -584,255 +487,250 @@
             }
         }
 
-        function timeAgo(date) {
-            if (!date) return 'N/A';
-            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-            if (seconds < 60) return seconds + "s";
-            if (seconds < 3600) return Math.floor(seconds / 60) + "m";
-            if (seconds < 86400) return Math.floor(seconds / 3600) + "h";
-            return Math.floor(seconds / 86400) + "d";
-        }
-
         function formatBytes(bytes) {
             if (bytes === 0) return '0 B';
             const k = 1024, sizes = ['B', 'KB', 'MB', 'GB', 'TB'], i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, Math.max(1, i))).toFixed(2)) + ' ' + sizes[Math.max(1, i)];
         }
 
-        // --- DOM Diffing System (State-Hash based to prevent icon overwriting) ---
-        function syncDOMList(parentId, items, idKey, renderFn, updateFn, flexLayout = false) {
-            const list = document.getElementById(parentId);
-            const currentIds = new Set(items.map(item => String(item[idKey])));
-
-            Array.from(list.children).forEach(child => {
-                if (!currentIds.has(child.dataset.id)) child.remove();
-            });
-
-            items.forEach((item, index) => {
-                const id = String(item[idKey]);
-                const itemState = JSON.stringify(item);
-                let child = list.querySelector(`[data-id="${id}"]`);
-
-                if (!child) {
-                    child = document.createElement('div');
-                    child.className = "card";
-                    child.dataset.id = id;
-                    child.dataset.state = itemState;
-                    if (flexLayout) {
-                        child.style.display = "flex";
-                        child.style.justifyContent = "space-between";
-                        child.style.alignItems = "center";
-                    }
-                    child.innerHTML = renderFn(item);
-                    list.appendChild(child);
-                    lucide.createIcons({ root: child });
-                } else if (updateFn) {
-                    updateFn(child, item);
-                } else {
-                    if (child.dataset.state !== itemState) {
-                        child.dataset.state = itemState;
-                        child.innerHTML = renderFn(item);
-                        lucide.createIcons({ root: child });
-                    }
-                }
-
-                if (list.children[index] !== child) {
-                    list.insertBefore(child, list.children[index]);
-                }
-            });
-        }
-
-        const renderContainer = (c) => {
-            const isExpanded = expanded.has(c.id);
-            const uptime = c.status === 'running' ? timeAgo(c.started_at) : 'Offline';
-            return `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer;" onclick="toggleDetails('${c.id}', '${c.status}')">
-                    <div><div class="container-name">${c.name}</div><div class="container-image">${c.image}</div></div>
-                    <div class="status-badge status-${c.status === 'running' ? 'running' : 'exited'}">${c.status}</div>
-                </div>
-                <div class="details-grid" id="details-${c.id}" style="display:${isExpanded ? 'grid' : 'none'}">
-                    <div class="details-item" style="grid-column: span 2" id="stats-${c.id}"></div>
-                    <div class="details-item"><span class="details-label">ID</span><span class="details-value">${c.id}</span></div>
-                    <div class="details-item"><span class="details-label">Uptime</span><span class="details-value uptime-val">${uptime}</span></div>
-                    <div class="details-item"><span class="details-label">Created</span><span class="details-value">${timeAgo(c.created)} ago</span></div>
-                    <div class="details-item"><span class="details-label">Ports</span><span class="details-value">${Object.entries(c.ports).map(([p, v]) => `${v ? v[0].HostPort : ''}->${p}`).join(", ") || 'N/A'}</span></div>
-                    <div class="details-item" style="grid-column: span 2"><span class="details-label">Networks</span><span class="details-value">${c.networks.join(", ")}</span></div>
-                    <div class="details-item" style="grid-column: span 2"><span class="details-label">Command</span><span class="details-value">${c.command}</span></div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-sm btn-action" title="${c.status === 'running' ? 'Stop' : 'Start'}" onclick="action('${c.id}', '${c.status === 'running' ? 'stop' : 'start'}')"><i data-lucide="${c.status === 'running' ? 'pause' : 'play'}" size="14"></i></button>
-                    <button class="btn-sm" title="Restart" onclick="action('${c.id}', 'restart')"><i data-lucide="rotate-cw" size="14"></i></button>
-                    <button class="btn-sm" title="Logs" onclick="viewLogs('${c.id}', '${c.name}')"><i data-lucide="terminal" size="14"></i></button>
-                    <button class="btn-sm btn-nuke" title="Remove" onclick="showModal('Nuke?', 'Irreversibly delete container ${c.name}?', ()=>action('${c.id}','remove'))"><i data-lucide="trash-2" size="14"></i></button>
-                </div>`;
-        };
-
-        const updateContainer = (card, c) => {
-            const isExpanded = expanded.has(c.id);
-            const uptime = c.status === 'running' ? timeAgo(c.started_at) : 'Offline';
-            const badge = card.querySelector('.status-badge');
-
-            if (badge.textContent !== c.status) {
-                badge.textContent = c.status;
-                badge.className = `status-badge status-${c.status === 'running' ? 'running' : 'exited'}`;
-            }
-            card.querySelector('.uptime-val').textContent = uptime;
-
-            const actionBtn = card.querySelector('.btn-action');
-            if (actionBtn) {
-                actionBtn.setAttribute('onclick', `action('${c.id}', '${c.status === 'running' ? 'stop' : 'start'}')`);
-                const icon = actionBtn.querySelector('i');
-                const targetIcon = c.status === 'running' ? 'pause' : 'play';
-                if (icon && icon.getAttribute('data-lucide') !== targetIcon) {
-                    icon.setAttribute('data-lucide', targetIcon);
-                    const svg = actionBtn.querySelector('svg');
-                    if (svg) svg.remove();
-                    lucide.createIcons({ root: actionBtn });
-                }
-            }
-
-            const details = card.querySelector('.details-grid');
-            if (details) details.style.display = isExpanded ? 'grid' : 'none';
-        };
-
-        const renderImage = (img) => `
-            <div><div class="container-name" style="font-size:0.9rem">${img.tags[0] || img.id.substring(0, 12)}</div><div class="container-image">${formatBytes(img.size)}</div></div>
-            <button class="btn-sm" style="flex:0" onclick="showModal('Purge Image?', 'Remove image ${img.tags[0] || img.id}?', ()=>actionGeneric('images', '${img.id}', 'DELETE'))"><i data-lucide="trash-2" size="14"></i></button>`;
-
-        const renderVolume = (v) => `
-            <div style="overflow:hidden; padding-right:10px;"><div class="container-name" style="font-size:0.9rem; overflow:hidden; text-overflow:ellipsis;">${v.name}</div><div class="container-image">Driver: ${v.driver}</div></div>
-            <button class="btn-sm btn-nuke" style="flex:0" onclick="showModal('Erase Volume?', 'Destroy volume ${v.name} and all its data?', ()=>actionGeneric('volumes', '${v.name}', 'DELETE'))"><i data-lucide="trash-2" size="14"></i></button>`;
-
-        const renderNetwork = (n) => `
-            <div><div class="container-name" style="font-size:0.9rem">${n.name}</div><div class="container-image">Driver: ${n.driver} | ID: ${n.id.substring(0, 8)}</div></div>
-            <button class="btn-sm btn-nuke" style="flex:0" onclick="showModal('Remove Network?', 'Disconnect and remove network ${n.name}?', ()=>actionGeneric('networks', '${n.id}', 'DELETE'))"><i data-lucide="trash-2" size="14"></i></button>`;
-
-        // --- Core Fetch Handlers ---
-        async function loadStats(id) {
-            const el = document.getElementById(`stats-${id}`);
-            if (!el) return;
-            if (el.innerHTML.trim() === '') {
-                el.innerHTML = `<span class="details-value" style="color:var(--text-muted); opacity:0.7;">Fetching...</span>`;
-            }
-            try {
-                const r = await fetch(`${api}/containers/${id}/stats`);
-                const d = await r.json();
-                el.innerHTML = `<span class="details-value stats-highlight">CPU: ${d.cpu}% &bull; RAM: ${formatBytes(d.mem)} / ${formatBytes(d.mem_limit)}</span>`;
-            } catch (e) {
-                if (!el.innerHTML.includes('CPU')) el.innerHTML = '<span class="details-value" style="color:#ef4444">Telemetry unavail</span>';
-            }
-        }
-
         async function refresh() {
             try {
-                const search = document.getElementById('search')?.value.toLowerCase() || '';
-                const resStatus = await fetch(`${api}/status`);
+                const search = (document.getElementById('search')?.value || '').toLowerCase().trim();
+                const resStatus = await fetch('./status', { credentials: 'include' });
+                if (!resStatus.ok) return;
                 const status = await resStatus.json();
 
                 const tasks = document.getElementById('active-tasks');
                 tasks.innerHTML = "";
                 const active = { ...status.pulling, ...status.deploying };
                 Object.keys(active).forEach(t => {
-                    tasks.innerHTML += `<div class="progress-box"><div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; font-weight:800;"><span>${t.toUpperCase()}</span><span>${active[t]}</span></div><div class="progress-bar-track"><div class="progress-bar-fill"></div></div></div>`;
+                    tasks.innerHTML += `<div class="card" style="padding:10px; background:var(--primary-muted); border-color:var(--primary);"><div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800;"><span>${t.toUpperCase()}</span><span>${active[t]}</span></div></div>`;
                 });
 
                 if (currentTab === 'containers') {
-                    const res = await fetch(`${api}/containers`);
+                    const res = await fetch('./containers', { credentials: 'include' });
+                    if (!res.ok) return;
                     let data = await res.json();
-                    data = data.filter(c => c.name.toLowerCase().includes(search) || c.image.toLowerCase().includes(search));
+                    data = data.filter(c => c.name.toLowerCase().includes(search) || (c.image || '').toLowerCase().includes(search));
                     data.sort((a, b) => a.name.localeCompare(b.name));
 
-                    syncDOMList('containerList', data, 'id', renderContainer, updateContainer, false);
+                    const list = document.getElementById('containerList');
+                    list.innerHTML = data.map(c => `
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer;" onclick="toggleDetails('${c.id}', '${c.status}')">
+                                <div>
+                                    <div class="container-name">${c.name}</div>
+                                    <div class="container-image">${c.image}</div>
+                                </div>
+                                <span class="status-badge status-${c.status === 'running' ? 'running' : 'exited'}">${c.status}</span>
+                            </div>
+                            <div class="details-grid" id="details-${c.id}" style="display:${expanded.has(c.id) ? 'grid' : 'none'}">
+                                <div class="details-item" style="grid-column: span 2" id="stats-${c.id}"></div>
+                                <div class="details-item"><span class="details-label">ID</span><span class="details-value">${c.id}</span></div>
+                                <div class="details-item"><span class="details-label">Ports</span><span class="details-value">${Object.entries(c.ports || {}).map(([p, v]) => `${v ? v[0].HostPort : ''}->${p}`).join(", ") || 'N/A'}</span></div>
+                                <div class="details-item" style="grid-column: span 2"><span class="details-label">Networks</span><span class="details-value">${(c.networks || []).join(", ") || 'bridge'}</span></div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-sm" onclick="action('${c.id}', '${c.status === 'running' ? 'stop' : 'start'}')">${c.status === 'running' ? 'Stop' : 'Start'}</button>
+                                <button class="btn-sm" onclick="action('${c.id}', 'restart')">Restart</button>
+                                <button class="btn-sm" onclick="viewLogs('${c.id}', '${c.name}')">Logs</button>
+                                <button class="btn-sm btn-nuke" style="color:var(--danger)" onclick="deleteContainer('${c.id}', '${c.name}')">Remove</button>
+                            </div>
+                        </div>
+                    `).join('');
 
                     data.forEach(c => {
                         if (expanded.has(c.id) && c.status === 'running') loadStats(c.id);
                     });
                 } else if (currentTab === 'images') {
-                    const res = await fetch(`${api}/images`);
+                    const res = await fetch('./images', { credentials: 'include' });
+                    if (!res.ok) return;
                     let data = await res.json();
-                    data.sort((a, b) => (a.tags[0] || a.id).localeCompare(b.tags[0] || b.id));
-                    syncDOMList('imageList', data, 'id', renderImage, null, true);
+                    const list = document.getElementById('imageList');
+                    list.innerHTML = data.map(img => `
+                        <div class="card" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div class="container-name">${img.tags[0] || img.id.substring(0, 12)}</div>
+                                <div class="container-image">${formatBytes(img.size)}</div>
+                            </div>
+                            <button class="btn-sm btn-nuke" style="flex:0; padding:6px 12px; color:var(--danger);" onclick="deleteImage('${img.id}')">Delete</button>
+                        </div>
+                    `).join('');
                 } else if (currentTab === 'volumes') {
-                    const res = await fetch(`${api}/volumes`);
+                    const res = await fetch('./volumes', { credentials: 'include' });
+                    if (!res.ok) return;
                     let data = await res.json();
-                    data.sort((a, b) => a.name.localeCompare(b.name));
-                    syncDOMList('volumeList', data, 'name', renderVolume, null, true);
+                    const list = document.getElementById('volumeList');
+                    list.innerHTML = data.map(v => `
+                        <div class="card" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                            <div style="overflow:hidden; padding-right:8px;">
+                                <div class="container-name" style="text-overflow:ellipsis; overflow:hidden;">${v.name}</div>
+                                <div class="container-image">Driver: ${v.driver}</div>
+                            </div>
+                            <button class="btn-sm btn-nuke" style="flex:0; padding:6px 12px; color:var(--danger);" onclick="deleteVolume('${v.name}')">Delete</button>
+                        </div>
+                    `).join('');
                 } else if (currentTab === 'networks') {
-                    const res = await fetch(`${api}/networks`);
+                    const res = await fetch('./networks', { credentials: 'include' });
+                    if (!res.ok) return;
                     let data = await res.json();
-                    data.sort((a, b) => a.name.localeCompare(b.name));
-                    syncDOMList('networkList', data, 'id', renderNetwork, null, true);
+                    const list = document.getElementById('networkList');
+                    list.innerHTML = data.map(n => `
+                        <div class="card" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div class="container-name">${n.name}</div>
+                                <div class="container-image">Driver: ${n.driver}</div>
+                            </div>
+                            <button class="btn-sm btn-nuke" style="flex:0; padding:6px 12px; color:var(--danger);" onclick="deleteNetwork('${n.id}')">Delete</button>
+                        </div>
+                    `).join('');
                 }
-            } catch (e) { }
+            } catch (e) {}
         }
 
-        async function deployContainer() {
-            const btn = document.getElementById('launch-btn');
-            btn.innerText = "Deploying..."; btn.disabled = true;
-            let payload;
-            if (document.getElementById('run-json').style.display === 'block') {
-                try { payload = { mode: 'advanced', config: JSON.parse(document.getElementById('run-json').value) }; }
-                catch (e) { alert("Invalid JSON"); btn.innerText = "Ignite Container"; btn.disabled = false; return; }
-            } else {
-                payload = {
-                    mode: 'basic',
-                    image: document.getElementById('run-image').value,
-                    name: document.getElementById('run-name').value,
-                    ports: document.getElementById('run-ports').value,
-                    volumes: document.getElementById('run-volumes').value,
-                    env: document.getElementById('run-env').value,
-                    restart: document.getElementById('run-restart').value
-                };
-            }
+        async function loadStats(id) {
+            const el = document.getElementById(`stats-${id}`);
+            if (!el) return;
             try {
-                const r = await fetch(`${api}/containers/run`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (r.ok) { showToast("Task submitted to forge"); switchTab('containers'); }
-                else { const err = await r.json(); alert(err.detail || "Deployment failed"); }
-            } catch (e) { }
-            btn.innerText = "Ignite Container"; btn.disabled = false;
+                const r = await fetch(`./containers/${id}/stats`, { credentials: 'include' });
+                const d = await r.json();
+                el.innerHTML = `<span class="details-value" style="color:var(--primary); font-weight:800;">CPU: ${d.cpu}% • RAM: ${formatBytes(d.mem)} / ${formatBytes(d.mem_limit)}</span>`;
+            } catch (e) {}
         }
-
-        async function action(id, t) { await fetch(`${api}/containers/${id}/${t}`, { method: "POST" }); showToast(`Signal ${t} sent`); refresh(); }
-        async function actionGeneric(type, id, method) { await fetch(`${api}/${type}/${id}`, { method: method }); showToast(`Deleted ${type}`); refresh(); }
-        async function pullImg() { const img = document.getElementById('pull-input').value; if (img) { fetch(`${api}/images/pull`, { method: 'POST', body: JSON.stringify({ image: img }), headers: { 'Content-Type': 'application/json' } }); document.getElementById('pull-input').value = ""; setTimeout(refresh, 1000); } }
 
         function toggleDetails(id, status) {
             if (expanded.has(id)) {
                 expanded.delete(id);
-                document.getElementById(`details-${id}`).style.display = 'none';
+                const el = document.getElementById(`details-${id}`);
+                if (el) el.style.display = 'none';
             } else {
                 expanded.add(id);
-                document.getElementById(`details-${id}`).style.display = 'grid';
+                const el = document.getElementById(`details-${id}`);
+                if (el) el.style.display = 'grid';
                 if (status === 'running') loadStats(id);
+            }
+        }
+
+        async function deployContainer() {
+            const btn = document.getElementById('launch-btn');
+            btn.innerText = "Deploying...";
+            btn.disabled = true;
+            let payload;
+            if (document.getElementById('run-json').style.display === 'block') {
+                try {
+                    payload = { mode: 'advanced', config: JSON.parse(document.getElementById('run-json').value) };
+                } catch (e) {
+                    alert("Invalid JSON format");
+                    btn.innerText = "Ignite Container";
+                    btn.disabled = false;
+                    return;
+                }
+            } else {
+                payload = {
+                    mode: 'basic',
+                    image: document.getElementById('run-image').value.trim(),
+                    name: document.getElementById('run-name').value.trim(),
+                    ports: document.getElementById('run-ports').value.trim(),
+                    volumes: document.getElementById('run-volumes').value.trim(),
+                    env: document.getElementById('run-env').value.trim(),
+                    restart: document.getElementById('run-restart').value
+                };
+            }
+
+            try {
+                const r = await fetch('./containers/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+                if (r.ok) {
+                    showToast("Container ignition started");
+                    switchTab('containers');
+                } else {
+                    const err = await r.json();
+                    alert(err.detail || "Deployment failed");
+                }
+            } catch (e) {}
+            btn.innerText = "Ignite Container";
+            btn.disabled = false;
+        }
+
+        async function action(id, t) {
+            await fetch(`./containers/${id}/${t}`, { method: 'POST', credentials: 'include' });
+            showToast(`Signal: ${t}`);
+            refresh();
+        }
+
+        async function deleteContainer(id, name) {
+            if (confirm(`Irreversibly delete container ${name}?`)) {
+                await fetch(`./containers/${id}/remove`, { method: 'POST', credentials: 'include' });
+                showToast("Container removed");
+                refresh();
+            }
+        }
+
+        async function deleteImage(id) {
+            if (confirm("Delete image?")) {
+                await fetch(`./images/${id}`, { method: 'DELETE', credentials: 'include' });
+                showToast("Image removed");
+                refresh();
+            }
+        }
+
+        async function deleteVolume(name) {
+            if (confirm(`Erase volume ${name}? Data will be lost.`)) {
+                await fetch(`./volumes/${name}`, { method: 'DELETE', credentials: 'include' });
+                showToast("Volume erased");
+                refresh();
+            }
+        }
+
+        async function deleteNetwork(id) {
+            if (confirm("Disconnect and delete network?")) {
+                await fetch(`./networks/${id}`, { method: 'DELETE', credentials: 'include' });
+                showToast("Network deleted");
+                refresh();
+            }
+        }
+
+        async function pullImg() {
+            const img = document.getElementById('pull-input').value.trim();
+            if (img) {
+                await fetch('./images/pull', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: img }),
+                    credentials: 'include'
+                });
+                document.getElementById('pull-input').value = "";
+                showToast("Image pull queued");
+                setTimeout(refresh, 1000);
             }
         }
 
         async function viewLogs(id, name) {
             document.getElementById('log-title').innerText = `Logs: ${name}`;
-            document.getElementById('logText').innerText = "Establishing connection...";
-
-            // Push Modal State (Level 2)
-            history.pushState({ tab: currentTab, modal: 'logs' }, '', '#logs');
+            document.getElementById('logText').innerText = "Streaming logs...";
             document.getElementById('log-view').style.display = 'flex';
-
             try {
-                const r = await fetch(`${api}/containers/${id}/logs`);
+                const r = await fetch(`./containers/${id}/logs`, { credentials: 'include' });
                 const d = await r.json();
-                document.getElementById('logText').innerText = d.logs || "No logs available.";
-            } catch (e) { document.getElementById('logText').innerText = "Failed to fetch logs."; }
+                document.getElementById('logText').innerText = d.logs || "No logs captured.";
+            } catch (e) {
+                document.getElementById('logText').innerText = "Failed to stream logs.";
+            }
         }
-        function closeLogs() { history.back(); }
+
+        function closeLogs() {
+            document.getElementById('log-view').style.display = 'none';
+        }
 
         window.onload = () => {
-            // Lock in the Base State when app loads
-            history.replaceState({ tab: 'containers' }, '', '#containers');
-            isAtBase = true;
-
             refresh();
-            autoRefresh = setInterval(refresh, 5000);
+            setInterval(refresh, 4000);
             lucide.createIcons();
         };
     </script>
 </body>
-
 </html>

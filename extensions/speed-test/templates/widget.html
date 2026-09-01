@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-header {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .speed-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-test {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: transform 0.1s ease;
+            box-shadow: 0 4px 12px var(--primary-muted);
+        }
+
+        .btn-test:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="stat-header">
+            <div>
+                <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Last Speed</div>
+                <div id="wSpeed" class="speed-val">0.0 Mbps</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Latency</div>
+                <div id="wPing" style="font-size: 12px; font-weight: 800; font-family: monospace;">-- ms</div>
+            </div>
+        </div>
+
+        <button class="btn-test" onclick="runQuickTest()">
+            <svg style="width: 13px; height: 13px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Quick Ping & Speed
+        </button>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+
+        async function measurePing() {
+            const samples = [];
+            for (let i = 0; i < 4; i++) {
+                const t0 = performance.now();
+                try {
+                    await fetch(`${apiPath}/ping`, { credentials: 'include' });
+                    samples.push(performance.now() - t0);
+                } catch (e) {}
+            }
+            if (samples.length === 0) return '--';
+            samples.sort((a, b) => a - b);
+            return Math.round(samples[Math.floor(samples.length / 2)]) + ' ms';
+        }
+
+        async function syncWidget() {
+            try {
+                const res = await fetch(`${apiPath}/status`, { credentials: 'include' });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.download > 0) {
+                    document.getElementById('wSpeed').innerText = Number(data.download).toFixed(1) + ' Mbps';
+                }
+                if (data.ping > 0) {
+                    document.getElementById('wPing').innerText = data.ping + ' ms';
+                }
+            } catch (e) {}
+        }
+
+        async function runQuickTest() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            document.getElementById('wPing').innerText = '...';
+            const latency = await measurePing();
+            document.getElementById('wPing').innerText = latency;
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 8000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stream-row {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stream-name {
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .stream-vol {
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--primary);
+            width: 32px;
+            text-align: right;
+        }
+
+        input[type=range] {
+            width: 80px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: var(--surface-hover);
+            border-radius: 100px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -5px;
+            border: 1.5px solid #ffffff;
+        }
+
+        .btn-mute {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-mute.active {
+            color: var(--danger);
+        }
+
+        .icon-svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box" id="widgetList">
+        <div style="font-size: 10px; font-weight: 700; opacity: 0.5; text-align: center; padding: 12px;">
+            Scanning mixer streams...
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+        let updateTimers = {};
+
+        async function syncWidget() {
+            if (document.activeElement && document.activeElement.type === 'range') return;
+
+            try {
+                const res = await fetch(`${apiPath}/sessions`, { credentials: 'include' });
+                if (!res.ok) return;
+                const sessions = await res.json();
+                renderWidget(sessions);
+            } catch (e) {}
+        }
+
+        function renderWidget(sessions) {
+            const container = document.getElementById('widgetList');
+            if (!sessions || sessions.length === 0) {
+                container.innerHTML = `<div style="font-size:10px; opacity:0.5; text-align:center; padding:10px;">No active audio streams</div>`;
+                return;
+            }
+
+            // Display top 2 streams (Master + primary active app)
+            const topStreams = sessions.slice(0, 2);
+            container.innerHTML = topStreams.map(s => `
+                <div class="stream-row">
+                    <div class="stream-name" title="${s.name}">${s.name}</div>
+                    <input type="range" min="0" max="1" step="0.01" value="${s.volume}"
+                        oninput="handleQuickVolume('${s.id}', this.value)">
+                    <span class="stream-vol" id="wvol-${s.id}">${Math.round(s.volume * 100)}%</span>
+                    <button class="btn-mute ${s.muted ? 'active' : ''}" onclick="toggleQuickMute('${s.id}', ${!s.muted})">
+                        <svg class="icon-svg" viewBox="0 0 24 24">
+                            <path d="${s.muted ? 'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z' : 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z'}"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function handleQuickVolume(id, vol) {
+            const textEl = document.getElementById(`wvol-${id}`);
+            if (textEl) textEl.innerText = `${Math.round(vol * 100)}%`;
+
+            clearTimeout(updateTimers[id]);
+            updateTimers[id] = setTimeout(() => {
+                fetch(`${apiPath}/volume`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, volume: parseFloat(vol) }),
+                    credentials: 'include'
+                });
+            }, 60);
+        }
+
+        async function toggleQuickMute(id, state) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            await fetch(`${apiPath}/mute`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, muted: state }),
+                credentials: 'include'
+            });
+            syncWidget();
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 2500);
+    </script>
+</body>
+</html>

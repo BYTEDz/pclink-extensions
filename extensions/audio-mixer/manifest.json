@@ -1,0 +1,72 @@
+{
+  "manifest_version": 2,
+  "id": "audio-mixer",
+  "name": "Audio Mixer",
+  "version": "2.1.0",
+  "description": "Control volume and mute states for individual applications on Windows and Linux (PipeWire / PulseAudio).",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Media",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "media.control",
+    "media.read",
+    "system.exec",
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "media.control",
+    "media.read",
+    "system.exec",
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "audio-mixer-main",
+        "title": "Audio Mixer",
+        "icon": "sliders",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "audio-mixer-widget",
+        "title": "App Audio Mixer",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 50,
+      "execution_timeout_sec": 30
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "manifest_version": 2,
+  "id": "storage-sweeper",
+  "name": "Storage Sweeper",
+  "version": "2.0.0",
+  "description": "Purge temporary cache files, junk data, and free up system disk space across all storage volumes.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Utility",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "fs.read",
+    "fs.write",
+    "fs.all"
+  ],
+  "declared_permissions": [
+    "fs.read",
+    "fs.write",
+    "fs.all"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "storage-sweeper-main",
+        "title": "Storage Sweeper",
+        "icon": "trash-2",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "sweeper-status",
+        "title": "Storage Sweeper",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 50,
+      "execution_timeout_sec": 60
+    }
+  }
+}

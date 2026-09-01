@@ -1,0 +1,70 @@
+{
+  "manifest_version": 2,
+  "id": "vessel-forge",
+  "name": "Vessel Forge",
+  "version": "2.1.0",
+  "description": "Advanced container fleet orchestration and image forging. Monitor live stats, manage vessels, volumes, networks, and deploy cross-architecture setups.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "System",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "system.exec",
+    "notifications",
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "system.exec",
+    "notifications",
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "vessel-forge-main",
+        "title": "Vessel Forge",
+        "icon": "box",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "docker-status",
+        "title": "Docker Summary",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 512,
+      "max_cpu_percent": 80,
+      "execution_timeout_sec": 30
+    }
+  }
+}

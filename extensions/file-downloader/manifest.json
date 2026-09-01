@@ -1,0 +1,74 @@
+{
+  "manifest_version": 2,
+  "id": "file-downloader",
+  "name": "File Downloader",
+  "version": "2.1.0",
+  "description": "High-performance concurrent download manager with automatic resume, state persistence, network recovery, and live dashboard widgets.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Utility",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "fs.read",
+    "fs.write",
+    "net.fetch",
+    "notifications",
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "fs.read",
+    "fs.write",
+    "net.fetch",
+    "notifications",
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "downloader-main",
+        "title": "Downloader",
+        "icon": "download-cloud",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "download-status",
+        "title": "Active Downloads",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 60,
+      "execution_timeout_sec": 30
+    }
+  }
+}

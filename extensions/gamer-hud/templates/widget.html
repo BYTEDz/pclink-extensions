@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+
+        .telemetry-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .metric-val {
+            font-size: 14px;
+            font-weight: 900;
+            font-family: monospace;
+            letter-spacing: -0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="telemetry-grid">
+            <div class="telemetry-card">
+                <span class="metric-label">CPU</span>
+                <span class="metric-val" id="wCpu" style="color: var(--primary);">0%</span>
+            </div>
+            <div class="telemetry-card">
+                <span class="metric-label">GPU</span>
+                <span class="metric-val" id="wGpu" style="color: #06b6d4;">0%</span>
+            </div>
+            <div class="telemetry-card">
+                <span class="metric-label">RAM</span>
+                <span class="metric-val" id="wRam" style="color: #10b981;">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+
+        async function syncWidget() {
+            try {
+                const res = await fetch(`${apiPath}/stats`, { credentials: 'include' });
+                if (!res.ok) return;
+                const data = await res.json();
+                document.getElementById('wCpu').innerText = `${Math.round(data.cpu.usage)}%`;
+                document.getElementById('wGpu').innerText = `${data.gpu.usage}%`;
+                document.getElementById('wRam').innerText = `${Math.round(data.ram.usage)}%`;
+            } catch (e) {}
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 1500);
+    </script>
+</body>
+</html>

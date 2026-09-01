@@ -1,4 +1,4 @@
-name: Package Extensions
+name: Package & Publish Extensions
 
 on:
   push:
@@ -6,10 +6,31 @@ on:
     paths:
       - 'extensions/**'
       - 'scripts/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'extensions/**'
+      - 'scripts/**'
   workflow_dispatch:
 
 jobs:
-  build:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Lint Extension Manifests
+        run: python scripts/lint_extensions.py
+
+  publish:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,45 +46,36 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml
-
-      - name: Package Extensions and Generate Registry
+      - name: Build Packages
         run: |
           mkdir -p dist
-          # Iterate through each extension folder
+
           for dir in extensions/*/ ; do
-            if [ -f "${dir}extension.yaml" ]; then
-              # Get name and version from yaml
-              # We use a simple python one-liner to parse the yaml values
-              EXT_NAME=$(python3 -c "import yaml; print(yaml.safe_load(open('${dir}extension.yaml'))['name'])")
-              EXT_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('${dir}extension.yaml'))['version'])")
-              
-              echo "Packaging $EXT_NAME v$EXT_VERSION..."
-              
-              # Create zip from the directory contents (not the directory itself)
-              (cd "$dir" && zip -r "../../dist/${EXT_NAME}-${EXT_VERSION}.zip" .)
+            if [ -f "${dir}manifest.json" ]; then
+              EXT_ID=$(python3 -c "import json; print(json.load(open('${dir}manifest.json'))['id'])")
+              EXT_VERSION=$(python3 -c "import json; print(json.load(open('${dir}manifest.json'))['version'])")
+
+              echo "Packaging ${EXT_ID} v${EXT_VERSION}..."
+              (cd "$dir" && zip -r -q "../../dist/${EXT_ID}-${EXT_VERSION}.pclink" . -x "*.pyc" -x "__pycache__/*" -x ".git*" -x ".DS_Store")
             fi
           done
-          
-          # Generate the extensions.json registry
-          python scripts/generate_registry.py
 
-      - name: Commit and push registry
+      - name: Generate Registry with Checksums
+        run: python scripts/generate_registry.py
+
+      - name: Commit Updated Registry
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -f extensions.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update extensions registry [skip ci]" && git push)
+          git add extensions.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(registry): update extensions.json [skip ci]" && git push)
 
-      - name: Release Packages
-        uses: softprops/action-gh-release@v1
+      - name: Publish Release Assets
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: extensions-latest
-          files: dist/*.zip
-          name: Extension Packages
-          body: "Auto-generated packages for PCLink extensions. Download the .zip files and install them in the PCLink App."
+          files: dist/*.pclink
+          name: Extension Marketplace Packages
+          body: "Automated production release of PCLink Extension Marketplace packages."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

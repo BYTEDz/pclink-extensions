@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gamer HUD</title>
-    <script src="/ui/static/extension-theme.js"></script>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            /* Extension-Specific Accents (Fallback if not synced) */
-            --secondary: #7000ff;
-            --accent: #ff0055;
-            /* Success/Warning now provided by SDK but keeping local aliases for simplicity */
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -19,78 +42,95 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            overflow-x: hidden;
-            /* Note: font-family, bg, and text are now handled by SDK */
+            gap: 14px;
+            user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            margin-bottom: 8px;
+            padding: 0 4px;
         }
 
         .header h1 {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
             font-weight: 900;
-            filter: drop-shadow(0 0 10px var(--primary-muted));
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            background-color: var(--success);
+        .badge-pulse {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--surface);
+            border: var(--card-border);
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            box-shadow: 0 0 15px var(--success);
-            animation: pulse 2s infinite;
+            background: var(--success);
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(0.9);
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(0.9);
-                opacity: 0.6;
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
 
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 12px;
         }
 
         .span-2 {
             grid-column: span 2;
         }
 
-        /* Upgraded Card with Glassmorphism and Radius Sync */
         .card {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 16px;
             border: var(--card-border);
             box-shadow: var(--card-shadow);
             display: flex;
@@ -98,74 +138,68 @@
             gap: 8px;
             position: relative;
             overflow: hidden;
-            transition: transform 0.2s ease;
+            transition: transform 0.15s ease;
         }
 
         .card:active {
-            transform: scale(0.98);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-            opacity: 0.5;
+            transform: scale(0.99);
         }
 
         .card-label {
             font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .card-value {
-            font-size: 2.22rem;
+            font-size: 2.2rem;
             font-weight: 900;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
             display: flex;
             align-items: baseline;
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
         .unit {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
-            margin-left: 6px;
-            font-weight: 500;
+            margin-left: 4px;
+            font-weight: 700;
+            font-family: sans-serif;
         }
 
-        .progress-container {
+        .progress-track {
             width: 100%;
-            height: 8px;
-            background: var(--primary-faint);
+            height: 6px;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 100px;
-            margin-top: 8px;
             overflow: hidden;
+            margin-top: 4px;
         }
 
         .progress-bar {
             height: 100%;
             border-radius: 100px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px var(--primary-muted);
+            background: var(--primary);
+            transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
         }
 
         .core-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-top: 12px;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-top: 8px;
         }
 
         .core-bar {
-            height: 30px;
-            background: var(--hover-overlay);
+            height: 28px;
+            background: var(--surface-hover);
             border-radius: 4px;
             position: relative;
             overflow: hidden;
@@ -176,165 +210,135 @@
             bottom: 0;
             width: 100%;
             background: var(--primary);
-            opacity: 0.8;
-            transition: height 0.4s ease;
-        }
-
-        /* Specific styles for GPU/RAM stats to look distinct */
-        .gpu-card .progress-bar {
-            background: linear-gradient(90deg, var(--success), #00ffcc);
-            box-shadow: 0 0 15px var(--success);
-        }
-
-        .gpu-card .progress-container {
-            background: var(--success);
-            opacity: 0.1;
-        }
-
-        .ram-card .progress-bar {
-            background: linear-gradient(90deg, var(--warning), #ff8800);
-            box-shadow: 0 0 15px var(--warning);
-        }
-
-        .ram-card .progress-container {
-            background: var(--warning);
-            opacity: 0.1;
-        }
-
-        .footer {
-            margin-top: 24px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            padding: 16px 0;
-            border-top: 1px dashed var(--divider);
-            letter-spacing: 2px;
-            font-weight: 600;
+            transition: height 0.3s ease;
         }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <h1>Gamer HUD</h1>
-        <div class="status-dot"></div>
-    </div>
-
-    <div class="grid">
-        <!-- CPU MAIN -->
-        <div class="card span-2">
-            <div class="card-label">CPU LOAD</div>
-            <div class="card-value" id="cpu-usage">0<span class="unit">%</span></div>
-            <div class="progress-container">
-                <div class="progress-bar" id="cpu-bar" style="width: 0%"></div>
-            </div>
-            <div class="card-label" style="margin-top: 16px;">LOGICAL CORES</div>
-            <div class="core-grid" id="core-grid">
-                <!-- Dynamic cores -->
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i data-lucide="cpu" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                Gamer HUD
+            </h1>
+            <div class="badge-pulse">
+                <span class="pulse-dot"></span>
+                <span>1000ms Live</span>
             </div>
         </div>
 
-        <!-- GPU -->
-        <div class="card gpu-card">
-            <div class="card-label">GPU UTIL</div>
-            <div class="card-value" id="gpu-usage">0<span class="unit">%</span></div>
-            <div class="progress-container">
-                <div class="progress-bar" id="gpu-bar-el" style="width: 0%"></div>
+        <div class="grid">
+            <div class="card span-2">
+                <div class="card-label">
+                    <i data-lucide="activity" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                    CPU Load & Cores
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <div class="card-value" id="cpuUsage">0<span class="unit">%</span></div>
+                    <div style="font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="cpuFreq">0.00 GHz</div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" id="cpuBar" style="width: 0%"></div>
+                </div>
+                <div class="core-grid" id="coreGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">
+                    <i data-lucide="zap" style="width: 14px; height: 14px; color: #06b6d4;"></i>
+                    GPU Util
+                </div>
+                <div class="card-value" id="gpuUsage" style="color: #06b6d4;">0<span class="unit">%</span></div>
+                <div class="progress-track">
+                    <div class="progress-bar" id="gpuBar" style="width: 0%; background: #06b6d4;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">
+                    <i data-lucide="thermometer" style="width: 14px; height: 14px; color: var(--text-muted);"></i>
+                    GPU Temp
+                </div>
+                <div class="card-value" id="gpuTemp">0<span class="unit">°C</span></div>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-label">
+                    <i data-lucide="hard-drive" style="width: 14px; height: 14px; color: #10b981;"></i>
+                    System RAM
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <div class="card-value" id="ramUsage" style="color: #10b981;">0<span class="unit">%</span></div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);" id="ramDetails">0.0 / 0.0 GB</div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" id="ramBar" style="width: 0%; background: #10b981;"></div>
+                </div>
+            </div>
+
+            <div class="card span-2" style="padding: 12px 16px;">
+                <div class="flex items-center justify-between">
+                    <div class="card-label">GPU Accelerator</div>
+                    <div id="gpuName" style="font-size: 0.8rem; font-weight: 800; font-family: monospace; color: var(--primary);">Detecting...</div>
+                </div>
             </div>
         </div>
-
-        <!-- GPU TEMP -->
-        <div class="card gpu-card">
-            <div class="card-label">GPU TEMP</div>
-            <div class="card-value" id="gpu-temp">0<span class="unit">°C</span></div>
-        </div>
-
-        <!-- RAM -->
-        <div class="card ram-card span-2">
-            <div class="card-label">MEMORY USAGE</div>
-            <div class="card-value" id="ram-usage">0<span class="unit">%</span></div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;" id="ram-details">0.0 / 0.0 GB
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" id="ram-bar" style="width: 0%"></div>
-            </div>
-        </div>
-
-        <!-- CPU FREQ -->
-        <div class="card">
-            <div class="card-label">CPU CLOCK</div>
-            <div class="card-value" id="cpu-freq">0.00<span class="unit">GHz</span></div>
-        </div>
-
-        <!-- GPU NAME -->
-        <div class="card">
-            <div class="card-label">HARDWARE</div>
-            <div id="gpu-name"
-                style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; line-height: 1.4;">Detecting...
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        LIVE ENGINE TELEMETRY ACTIVE
     </div>
 
     <script>
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
-
         async function fetchStats() {
             try {
-                const res = await fetch(apiPath + '/stats');
+                const res = await fetch('./stats', { credentials: 'include' });
+                if (!res.ok) return;
                 const data = await res.json();
                 updateUI(data);
             } catch (err) {
-                console.error("Failed to fetch stats", err);
+                console.debug("Telemetry tick skipped:", err);
             }
         }
 
         function updateUI(data) {
-            // CPU
-            document.getElementById('cpu-usage').innerHTML = `${Math.round(data.cpu.usage)}<span class="unit">%</span>`;
-            document.getElementById('cpu-bar').style.width = `${data.cpu.usage}%`;
-            document.getElementById('cpu-freq').innerHTML = `${data.cpu.freq.toFixed(2)}<span class="unit">GHz</span>`;
+            document.getElementById('cpuUsage').innerHTML = `${Math.round(data.cpu.usage)}<span class="unit">%</span>`;
+            document.getElementById('cpuBar').style.width = `${data.cpu.usage}%`;
+            document.getElementById('cpuFreq').textContent = `${data.cpu.freq_ghz.toFixed(2)} GHz`;
 
-            // Cores
-            const coreGrid = document.getElementById('core-grid');
-            if (coreGrid.children.length !== data.cpu.cores.length) {
-                coreGrid.innerHTML = '';
-                data.cpu.cores.forEach(() => {
-                    const div = document.createElement('div');
-                    div.className = 'core-bar';
-                    div.innerHTML = '<div class="core-fill" style="height: 0%"></div>';
-                    coreGrid.appendChild(div);
+            const coreGrid = document.getElementById('coreGrid');
+            if (data.cpu.cores && data.cpu.cores.length > 0) {
+                if (coreGrid.children.length !== data.cpu.cores.length) {
+                    coreGrid.innerHTML = '';
+                    data.cpu.cores.forEach(() => {
+                        const div = document.createElement('div');
+                        div.className = 'core-bar';
+                        div.innerHTML = '<div class="core-fill" style="height: 0%"></div>';
+                        coreGrid.appendChild(div);
+                    });
+                }
+                data.cpu.cores.forEach((usage, i) => {
+                    if (coreGrid.children[i]) {
+                        coreGrid.children[i].firstElementChild.style.height = `${usage}%`;
+                    }
                 });
             }
-            data.cpu.cores.forEach((usage, i) => {
-                coreGrid.children[i].firstElementChild.style.height = `${usage}%`;
-            });
 
-            // RAM
-            document.getElementById('ram-usage').innerHTML = `${Math.round(data.ram.usage)}<span class="unit">%</span>`;
-            document.getElementById('ram-bar').style.width = `${data.ram.usage}%`;
-            document.getElementById('ram-details').innerText = `${data.ram.used} / ${data.ram.total} GB`;
+            document.getElementById('ramUsage').innerHTML = `${Math.round(data.ram.usage)}<span class="unit">%</span>`;
+            document.getElementById('ramBar').style.width = `${data.ram.usage}%`;
+            document.getElementById('ramDetails').innerText = `${data.ram.used_gb} / ${data.ram.total_gb} GB`;
 
-            // GPU
-            document.getElementById('gpu-usage').innerHTML = `${data.gpu.usage}<span class="unit">%</span>`;
-            document.getElementById('gpu-bar-el').style.width = `${data.gpu.usage}%`;
-            document.getElementById('gpu-temp').innerHTML = `${data.gpu.temp}<span class="unit">°C</span>`;
-            document.getElementById('gpu-name').innerText = data.gpu.name;
+            document.getElementById('gpuUsage').innerHTML = `${data.gpu.usage}<span class="unit">%</span>`;
+            document.getElementById('gpuBar').style.width = `${data.gpu.usage}%`;
 
-            // GPU color logic based on temp
-            const gpuVal = document.getElementById('gpu-temp');
-            if (data.gpu.temp > 80) gpuVal.style.color = 'var(--accent)';
-            else if (data.gpu.temp > 65) gpuVal.style.color = 'var(--warning)';
-            else gpuVal.style.color = 'var(--success)';
+            const tempEl = document.getElementById('gpuTemp');
+            tempEl.innerHTML = `${data.gpu.temp}<span class="unit">°C</span>`;
+            document.getElementById('gpuName').innerText = data.gpu.name || 'Dedicated Accelerator';
+
+            if (data.gpu.temp >= 85) tempEl.style.color = 'var(--danger)';
+            else if (data.gpu.temp >= 70) tempEl.style.color = 'var(--warning)';
+            else tempEl.style.color = 'var(--success)';
         }
 
-        // High frequency update (1 second)
-        setInterval(fetchStats, 1000);
+        lucide.createIcons();
         fetchStats();
+        setInterval(fetchStats, 1000);
     </script>
 </body>
-
 </html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .clip-preview-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .preview-text {
+            font-size: 11px;
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .quick-input {
+            flex: 1;
+            background: var(--surface);
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 6px 8px;
+            color: var(--text);
+            font-size: 10px;
+            outline: none;
+        }
+
+        .btn-quick {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 6px 10px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-quick:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="clip-preview-card">
+            <div class="label-row">
+                <span>Latest PC Clip</span>
+                <span id="wTime" style="opacity: 0.5;">--:--</span>
+            </div>
+            <div class="preview-text" id="wPreview">Waiting for clip...</div>
+        </div>
+
+        <div class="input-row">
+            <input type="text" id="wSendInput" class="quick-input" placeholder="Type & push to PC..." onkeydown="if(event.key==='Enter') quickPush()">
+            <button class="btn-quick" onclick="quickPush()">Push</button>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+
+        async function syncWidget() {
+            try {
+                const res = await fetch(`${apiPath}/history`, { credentials: 'include' });
+                if (!res.ok) return;
+                const items = await res.json();
+                if (items && items.length > 0) {
+                    const top = items[0];
+                    document.getElementById('wPreview').innerText = top.content;
+                    document.getElementById('wTime').innerText = new Date(top.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            } catch (e) {}
+        }
+
+        async function quickPush() {
+            const input = document.getElementById('wSendInput');
+            const text = (input.value || '').trim();
+            if (!text) return;
+
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+
+            try {
+                await fetch(`${apiPath}/copy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: text }),
+                    credentials: 'include'
+                });
+                input.value = '';
+                syncWidget();
+            } catch (e) {}
+        }
+
+        syncWidget();
+        setInterval(syncWidget, 2500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+  "manifest_version": 2,
+  "id": "my-extension",
+  "name": "My Extension",
+  "version": "1.0.0",
+  "description": "A brief description of my extension.",
+  "author": "Your Name",
+  "icon": "icon.svg",
+  "category": "Utility",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "storage.local",
+    "system.exec"
+  ],
+  "declared_permissions": [
+    "storage.local",
+    "system.exec"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": false,
+    "allow_fullscreen": false
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "my-extension-main",
+        "title": "My Extension",
+        "icon": "grid",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": []
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 50,
+      "execution_timeout_sec": 30
+    }
+  }
+}

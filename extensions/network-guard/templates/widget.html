@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.15);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --text: #0f172a;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 6px 8px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .widget-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px 4px;
+        }
+
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        .shield-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--primary);
+        }
+
+        .status-pill {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: var(--primary-muted);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pulse-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: var(--card-border);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-val {
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .unit {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .arrow-down { color: #06b6d4; }
+        .arrow-up { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="widget-box">
+        <div class="header-row">
+            <div class="title-group">
+                <svg class="shield-icon" viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                <span>Live Sockets</span>
+            </div>
+            <div class="status-pill">
+                <span class="pulse-dot"></span>
+                <span id="connCount">0 Sockets</span>
+            </div>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-label">
+                    <span class="arrow-down">↓</span> Download
+                </span>
+                <div class="stat-val">
+                    <span id="downSpeed">0.0</span><span class="unit" id="downUnit">KB/s</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">
+                    <span class="arrow-up">↑</span> Upload
+                </span>
+                <div class="stat-val">
+                    <span id="upSpeed">0.0</span><span class="unit" id="upUnit">KB/s</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
+
+        function formatSpeed(kb) {
+            if (!kb || kb <= 0) return { val: '0.0', unit: 'KB/s' };
+            if (kb > 1024) return { val: (kb / 1024).toFixed(1), unit: 'MB/s' };
+            return { val: kb.toFixed(1), unit: 'KB/s' };
+        }
+
+        async function syncNetworkWidget() {
+            try {
+                const res = await fetch(`${apiPath}/status`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+
+                    const down = formatSpeed(data.speed ? data.speed.down : 0);
+                    const up = formatSpeed(data.speed ? data.speed.up : 0);
+
+                    document.getElementById('downSpeed').textContent = down.val;
+                    document.getElementById('downUnit').textContent = down.unit;
+                    document.getElementById('upSpeed').textContent = up.val;
+                    document.getElementById('upUnit').textContent = up.unit;
+
+                    const totalConns = (data.apps || []).reduce((acc, app) => acc + (app.conn_count || 0), 0);
+                    document.getElementById('connCount').textContent = `${totalConns} Sockets`;
+                }
+            } catch (e) {}
+        }
+
+        syncNetworkWidget();
+        setInterval(syncNetworkWidget, 1500);
+    </script>
+</body>
+</html>

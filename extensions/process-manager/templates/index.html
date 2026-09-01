@@ -1,256 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Task Manager</title>
-    <!-- Theme SDK -->
-    <script src="/ui/static/extension-theme.js"></script>
-    <!-- Icons -->
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.15);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --danger-muted: rgba(239, 68, 68, 0.15);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow-x: hidden;
         }
 
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: var(--text);
-            margin: 0;
-            padding: 20px;
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             user-select: none;
         }
 
-        /* Header Controls */
+        .container {
+            width: 100%;
+            max-width: 540px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            align-items: center;
             position: sticky;
             top: 0;
-            background: var(--bg);
-            padding: 10px 0;
-            z-index: 10;
-            border-bottom: 1px solid var(--card-border);
+            padding: 8px 0;
+            z-index: 20;
+            backdrop-filter: blur(8px);
         }
 
         .search-bar {
             flex-grow: 1;
             background: var(--surface);
-            border: 1px solid var(--card-border);
+            border: var(--card-border);
             color: var(--text);
-            padding: 10px 15px;
-            border-radius: var(--radius);
-            font-size: 16px;
+            padding: 10px 14px;
+            border-radius: calc(var(--radius) * 0.75);
+            font-size: 0.85rem;
+            font-weight: 600;
             outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary);
+        }
+
+        .sort-select {
+            background: var(--surface);
+            border: var(--card-border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: calc(var(--radius) * 0.75);
+            font-size: 0.8rem;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
         }
 
         .btn-refresh {
             background: var(--surface);
-            border: 1px solid var(--card-border);
+            border: var(--card-border);
             color: var(--text);
-            border-radius: var(--radius);
-            width: 44px;
+            border-radius: calc(var(--radius) * 0.75);
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.1s ease;
         }
 
-        /* Process List */
+        .btn-refresh:active {
+            transform: scale(0.94);
+        }
+
+        .summary-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .process-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding-bottom: 40px;
+            gap: 8px;
+            width: 100%;
         }
 
         .process-card {
-            background-color: var(--surface);
-            border: 1px solid var(--card-border);
+            background: var(--surface);
+            border: var(--card-border);
             border-radius: var(--radius);
-            padding: 16px;
+            padding: 14px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--card-shadow);
-            transition: transform 0.1s;
+            transition: transform 0.1s ease, background 0.15s ease;
+            gap: 12px;
         }
 
         .process-card:active {
-            transform: scale(0.98);
+            transform: scale(0.99);
         }
 
         .proc-info {
             flex-grow: 1;
             min-width: 0;
-            /* Text truncate fix */
         }
 
         .proc-name {
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 800;
+            font-size: 0.9rem;
             margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.2px;
         }
 
         .proc-meta {
-            font-size: 13px;
+            font-size: 0.75rem;
             color: var(--text-muted);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
+            font-weight: 600;
         }
 
         .badge {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
         }
 
         .btn-kill {
-            background-color: rgba(239, 68, 68, 0.1);
-            /* Red with opacity */
-            color: #ef4444;
-            /* Red */
+            background: var(--danger-muted);
+            color: var(--danger);
             border: none;
-            padding: 10px;
-            border-radius: var(--radius);
-            margin-left: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.1s ease, opacity 0.15s;
         }
 
-        .btn-kill:hover {
-            background-color: rgba(239, 68, 68, 0.2);
+        .btn-kill:active {
+            transform: scale(0.92);
         }
 
-        /* Loading State */
-        .loading {
+        .empty-state {
             text-align: center;
+            padding: 48px 16px;
             color: var(--text-muted);
-            margin-top: 50px;
+            border-radius: var(--radius);
+            border: 1px dashed var(--card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
-        .hidden {
-            display: none;
+        .empty-state svg {
+            width: 36px;
+            height: 36px;
+            opacity: 0.4;
+            margin-bottom: 4px;
         }
     </style>
 </head>
-
 <body>
+    <div class="container">
+        <div class="header">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Search processes by name or PID..." oninput="handleSearch()">
+            <select id="sortBy" class="sort-select" onchange="handleSortChange()">
+                <option value="memory">Sort: Memory</option>
+                <option value="cpu">Sort: CPU</option>
+                <option value="name">Sort: Name</option>
+            </select>
+            <button class="btn-refresh" onclick="fetchProcesses()" aria-label="Refresh processes">
+                <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+            </button>
+        </div>
 
-    <div class="header">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search processes...">
-        <button class="btn-refresh" onclick="fetchProcesses()">
-            <i data-lucide="rotate-ccw" size="20"></i>
-        </button>
-    </div>
+        <div class="summary-strip">
+            <span id="procCount">0 Processes</span>
+            <span id="liveStatus">Polling...</span>
+        </div>
 
-    <div id="loader" class="loading">
-        <i data-lucide="loader-2" class="animate-spin"></i> Loading...
-    </div>
-
-    <div id="processList" class="process-list">
-        <!-- Process items injected here -->
+        <div id="processList" class="process-list">
+            <div class="empty-state">
+                <i data-lucide="cpu"></i>
+                <span>Reading process table...</span>
+            </div>
+        </div>
     </div>
 
     <script>
-        lucide.createIcons();
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
-        let currentData = [];
+        let allProcesses = [];
+
+        function getAuthHeaders() {
+            const headers = { 'Content-Type': 'application/json' };
+            if (window.pclink && pclink._token) {
+                headers['X-API-Key'] = pclink._token;
+            }
+            return headers;
+        }
 
         async function fetchProcesses() {
-            const list = document.getElementById('processList');
-            const loader = document.getElementById('loader');
-
-            loader.classList.remove('hidden');
-            list.innerHTML = '';
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('selection');
+            }
 
             try {
-                // Fetch sorted by memory by default
-                const res = await fetch(`${apiPath}/processes?sort_by=memory`);
-                const json = await res.json();
-
-                if (json.status === 'ok') {
-                    currentData = json.data;
-                    renderList(currentData);
+                let url = '/system/processes';
+                if (window.pclink && pclink._token) {
+                    url += `?token=${encodeURIComponent(pclink._token)}`;
                 }
+
+                const res = await fetch(url, {
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                allProcesses = (data || []).map(p => ({
+                    pid: p.pid,
+                    name: p.name || 'Unknown',
+                    user: p.username || 'System',
+                    memory: p.memory_mb || 0,
+                    cpu: p.cpu_percent || 0.0
+                }));
+
+                document.getElementById('liveStatus').innerText = 'Live';
+                renderList();
             } catch (err) {
-                console.error(err);
-                list.innerHTML = `<div style="text-align:center; color: var(--danger)">Failed to load processes</div>`;
-            } finally {
-                loader.classList.add('hidden');
+                console.error("Failed to fetch processes:", err);
+                document.getElementById('liveStatus').innerText = 'Offline';
             }
         }
 
-        function renderList(data) {
+        function renderList() {
             const list = document.getElementById('processList');
-            list.innerHTML = '';
+            const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const sortBy = document.getElementById('sortBy').value;
 
-            if (data.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color: var(--text-muted)">No processes found.</div>`;
+            let filtered = allProcesses.filter(p => {
+                if (!search) return true;
+                return p.name.toLowerCase().includes(search) || String(p.pid).includes(search);
+            });
+
+            if (sortBy === 'cpu') {
+                filtered.sort((a, b) => (b.cpu || 0) - (a.cpu || 0));
+            } else if (sortBy === 'name') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            } else {
+                filtered.sort((a, b) => (b.memory || 0) - (a.memory || 0));
+            }
+
+            document.getElementById('procCount').innerText = `${filtered.length} Processes`;
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="search-x"></i>
+                        <span>No matching processes found</span>
+                    </div>
+                `;
+                lucide.createIcons();
                 return;
             }
 
-            data.forEach(proc => {
-                const el = document.createElement('div');
-                el.className = 'process-card';
-                el.innerHTML = `
+            list.innerHTML = filtered.slice(0, 60).map(proc => `
+                <div class="process-card">
                     <div class="proc-info">
-                        <div class="proc-name">${proc.name}</div>
+                        <div class="proc-name" title="${proc.name}">${proc.name}</div>
                         <div class="proc-meta">
-                            <span class="badge"><i data-lucide="microchip" size="12"></i> ${proc.memory} MB</span>
-                            <span class="badge" style="${proc.cpu > 10 ? 'color:var(--primary)' : ''}"><i data-lucide="activity" size="12"></i> ${proc.cpu}%</span>
-                            <span style="opacity:0.5">#${proc.pid}</span>
+                            <span class="badge">
+                                <i data-lucide="hard-drive" style="width: 12px; height: 12px;"></i>
+                                ${proc.memory} MB
+                            </span>
+                            <span class="badge" style="${proc.cpu > 5 ? 'color:var(--primary); font-weight:800;' : ''}">
+                                <i data-lucide="activity" style="width: 12px; height: 12px;"></i>
+                                ${proc.cpu}%
+                            </span>
+                            <span style="opacity:0.4;">PID: ${proc.pid}</span>
                         </div>
                     </div>
-                    <button class="btn-kill" onclick="killProcess(${proc.pid}, '${proc.name}')">
-                        <i data-lucide="trash-2" size="20"></i>
+                    <button class="btn-kill" onclick="killProcess(${proc.pid}, '${proc.name}')" title="Force Stop">
+                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                     </button>
-                `;
-                list.appendChild(el);
-            });
+                </div>
+            `).join('');
+
             lucide.createIcons();
         }
 
         async function killProcess(pid, name) {
-            if (!confirm(`Force stop "${name}"?`)) return;
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('error');
+            }
+
+            if (!confirm(`Force stop "${name}" (PID: ${pid})?`)) return;
 
             try {
-                const res = await fetch(`${apiPath}/kill`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pid: pid })
-                });
-                const json = await res.json();
+                let url = '/system/processes/kill';
+                if (window.pclink && pclink._token) {
+                    url += `?token=${encodeURIComponent(pclink._token)}`;
+                }
 
-                if (json.status === 'ok') {
-                    // Remove from UI immediately for snappy feel
-                    currentData = currentData.filter(p => p.pid !== pid);
-                    renderList(currentData);
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ pid: parseInt(pid) }),
+                    credentials: 'include'
+                });
+
+                if (res.ok) {
+                    allProcesses = allProcesses.filter(p => p.pid !== pid);
+                    renderList();
                 } else {
-                    alert('Error: ' + (json.detail || 'Failed to kill process'));
+                    const err = await res.json().catch(() => ({ detail: 'Failed to stop process' }));
+                    alert(err.detail || 'Failed to stop process');
                 }
             } catch (err) {
                 alert('Connection error');
             }
         }
 
-        // Search Filter
-        document.getElementById('searchInput').addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = currentData.filter(p => p.name.toLowerCase().includes(term));
-            renderList(filtered);
-        });
+        function handleSearch() {
+            renderList();
+        }
 
-        // Initial Load
+        function handleSortChange() {
+            renderList();
+        }
+
+        lucide.createIcons();
         fetchProcesses();
+        setInterval(fetchProcesses, 4000);
     </script>
 </body>
-
 </html>

@@ -2,233 +2,323 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="/ui/static/extension-theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Media Master</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #2563eb;
+            --primary-muted: rgba(37, 99, 235, 0.15);
+            --primary-faint: rgba(37, 99, 235, 0.08);
+            --surface: rgba(255, 255, 255, 0.05);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius: 16px;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
-        
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            /* Inherited from SDK: font-family, background, text color */
-            margin: 0; 
+            margin: 0;
             padding: 16px;
-            display: flex; 
-            flex-direction: column; 
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            background: transparent;
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
         }
 
         .container {
-            width: 100%; 
+            width: 100%;
             max-width: 380px;
-            display: flex; 
-            flex-direction: column; 
-            gap: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* Album Art Area - Sync with var(--radius) */
         .art-card {
-            aspect-ratio: 1/1;
+            aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, var(--primary), var(--primary-muted));
-            border-radius: var(--radius); /* Applied SDK Radius */
-            display: flex; 
-            align-items: center; 
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
             justify-content: center;
             box-shadow: var(--card-shadow);
-            position: relative; 
+            position: relative;
             overflow: hidden;
             border: var(--card-border);
+            transition: transform 0.3s ease;
         }
-        
-        .art-card i { 
-            color: white; 
-            opacity: 0.9; 
-            width: 80px; 
-            height: 80px; 
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
-        }
-        
-        /* Song Info */
-        .info { text-align: left; padding: 0 8px; }
-        .info h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            font-weight: 900; 
-            letter-spacing: -0.5px;
-            background: linear-gradient(90deg, var(--primary), var(--text));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .info p { margin: 4px 0 0; color: var(--text-muted); font-size: 1rem; font-weight: 600; }
 
-        /* Modern Transport Controls */
-        .transport {
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            padding: 0 10px;
-        }
-        
-        .btn-main {
-            background: var(--primary); /* Use primary color for main action */
+        .art-card svg {
             color: white;
-            border: none; 
-            border-radius: 50%; /* Play button stays circular */
-            width: 72px; 
-            height: 72px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            cursor: pointer; 
-            transition: transform 0.1s;
-            box-shadow: 0 0 20px var(--primary-muted);
+            opacity: 0.9;
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
         }
-        
-        .btn-icon {
-            background: none; 
-            border: none; 
-            color: var(--text);
-            width: 48px; 
-            height: 48px;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            transition: opacity 0.2s;
-        }
-        
-        .btn-icon:active { opacity: 0.5; }
-        .btn-main:active { transform: scale(0.9); }
 
-        /* Secondary Controls (Seek) - Sync with var(--radius) */
+        .info {
+            text-align: left;
+            padding: 0 4px;
+        }
+
+        .info h1 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info p {
+            margin: 4px 0 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .transport {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: 0 6px 20px var(--primary-muted);
+        }
+
+        .btn-main:active {
+            transform: scale(0.92);
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text);
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .btn-icon:active {
+            opacity: 0.5;
+            transform: scale(0.9);
+        }
+
         .secondary-actions {
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-        
+
         .seek-btn {
             background: var(--surface);
             border: var(--card-border);
             color: var(--text);
-            padding: 14px; 
-            border-radius: calc(var(--radius) * 0.7); /* Slightly smaller than main radius */
-            font-size: 0.85rem; 
+            padding: 14px;
+            border-radius: calc(var(--radius) * 0.75);
+            font-size: 0.85rem;
             font-weight: 800;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
         }
 
-        /* Volume Bar Wrapper - Sync with var(--radius) */
+        .seek-btn:active {
+            transform: scale(0.96);
+            background: var(--primary-faint);
+        }
+
         .volume-section {
             background: var(--surface);
             border: var(--card-border);
-            padding: 20px; 
-            border-radius: var(--radius); /* Applied SDK Radius */
-            display: flex; 
-            align-items: center; 
-            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 14px;
             box-shadow: var(--card-shadow);
         }
-        
-        .vol-btn { 
-            background: none; 
-            border: none; 
-            color: var(--text-muted); 
-            padding: 0; 
+
+        .vol-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
-        .vol-track {
-            flex-grow: 1; 
-            height: 6px; 
-            background: var(--primary-faint); 
-            border-radius: 100px; 
-            position: relative;
-            overflow: hidden;
-        }
-
-        .vol-fill {
-            width: 65%; 
-            height: 100%; 
-            background: var(--primary); 
-            border-radius: 100px;
-            box-shadow: 0 0 10px var(--primary-muted);
+        .vol-btn:active {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Visual Art -->
-        <div class="art-card">
+        <div class="art-card" id="artCard">
             <i data-lucide="music-4"></i>
         </div>
 
-        <!-- Meta -->
         <div class="info">
-            <h1>Active Media</h1>
-            <p>Remote PC Playback</p>
+            <h1 id="trackTitle">No Media Playing</h1>
+            <p id="trackArtist">Waiting for active player...</p>
         </div>
 
-        <!-- Main Playback -->
         <div class="transport">
-            <button class="btn-icon" onclick="control('prev')"><i data-lucide="skip-back"></i></button>
-            <button class="btn-icon" onclick="control('seek_bwd')"><i data-lucide="rotate-ccw"></i></button>
-            <button class="btn-main" onclick="control('play_pause')"><i data-lucide="play" id="playIcon"></i></button>
-            <button class="btn-icon" onclick="control('seek_fwd')"><i data-lucide="rotate-cw"></i></button>
-            <button class="btn-icon" onclick="control('next')"><i data-lucide="skip-forward"></i></button>
+            <button class="btn-icon" onclick="control('prev')" aria-label="Previous Track">
+                <i data-lucide="skip-back"></i>
+            </button>
+            <button class="btn-icon" onclick="control('seek_bwd')" aria-label="Seek Backward">
+                <i data-lucide="rotate-ccw"></i>
+            </button>
+            <button class="btn-main" onclick="control('play_pause')" id="playBtn" aria-label="Play or Pause">
+                <i data-lucide="play" id="playIcon"></i>
+            </button>
+            <button class="btn-icon" onclick="control('seek_fwd')" aria-label="Seek Forward">
+                <i data-lucide="rotate-cw"></i>
+            </button>
+            <button class="btn-icon" onclick="control('next')" aria-label="Next Track">
+                <i data-lucide="skip-forward"></i>
+            </button>
         </div>
 
-        <!-- Seek Shortcuts -->
         <div class="secondary-actions">
             <button class="seek-btn" onclick="control('seek_bwd')">
-                <i data-lucide="chevrons-left" size="18"></i> -10S
+                <i data-lucide="chevrons-left"></i> -10s
             </button>
             <button class="seek-btn" onclick="control('seek_fwd')">
-                10S <i data-lucide="chevrons-right" size="18"></i>
+                +10s <i data-lucide="chevrons-right"></i>
             </button>
         </div>
 
-        <!-- Volume Control -->
         <div class="volume-section">
-            <button class="vol-btn" onclick="control('vol_down')"><i data-lucide="volume-1"></i></button>
-            <div class="vol-track">
-                <div class="vol-fill"></div>
+            <button class="vol-btn" onclick="control('vol_down')" aria-label="Volume Down">
+                <i data-lucide="volume-1"></i>
+            </button>
+            <div style="flex-grow: 1; text-align: center; font-size: 0.8rem; font-weight: 700; opacity: 0.6;">
+                MASTER VOLUME
             </div>
-            <button class="vol-btn" onclick="control('vol_up')"><i data-lucide="volume-2"></i></button>
+            <button class="vol-btn" onclick="control('vol_up')" aria-label="Volume Up">
+                <i data-lucide="volume-2"></i>
+            </button>
         </div>
     </div>
 
     <script>
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
         let isPlaying = false;
 
-        async function control(action) {
-            if(action === 'play_pause') {
-                isPlaying = !isPlaying;
-                const icon = document.getElementById('playIcon');
-                icon.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
-                lucide.createIcons();
-            }
+        async function syncLiveMetadata() {
             try {
-                await fetch(`${apiPath}/control/${action}`, { method: 'POST' });
-            } catch (e) { console.error(e); }
+                if (!window.pclink || !window.pclink.media) return;
+                const state = await pclink.media.getState();
+
+                const titleEl = document.getElementById('trackTitle');
+                const artistEl = document.getElementById('trackArtist');
+                const playIcon = document.getElementById('playIcon');
+
+                if (state && state.title && state.title !== 'Nothing Playing') {
+                    titleEl.textContent = state.title;
+                    artistEl.textContent = state.artist || state.source_app || 'Active Playback';
+                    isPlaying = (state.status === 'PLAYING' || state.status === 'playing');
+                } else {
+                    titleEl.textContent = 'No Media Playing';
+                    artistEl.textContent = 'PC Audio Idle';
+                    isPlaying = false;
+                }
+
+                playIcon.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+                lucide.createIcons();
+            } catch (e) {
+                console.debug("Metadata sync interval skip:", e);
+            }
         }
-        
+
+        async function control(action) {
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('selection');
+            }
+
+            try {
+                if (action === 'play_pause') {
+                    isPlaying = !isPlaying;
+                    document.getElementById('playIcon').setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+                    lucide.createIcons();
+                    await pclink.media.playPause();
+                } else if (action === 'next') {
+                    await pclink.media.next();
+                } else if (action === 'prev') {
+                    await pclink.media.previous();
+                } else if (action === 'seek_fwd') {
+                    await pclink.input.pressKey('right');
+                } else if (action === 'seek_bwd') {
+                    await pclink.input.pressKey('left');
+                } else if (action === 'vol_up') {
+                    await pclink.media.command('vol_up');
+                } else if (action === 'vol_down') {
+                    await pclink.media.command('vol_down');
+                }
+
+                setTimeout(syncLiveMetadata, 300);
+            } catch (e) {
+                console.error("Media command failed:", e);
+            }
+        }
+
         lucide.createIcons();
+        syncLiveMetadata();
+        setInterval(syncLiveMetadata, 2000);
     </script>
 </body>
 </html>

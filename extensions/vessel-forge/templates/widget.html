@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+
     <style>
         :root {
             --primary: #2496ed;
             --primary-muted: rgba(36, 150, 237, 0.2);
             --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
             --text: #ffffff;
             --text-muted: rgba(255, 255, 255, 0.6);
-            --surface: rgba(255, 255, 255, 0.08);
-            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
             --radius: 12px;
         }
 
         :root[data-theme="light"] {
-            --text: #1a1a1a;
+            --text: #0f172a;
             --text-muted: rgba(0, 0, 0, 0.5);
-            --surface: rgba(0, 0, 0, 0.05);
-            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --surface: rgba(0, 0, 0, 0.04);
+            --card-border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             margin: 0;
-            padding: 4px 6px;
+            padding: 6px 8px;
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
             overflow: hidden;
-            -webkit-user-select: none;
             user-select: none;
-            opacity: 0;
-            transition: opacity 0.2s;
+            -webkit-user-select: none;
         }
 
-        body.ready {
-            opacity: 1;
-        }
-
-        .widget-container {
+        .widget-box {
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -77,88 +80,70 @@
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.2px;
+            letter-spacing: 0.5px;
         }
 
         .health-bar {
-            height: 3px;
+            height: 4px;
             background: var(--surface);
             border-radius: var(--radius);
             overflow: hidden;
-            border: none;
-            margin: -2px 2px 2px 2px;
+            margin: 0 2px;
         }
 
         .health-fill {
             height: 100%;
             background: var(--primary);
-            transition: width 0.4s ease;
+            transition: width 0.3s ease;
             width: 0%;
             border-radius: var(--radius);
         }
 
         .shortcut-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 5px;
         }
 
-        .btn {
+        .btn-quick {
             background: var(--surface);
             border: var(--card-border);
-            border-radius: calc(var(--radius) * 0.8);
-            padding: 8px 2px;
+            border-radius: calc(var(--radius) * 0.75);
+            padding: 7px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 3px;
             cursor: pointer;
-            transition: transform 0.1s;
-            color: var(--text-muted);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-            background: var(--primary-muted);
-            color: var(--primary);
-        }
-
-        .btn-label {
-            font-size: 8px;
+            transition: transform 0.1s ease;
+            color: var(--text);
+            font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.2px;
         }
 
-        .btn-icon {
-            width: 13px;
-            height: 13px;
-            fill: currentColor;
+        .btn-quick:active {
+            transform: scale(0.95);
+            background: var(--surface-hover);
         }
     </style>
 </head>
-
 <body>
-    <div class="widget-container">
+    <div class="widget-box">
         <div class="status-header">
             <div class="main-info">
                 <svg class="icon" viewBox="0 0 24 24">
-                    <path
-                        d="M13.983 11.078h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.186.186 0 00.185-.186V6.468a.186.186 0 00-.185-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m0 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954-2.305h2.119a.186.186 0 00.186-.186V6.468a.185.185 0 00-.186-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186zM21.007 12.11c-.569 0-1.03.46-1.03 1.03 0 .18.065.344.148.498-1.247.762-2.327.57-2.423.553-.047-.01-.114-.01-.189-.01h-.034c-.202 0-.317.07-.389.13-.039.034-.148.131-.148.452l-.001.039c-.015.632.709 1.144 1.157 1.402.128.074.205.145.205.289 0 .141-.079.21-.21.289-.512.303-1.605.959-1.605 2.122 0 1.077.926 1.868 2.11 1.868 3.705 0 6.22-3.003 6.22-6.104 0-1.428-.567-2.568-1.811-2.568" />
+                    <path d="M13.983 11.078h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.186.186 0 00.185-.186V6.468a.186.186 0 00-.185-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m0 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954-2.305h2.119a.186.186 0 00.186-.186V6.468a.185.185 0 00-.186-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m0 2.305h2.119c.102 0 .186-.084.186-.186V8.773a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v2.119c0 .102.083.186.185.186m-2.954-2.305h2.119a.185.185 0 00.185-.186V6.468a.185.185 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186m-2.954 2.305h2.119c.102 0 .185-.084.185-.186V8.773a.186.186 0 00-.185-.186h-2.119a.186.186 0 00-.186.186v2.119c0 .102.084.186.186.186zM21.007 12.11c-.569 0-1.03.46-1.03 1.03 0 .18.065.344.148.498-1.247.762-2.327.57-2.423.553-.047-.01-.114-.01-.189-.01h-.034c-.202 0-.317.07-.389.13-.039.034-.148.131-.148.452l-.001.039c-.015.632.709 1.144 1.157 1.402.128.074.205.145.205.289 0 .141-.079.21-.21.289-.512.303-1.605.959-1.605 2.122 0 1.077.926 1.868 2.11 1.868 3.705 0 6.22-3.003 6.22-6.104 0-1.428-.567-2.568-1.811-2.568"/>
                 </svg>
                 <div>
-                    <div id="status-text" class="label">Vessel Forge</div>
-                    <div style="display: flex; align-items: baseline; gap: 4px">
+                    <div class="label">Vessels</div>
+                    <div style="display: flex; align-items: baseline; gap: 4px;">
                         <span id="count" class="count">--</span>
-                        <span style="font-size: 9px; opacity: 0.5;">/ <span id="total">--</span></span>
+                        <span style="font-size: 10px; opacity: 0.5;">/ <span id="total">--</span></span>
                     </div>
                 </div>
             </div>
-            <div id="ref-btn" onclick="refresh()" style="cursor: pointer; opacity: 0.5; padding-right: 4px;"><svg
-                    style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
-                    <path
-                        d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
-                </svg></div>
+            <span style="font-size: 9px; font-weight: 800; opacity: 0.4;">FLEET</span>
         </div>
 
         <div class="health-bar">
@@ -166,62 +151,47 @@
         </div>
 
         <div class="shortcut-grid">
-            <div class="btn" onclick="bulk('start')"><svg class="btn-icon" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-                <div class="btn-label">Start</div>
-            </div>
-            <div class="btn" onclick="bulk('restart')"><svg class="btn-icon" viewBox="0 0 24 24">
-                    <path
-                        d="M12 2.75a9.25 9.25 0 1 0 4.737 17.197l-1.353-1.503A7.25 7.25 0 1 1 18.995 12h2.003a9.25 9.25 0 0 0-8.998-9.25zM12 7l-4 4h3v4h2v-4h3l-4-4z" />
-                </svg>
-                <div class="btn-label">Restart</div>
-            </div>
-            <div class="btn" onclick="bulk('stop')"><svg class="btn-icon" viewBox="0 0 24 24">
-                    <path d="M6 6h12v12H6z" />
-                </svg>
-                <div class="btn-label">Stop</div>
-            </div>
-            <div class="btn" onclick="prune()"><svg class="btn-icon" viewBox="0 0 24 24">
-                    <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z" />
-                </svg>
-                <div class="btn-label">Prune</div>
-            </div>
-            <div class="btn" onclick="openFull()"><svg class="btn-icon" viewBox="0 0 24 24">
-                    <path
-                        d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-                </svg>
-                <div class="btn-label">Pro</div>
-            </div>
+            <button class="btn-quick" onclick="bulk('start')">Start</button>
+            <button class="btn-quick" onclick="bulk('restart')">Restart</button>
+            <button class="btn-quick" onclick="bulk('stop')">Stop</button>
+            <button class="btn-quick" style="color:var(--danger)" onclick="prune()">Prune</button>
         </div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        function updateUI(c) {
-            if (c.theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
-            if (c.radius) document.documentElement.style.setProperty('--radius', c.radius + 'px');
-            if (c.primaryColor) document.documentElement.style.setProperty('--primary', '#' + c.primaryColor);
-        }
-        updateUI({ theme: params.get('theme'), primaryColor: params.get('primary_color'), radius: params.get('radius') });
+        const apiPath = window.location.pathname.replace(/\/widget\/[^\/]+$/, '').replace(/\/ui$/, '');
 
         async function refresh() {
             try {
-                const res = await fetch('/extensions/vessel-forge/status');
-                const data = await res.json();
-                if (data.connected) {
-                    document.getElementById('count').innerText = data.running;
-                    document.getElementById('total').innerText = data.total;
-                    const pct = data.total > 0 ? (data.running / data.total) * 100 : 0;
-                    document.getElementById('fill').style.width = pct + '%';
+                const res = await fetch(`${apiPath}/status`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.connected) {
+                        document.getElementById('count').innerText = data.running;
+                        document.getElementById('total').innerText = data.total;
+                        const pct = data.total > 0 ? (data.running / data.total) * 100 : 0;
+                        document.getElementById('fill').style.width = pct + '%';
+                    }
                 }
-            } catch (e) { }
+            } catch (e) {}
         }
-        async function bulk(t) { fetch(`/extensions/vessel-forge/containers/bulk/${t}`, { method: 'POST' }).then(() => refresh()); }
-        async function prune() { if (confirm("Deep clean system? (Removes all unattached Containers, Networks, Volumes & Images)")) fetch(`/extensions/vessel-forge/system/prune`, { method: 'POST' }).then(() => refresh()); }
-        function openFull() { if (window.PCLinkWidget) window.PCLinkWidget.postMessage('open'); }
-        window.onload = () => { document.body.classList.add('ready'); refresh(); setInterval(refresh, 8000); };
+
+        async function bulk(action) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            await fetch(`${apiPath}/containers/bulk/${action}`, { method: 'POST', credentials: 'include' });
+            refresh();
+        }
+
+        async function prune() {
+            if (confirm("Deep clean system? (Removes all unattached Containers, Networks, Volumes & Images)")) {
+                if (window.pclink && window.pclink.ui) pclink.ui.haptic('error');
+                await fetch(`${apiPath}/system/prune`, { method: 'POST', credentials: 'include' });
+                refresh();
+            }
+        }
+
+        refresh();
+        setInterval(refresh, 6000);
     </script>
 </body>
-
 </html>

@@ -1,0 +1,70 @@
+{
+  "manifest_version": 2,
+  "id": "speed-test",
+  "name": "Network Speed Engine",
+  "version": "2.0.0",
+  "description": "Measure PC broadband internet speeds and test local Wi-Fi transfer throughput between phone and computer.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Utility",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "net.fetch",
+    "system.exec",
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "net.fetch",
+    "system.exec",
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true,
+    "allow_fullscreen": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "speed-test-main",
+        "title": "Speed Engine",
+        "icon": "gauge",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "speed-widget",
+        "title": "Speed Test",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 80,
+      "execution_timeout_sec": 30
+    }
+  }
+}

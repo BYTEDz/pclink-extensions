@@ -1,31 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Audio Mixer</title>
-    <script src="/ui/static/extension-theme.js"></script>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            background: transparent !important;
+            background-color: transparent !important;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
         body {
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
             gap: 12px;
-            /* Note: font-family, bg, and text are now handled by SDK */
+            user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
         }
 
         .channel {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 18px;
+            padding: 16px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             border: var(--card-border);
             box-shadow: var(--card-shadow);
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.15s ease;
         }
 
         .channel:active {
@@ -33,10 +105,10 @@
         }
 
         .icon-container {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--primary-faint);
-            border-radius: var(--radius);
+            border-radius: calc(var(--radius) * 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -49,74 +121,79 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            min-width: 0;
         }
 
         .info {
             display: flex;
             justify-content: space-between;
-            font-size: 0.95rem;
+            align-items: center;
+            font-size: 0.9rem;
             font-weight: 700;
-            letter-spacing: -0.3px;
+        }
+
+        .app-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 8px;
         }
 
         .vol-text {
             color: var(--primary);
-            font-family: monospace;
-            font-size: 1.1rem;
+            font-family: 'JetBrains Mono', 'SF Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 800;
+            flex-shrink: 0;
         }
 
-        /* Premium Range Slider */
         input[type=range] {
             width: 100%;
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
             height: 24px;
+            cursor: pointer;
         }
 
         input[type=range]:focus {
             outline: none;
         }
 
-        /* Track */
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 6px;
-            cursor: pointer;
-            background: var(--primary-faint);
+            height: 8px;
+            background: var(--surface-hover);
             border-radius: 100px;
-            border: none;
+            border: var(--card-border);
         }
 
-        /* Thumb */
         input[type=range]::-webkit-slider-thumb {
-            height: 22px;
-            width: 22px;
+            height: 20px;
+            width: 20px;
             border-radius: 50%;
-            background: var(--text);
+            background: var(--primary);
             cursor: pointer;
             -webkit-appearance: none;
-            margin-top: -8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            border: 4px solid var(--primary);
+            margin-top: -6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 2px solid #ffffff;
             transition: transform 0.1s ease;
         }
 
         input[type=range]:active::-webkit-slider-thumb {
             transform: scale(1.2);
-            background: var(--primary);
-            border-color: var(--text);
         }
 
         .mute-btn {
-            background: var(--hover-overlay);
-            border: 1px solid var(--divider);
+            background: var(--surface-hover);
+            border: var(--card-border);
             color: var(--text-muted);
             cursor: pointer;
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius);
+            width: 42px;
+            height: 42px;
+            border-radius: calc(var(--radius) * 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -124,93 +201,78 @@
             flex-shrink: 0;
         }
 
-        .mute-btn:hover {
-            background: var(--primary-muted);
-            color: var(--primary);
-        }
-
         .mute-btn.active {
-            background: var(--error);
-            color: white;
-            border-color: var(--error);
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-2px);
-            }
-
-            75% {
-                transform: translateX(2px);
-            }
-        }
-
-        #loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            font-weight: 600;
-            letter-spacing: 1px;
+            background: var(--danger);
+            color: #ffffff;
+            border-color: var(--danger);
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 48px 16px;
             color: var(--text-muted);
+            border-radius: var(--radius);
+            border: 1px dashed var(--card-border);
             display: flex;
             flex-direction: column;
-            gap: 12px;
             align-items: center;
+            gap: 8px;
         }
 
-        #list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        .empty-state svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.4;
+            margin-bottom: 4px;
         }
     </style>
 </head>
-
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i data-lucide="sliders" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                Audio Mixer
+            </h1>
+            <span style="font-size: 10px; font-weight: 800; opacity: 0.5; text-transform: uppercase;">Real-Time</span>
+        </div>
 
-    <div id="loading">
-        <div style="margin-bottom: 12px;">SCANNING PC AUDIO...</div>
+        <div id="list">
+            <div class="empty-state">
+                <i data-lucide="volume-x"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">Scanning audio streams...</span>
+                <span style="font-size: 0.75rem;">Detecting active applications playing sound.</span>
+            </div>
+        </div>
     </div>
-    <div id="list"></div>
 
     <script>
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
-        const API_BASE = apiPath;
-
-        // Polling to keep sync if volume changes on PC
-        setInterval(refresh, 2000);
-        refresh();
+        let cachedSessions = [];
+        let debounceTimers = {};
 
         async function refresh() {
+            if (document.activeElement && document.activeElement.type === 'range') return;
+
             try {
-                const res = await fetch(`${API_BASE}/sessions`);
+                const res = await fetch('./sessions', { credentials: 'include' });
+                if (!res.ok) return;
                 const sessions = await res.json();
-                document.getElementById('loading').style.display = 'none';
+                cachedSessions = sessions;
                 render(sessions);
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.debug("Audio session refresh skipped:", e);
+            }
         }
 
         function render(sessions) {
             const list = document.getElementById('list');
-            if (document.activeElement.type === 'range') return;
 
-            if (sessions.length === 0) {
+            if (!sessions || sessions.length === 0) {
                 list.innerHTML = `
                     <div class="empty-state">
-                        <i data-lucide="volume-x" style="width: 48px; height: 48px; opacity: 0.3;"></i>
-                        <div>No active audio sessions found.</div>
+                        <i data-lucide="volume-x"></i>
+                        <span style="font-weight: 700; font-size: 0.9rem;">No active audio sessions</span>
+                        <span style="font-size: 0.75rem;">Open a media player or browser tab to mix audio.</span>
                     </div>
                 `;
                 lucide.createIcons();
@@ -218,21 +280,20 @@
             }
 
             list.innerHTML = sessions.map(s => `
-                <div class="channel">
+                <div class="channel" data-id="${s.id}">
                     <div class="icon-container">
-                        <i data-lucide="${s.icon || 'music'}"></i>
+                        <i data-lucide="${s.icon || 'volume-2'}" style="width: 20px; height: 20px;"></i>
                     </div>
                     <div class="controls">
                         <div class="info">
-                            <span>${s.name}</span>
-                            <span class="vol-text">${Math.round(s.volume * 100)}%</span>
+                            <span class="app-name">${s.name}</span>
+                            <span class="vol-text" id="vol-${s.id}">${Math.round(s.volume * 100)}%</span>
                         </div>
-                        <input type="range" min="0" max="1" step="0.01" value="${s.volume}" 
-                            oninput="updateVolume('${s.id}', this.value)"
-                            onchange="updateVolume('${s.id}', this.value)">
+                        <input type="range" min="0" max="1" step="0.01" value="${s.volume}"
+                            oninput="handleVolumeInput('${s.id}', this.value)">
                     </div>
-                    <button class="mute-btn ${s.muted ? 'active' : ''}" onclick="toggleMute('${s.id}', ${!s.muted})">
-                        <i data-lucide="${s.muted ? 'volume-x' : 'volume-2'}"></i>
+                    <button class="mute-btn ${s.muted ? 'active' : ''}" onclick="toggleMute('${s.id}', ${!s.muted})" aria-label="Toggle Mute">
+                        <i data-lucide="${s.muted ? 'volume-x' : 'volume-2'}" style="width: 18px; height: 18px;"></i>
                     </button>
                 </div>
             `).join('');
@@ -240,29 +301,50 @@
             lucide.createIcons();
         }
 
-        async function updateVolume(id, vol) {
-            // Update the display text immediately for that warm 'analog' feel
-            const parent = document.querySelector(`input[value="${vol}"]`)?.closest('.channel');
-            if (parent) {
-                parent.querySelector('.vol-text').innerText = `${Math.round(vol * 100)}%`;
+        function handleVolumeInput(id, vol) {
+            const textEl = document.getElementById(`vol-${id}`);
+            if (textEl) {
+                textEl.innerText = `${Math.round(vol * 100)}%`;
             }
 
-            await fetch(`${API_BASE}/volume`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id, volume: parseFloat(vol) })
-            });
+            clearTimeout(debounceTimers[id]);
+            debounceTimers[id] = setTimeout(() => {
+                sendVolume(id, vol);
+            }, 60);
+        }
+
+        async function sendVolume(id, vol) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            try {
+                await fetch('./volume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, volume: parseFloat(vol) }),
+                    credentials: 'include'
+                });
+            } catch (e) {
+                console.error("Failed to set volume:", e);
+            }
         }
 
         async function toggleMute(id, state) {
-            await fetch(`${API_BASE}/mute`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id, muted: state })
-            });
-            refresh();
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic(state ? 'error' : 'selection');
+            try {
+                await fetch('./mute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, muted: state }),
+                    credentials: 'include'
+                });
+                refresh();
+            } catch (e) {
+                console.error("Failed to toggle mute:", e);
+            }
         }
+
+        lucide.createIcons();
+        refresh();
+        setInterval(refresh, 3000);
     </script>
 </body>
-
 </html>

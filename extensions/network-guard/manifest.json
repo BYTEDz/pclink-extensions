@@ -1,0 +1,67 @@
+{
+  "manifest_version": 2,
+  "id": "network-guard",
+  "name": "Network Guard",
+  "version": "2.0.1",
+  "description": "Real-time network traffic monitor and connection manager with per-process bandwidth telemetry and socket inspection.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Security",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "system.exec",
+    "storage.local"
+  ],
+  "declared_permissions": [
+    "system.exec",
+    "storage.local"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "network-guard-view",
+        "title": "Network Guard",
+        "icon": "shield",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "network-status",
+        "title": "Network Guard",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "python",
+    "entry_point": "extension.py:Extension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 256,
+      "max_cpu_percent": 50,
+      "execution_timeout_sec": 30
+    }
+  }
+}

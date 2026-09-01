@@ -1,102 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Quick Notes</title>
-    <script src="/ui/static/extension-theme.js"></script>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
-            --bg-color: #12100e;
-            --card-bg: #1e1b18;
-            --primary: #f39c12;
-            --on-primary: #000;
-            --text: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --danger: #e74c3c;
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --card-border: 1px solid rgba(255, 255, 255, 0.05);
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #f59e0b;
+            --primary-muted: rgba(245, 158, 11, 0.2);
+            --on-primary: #000000;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --danger-faint: rgba(239, 68, 68, 0.12);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --danger-faint: rgba(239, 68, 68, 0.08);
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
+            min-height: 100vh;
+            background: transparent !important;
+            background-color: transparent !important;
             overflow-x: hidden;
-            background-color: var(--bg-color);
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: var(--text);
             padding: 16px;
-            padding-bottom: 80px;
-            /* Space for FAB */
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(90px + var(--safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+            align-items: center;
         }
 
+        .container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+        }
 
-        .add-btn {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--primary);
-            border: none;
-            border-radius: 50px;
-            padding: 16px 24px;
-            color: var(--on-primary);
-            font-size: 16px;
-            font-weight: 700;
+        .header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-        }
-
-        .add-btn:active {
-            transform: scale(0.9);
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
+            letter-spacing: -0.5px;
         }
 
         .notes-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            width: 100%;
         }
 
         .note-card {
-            background: var(--card-bg);
-            border-radius: 16px;
+            background: var(--surface);
+            border-radius: var(--radius);
             padding: 16px;
             position: relative;
             border: var(--card-border);
             box-shadow: var(--card-shadow);
-            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.15s ease, background 0.15s ease;
         }
 
         textarea {
@@ -104,145 +112,230 @@
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
             line-height: 1.5;
             resize: none;
             outline: none;
-            min-height: 100px;
+            min-height: 90px;
             padding: 0;
             margin-bottom: 8px;
         }
 
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
         .card-actions {
             display: flex;
-            justify-content: flex-end;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: var(--card-border);
+        }
+
+        .note-date {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .delete-btn {
-            background: rgba(231, 76, 60, 0.1);
+            background: var(--danger-faint);
             border: none;
             color: var(--danger);
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
             cursor: pointer;
             padding: 6px 12px;
-            border-radius: 8px;
-            transition: all 0.2s;
+            border-radius: calc(var(--radius) * 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: opacity 0.15s, transform 0.1s;
         }
 
         .delete-btn:active {
-            background: rgba(231, 76, 60, 0.2);
+            transform: scale(0.94);
+            opacity: 0.8;
+        }
+
+        .add-btn {
+            position: fixed;
+            bottom: calc(20px + var(--safe-area-inset-bottom, 0px));
+            right: 20px;
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            border-radius: 50px;
+            padding: 14px 22px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px var(--primary-muted);
+            z-index: 40;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .add-btn:active {
+            transform: scale(0.92);
         }
 
         .sync-status {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%);
-            font-size: 11px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: var(--text-muted);
-            background: rgba(0, 0, 0, 0.5);
-            padding: 4px 12px;
+            background: var(--surface);
+            border: var(--card-border);
+            padding: 5px 14px;
             border-radius: 20px;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             pointer-events: none;
-            transition: opacity 0.3s;
+            box-shadow: var(--card-shadow);
         }
 
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--bg-color);
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            border: 1px dashed var(--card-border);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            z-index: 100;
+            gap: 8px;
         }
 
-        .hidden {
-            display: none !important;
+        .empty-state svg {
+            width: 36px;
+            height: 36px;
+            opacity: 0.4;
+            margin-bottom: 4px;
         }
     </style>
 </head>
-
 <body>
-    <div id="loader" class="loading-overlay">
-        <span>Loading notes...</span>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i data-lucide="edit-3" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                Quick Notes
+            </h1>
+        </div>
+
+        <div id="notes-grid" class="notes-grid">
+            <div class="empty-state">
+                <i data-lucide="file-text"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">No notes yet</span>
+                <span style="font-size: 0.75rem;">Tap the button below to create your first note.</span>
+            </div>
+        </div>
     </div>
 
-    <button class="add-btn" id="add-btn">
-        <span>+</span> New Note
+    <button class="add-btn" id="add-btn" aria-label="Create new note">
+        <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+        <span>New Note</span>
     </button>
 
-    <div id="notes-grid" class="notes-grid"></div>
-
-    <div class="sync-status" id="status">Synced</div>
+    <div class="sync-status" id="status">Ready</div>
 
     <script>
         let notes = [];
         const grid = document.getElementById('notes-grid');
         const statusEl = document.getElementById('status');
         const addBtn = document.getElementById('add-btn');
-        const loader = document.getElementById('loader');
-
-        // Robust fetch with absolute-like paths to avoid relative path issues
-        const apiPath = window.location.pathname.replace(/\/ui$/, '');
 
         async function loadNotes() {
             try {
-                const response = await fetch(apiPath + '/data');
-                if (!response.ok) throw new Error('Load failed');
-                notes = await response.json();
-                renderNotes();
-                loader.classList.add('hidden');
+                if (window.pclink && window.pclink.storage) {
+                    const saved = await pclink.storage.get('notes', null);
+                    if (saved && Array.isArray(saved)) {
+                        notes = saved;
+                    } else {
+                        notes = [
+                            { id: Date.now(), content: "Welcome to Quick Notes! Synced directly to your PC storage.", date: new Date().toLocaleDateString() }
+                        ];
+                        await pclink.storage.set('notes', notes);
+                    }
+                    renderNotes();
+                    statusEl.innerText = "Synced";
+                }
             } catch (e) {
-                statusEl.innerText = "Error loading notes";
-                loader.innerHTML = '<span style="color:var(--danger)">Failed to load. Is the server running?</span>';
+                console.error("Storage load failed:", e);
+                statusEl.innerText = "Sync Error";
             }
         }
 
         function renderNotes() {
+            if (notes.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="file-text"></i>
+                        <span style="font-weight: 700; font-size: 0.9rem;">No notes yet</span>
+                        <span style="font-size: 0.75rem;">Tap the button below to create your first note.</span>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
             grid.innerHTML = '';
             notes.forEach(note => {
                 const card = document.createElement('div');
                 card.className = 'note-card';
 
                 const box = document.createElement('textarea');
-                box.value = note.content;
+                box.value = note.content || '';
                 box.placeholder = "Write something...";
                 box.oninput = (e) => updateNote(note.id, e.target.value);
 
                 const actions = document.createElement('div');
                 actions.className = 'card-actions';
 
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'note-date';
+                dateSpan.innerText = note.date || new Date().toLocaleDateString();
+
                 const del = document.createElement('button');
                 del.className = 'delete-btn';
-                del.innerText = 'Delete';
+                del.innerHTML = `<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Delete`;
                 del.onclick = () => deleteNote(note.id);
 
+                actions.appendChild(dateSpan);
                 actions.appendChild(del);
                 card.appendChild(box);
                 card.appendChild(actions);
                 grid.appendChild(card);
             });
+
+            lucide.createIcons();
         }
 
         addBtn.addEventListener('click', () => {
-            console.log("Add button clicked");
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('selection');
+            }
+
             const newNote = {
                 id: Date.now(),
                 content: '',
-                color: '#f39c12'
+                date: new Date().toLocaleDateString()
             };
             notes.unshift(newNote);
             renderNotes();
 
-            // Focus the new textarea
             const firstTextarea = grid.querySelector('textarea');
             if (firstTextarea) firstTextarea.focus();
 
@@ -250,6 +343,10 @@
         });
 
         function deleteNote(id) {
+            if (window.pclink && window.pclink.ui) {
+                pclink.ui.haptic('error');
+            }
+
             notes = notes.filter(n => n.id !== id);
             renderNotes();
             saveNotes();
@@ -262,26 +359,23 @@
 
             clearTimeout(saveTimeout);
             statusEl.innerText = "Saving...";
-            saveTimeout = setTimeout(saveNotes, 1000);
+            saveTimeout = setTimeout(saveNotes, 600);
         }
 
         async function saveNotes() {
             try {
-                const response = await fetch(apiPath + '/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(notes)
-                });
-                if (!response.ok) throw new Error('Save failed');
-                statusEl.innerText = "Synced to PC";
+                if (window.pclink && window.pclink.storage) {
+                    await pclink.storage.set('notes', notes);
+                    statusEl.innerText = "Synced";
+                }
             } catch (e) {
+                console.error("Storage save failed:", e);
                 statusEl.innerText = "Sync Failed";
             }
         }
 
-        // Init
+        lucide.createIcons();
         loadNotes();
     </script>
 </body>
-
 </html>

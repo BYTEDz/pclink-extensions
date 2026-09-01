@@ -1,0 +1,62 @@
+{
+  "manifest_version": 2,
+  "id": "media-master",
+  "name": "Media Master",
+  "version": "2.2.0",
+  "description": "Modern media controller with live track metadata synchronization and seek shortcuts.",
+  "author": "BYTEDz",
+  "icon": "icon.svg",
+  "category": "Media",
+  "pclink_version": ">=4.9.0",
+  "min_server_version": "4.8.0",
+  "permissions": [
+    "media.read",
+    "media.control",
+    "input.inject"
+  ],
+  "declared_permissions": [
+    "media.read",
+    "media.control",
+    "input.inject"
+  ],
+  "supported_platforms": [
+    "windows",
+    "linux",
+    "darwin"
+  ],
+  "supported_architectures": [
+    "x86_64",
+    "amd64",
+    "arm64",
+    "aarch64"
+  ],
+  "ui_capabilities": {
+    "prevent_sleep": true
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "media-master-main",
+        "title": "Media Master",
+        "icon": "music",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ],
+    "dashboard_widgets": [
+      {
+        "id": "controls",
+        "title": "Media Controls",
+        "type": "webview",
+        "entry_point": "templates/widget.html",
+        "size": {
+          "w": 1,
+          "h": 2
+        }
+      }
+    ]
+  },
+  "backend": {
+    "runtime": "none"
+  }
+}

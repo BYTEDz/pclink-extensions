@@ -4,26 +4,56 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <script src="/ui/static/extension-theme.js"></script>
+    <title>Energy Pulse</title>
+
+    <!-- PCLink Unified Host Broker SDK -->
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+      :root {
+        --bg: transparent;
+        --surface: rgba(255, 255, 255, 0.06);
+        --surface-hover: rgba(255, 255, 255, 0.1);
+        --primary: #3b82f6;
+        --primary-muted: rgba(59, 130, 246, 0.2);
+        --primary-faint: rgba(59, 130, 246, 0.08);
+        --on-primary: #ffffff;
+        --text: #f8fafc;
+        --text-muted: rgba(248, 250, 252, 0.6);
+        --danger: #ef4444;
+        --card-border: 1px solid rgba(255, 255, 255, 0.08);
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        --radius: 16px;
+      }
+
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
       }
 
+      html, body {
+        background: transparent !important;
+        background-color: transparent !important;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background-color: var(--bg);
         color: var(--text);
-        margin: 0;
-        padding: 20px;
+        padding: 16px;
+        padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+        padding-bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-height: 100vh;
+        user-select: none;
       }
 
       .container {
@@ -34,40 +64,39 @@
         gap: 16px;
       }
 
-      /* Main Status Card - Synced Radius */
       .pulse-card {
         background: var(--surface);
         border: var(--card-border);
         border-radius: var(--radius);
-        padding: 32px;
+        padding: 28px 24px;
         text-align: center;
         box-shadow: var(--card-shadow);
         position: relative;
         overflow: hidden;
       }
 
-      /* Subtle accent top bar */
       .pulse-card::after {
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0;
-        height: 4px;
+        height: 3px;
         background: var(--primary);
-        opacity: 0.5;
+        opacity: 0.9;
       }
 
       .battery-level {
-        font-size: 3.5rem;
+        font-size: 3.25rem;
         font-weight: 900;
-        margin: 4px 0;
+        margin: 6px 0;
         color: var(--text);
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-family: 'JetBrains Mono', 'SF Mono', monospace;
+        letter-spacing: -1px;
       }
 
       .status-sub {
         font-weight: 800;
         font-size: 0.75rem;
-        letter-spacing: 2px;
+        letter-spacing: 1.5px;
         color: var(--text-muted);
         text-transform: uppercase;
       }
@@ -75,32 +104,40 @@
       .plan-grid {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
         width: 100%;
       }
 
-      /* Plan Buttons - Synced Radius */
       .plan-btn {
         background: var(--surface);
-        border: 2px solid transparent;
+        border: 1.5px solid transparent;
         color: var(--text);
-        padding: 16px;
+        padding: 14px 16px;
         border-radius: var(--radius);
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 14px;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), background 0.15s ease, border-color 0.15s ease;
         text-align: left;
         box-shadow: var(--card-shadow);
       }
 
-      .plan-btn i {
+      .plan-btn:active {
+        transform: scale(0.98);
+      }
+
+      .plan-btn i, .plan-btn svg {
         flex-shrink: 0;
-        padding: 12px;
-        border-radius: calc(var(--radius) * 0.5); /* Inner radius slightly smaller */
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        border-radius: calc(var(--radius) * 0.6);
         background: var(--primary-faint);
         color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.2s ease;
       }
 
@@ -113,49 +150,46 @@
 
       .plan-info h3 {
         margin: 0;
-        font-size: 1rem;
-        font-weight: 700;
+        font-size: 0.95rem;
+        font-weight: 800;
       }
 
       .plan-info p {
         margin: 0;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
         font-weight: 500;
       }
 
-      /* Active State - SDK Colors */
       .plan-btn.active {
         border-color: var(--primary);
         background: var(--primary-faint);
-        transform: scale(1.02);
       }
 
-      .plan-btn.active i {
+      .plan-btn.active i, .plan-btn.active svg {
         background: var(--primary);
-        color: white !important;
-        box-shadow: 0 0 15px var(--primary-muted);
+        color: var(--on-primary) !important;
+        box-shadow: 0 4px 14px var(--primary-muted);
       }
 
-      /* Toast Notification - Synced Style */
       #toast {
         position: fixed;
-        bottom: 30px;
+        bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
         left: 50%;
         transform: translateX(-50%) translateY(100px);
         background: var(--primary);
-        color: white;
-        padding: 14px 28px;
+        color: var(--on-primary);
+        padding: 12px 24px;
         border-radius: var(--radius);
         font-weight: 800;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         opacity: 0;
-        transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
         z-index: 1000;
         white-space: nowrap;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
       }
 
       #toast.show {
@@ -163,18 +197,16 @@
         opacity: 1;
       }
 
-      /* Compatibility Warning Box */
       #compatWarning {
         display: none;
-        background: var(--error-faint);
-        border: 1px solid var(--error);
-        color: var(--error);
-        padding: 14px;
-        border-radius: calc(var(--radius) * 0.5);
-        font-size: 0.85rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px;
+        border-radius: calc(var(--radius) * 0.6);
+        font-size: 0.8rem;
         font-weight: 700;
         text-align: center;
-        margin-top: 10px;
       }
     </style>
   </head>
@@ -183,13 +215,13 @@
       <div class="pulse-card">
         <div id="statusLabel" class="status-sub">Detecting System...</div>
         <div class="battery-level" id="levelText">--</div>
-        <div id="detailLabel" style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-top: 4px">
+        <div id="detailLabel" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-top: 4px">
           AC Power
         </div>
       </div>
 
       <div class="plan-grid">
-        <button class="plan-btn" id="btn-saver" onclick="setPlan('saver')">
+        <button class="plan-btn" id="btn-saver" onclick="setPlan('power-saver')">
           <i data-lucide="leaf"></i>
           <div class="plan-info">
             <h3>Power Saver</h3>
@@ -200,29 +232,27 @@
           <i data-lucide="scale"></i>
           <div class="plan-info">
             <h3>Balanced</h3>
-            <p>Standard performance mode</p>
+            <p>Standard performance profile</p>
           </div>
         </button>
-        <button class="plan-btn" id="btn-high" onclick="setPlan('high')">
+        <button class="plan-btn" id="btn-high" onclick="setPlan('performance')">
           <i data-lucide="zap"></i>
           <div class="plan-info">
-            <h3>High Performance</h3>
-            <p>Maximum power and speed</p>
+            <h3>Performance</h3>
+            <p>Maximum power and clock speed</p>
           </div>
         </button>
       </div>
 
       <div id="compatWarning">
         <i data-lucide="alert-circle" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"></i>
-        Limited support on this device
+        power-profiles-daemon is not active on this host
       </div>
     </div>
 
     <div id="toast">Profile Updated</div>
 
     <script>
-      const apiPath = window.location.pathname.replace(/\/ui$/, "");
-
       function showToast(msg) {
         const t = document.getElementById("toast");
         t.innerText = msg;
@@ -230,57 +260,94 @@
         setTimeout(() => t.classList.remove("show"), 2000);
       }
 
-      async function updateStatus() {
+      async function checkDaemonSupport() {
         try {
-          const res = await fetch(`${apiPath}/status`);
-          const data = await res.json();
-
-          const lvl = document.getElementById("levelText");
-          const lbl = document.getElementById("statusLabel");
-          const det = document.getElementById("detailLabel");
-          const warn = document.getElementById("compatWarning");
-
-          if (data.has_battery) {
-            lvl.innerText = data.percent + "%";
-            lbl.innerText = data.power_plugged ? "Charging" : "On Battery";
-            det.innerText = data.power_plugged ? "Power Connected" : "Discharging";
-          } else {
-            lvl.innerHTML = '<i data-lucide="plug-zap" style="width:48px; height:48px;"></i>';
-            lbl.innerText = "Desktop PC";
-            det.innerText = "AC Power Active";
-            lucide.createIcons();
-          }
-
-          if (data.compatible === false) {
-            warn.style.display = "block";
-            document.querySelector(".plan-grid").style.opacity = "0.4";
-            document.querySelector(".plan-grid").style.pointerEvents = "none";
-          } else {
-            warn.style.display = "none";
-            document.querySelector(".plan-grid").style.opacity = "1";
-            document.querySelector(".plan-grid").style.pointerEvents = "auto";
-          }
-
-          document.querySelectorAll(".plan-btn").forEach((b) => b.classList.remove("active"));
-          const activeBtn = document.getElementById(`btn-${data.active_plan}`);
-          if (activeBtn) activeBtn.classList.add("active");
+          if (!window.pclink || !window.pclink.system) return false;
+          const res = await pclink.system.exec({ command: "which powerprofilesctl" });
+          return res.exit_code === 0;
         } catch (e) {
-          console.error(e);
+          return false;
         }
       }
 
-      async function setPlan(type) {
+      async function getActivePlan() {
         try {
-          const res = await fetch(`${apiPath}/set-plan/${type}`, { method: "POST" });
-          const data = await res.json();
-          if (data.success) {
-            showToast(`Mode: ${type.toUpperCase()}`);
-            updateStatus();
+          if (!window.pclink || !window.pclink.system) return "balanced";
+          const res = await pclink.system.exec({ command: "powerprofilesctl get" });
+          if (res.exit_code === 0 && res.stdout) {
+            return res.stdout.trim();
           }
-        } catch (e) { console.error(e); }
+        } catch (e) {}
+        return "balanced";
       }
 
-      setInterval(updateStatus, 5000);
+      async function updateStatus() {
+        const lvl = document.getElementById("levelText");
+        const lbl = document.getElementById("statusLabel");
+        const det = document.getElementById("detailLabel");
+        const warn = document.getElementById("compatWarning");
+
+        const hasDaemon = await checkDaemonSupport();
+        if (!hasDaemon) {
+          warn.style.display = "block";
+          document.querySelector(".plan-grid").style.opacity = "0.4";
+          document.querySelector(".plan-grid").style.pointerEvents = "none";
+        } else {
+          warn.style.display = "none";
+          document.querySelector(".plan-grid").style.opacity = "1";
+          document.querySelector(".plan-grid").style.pointerEvents = "auto";
+        }
+
+        try {
+          const sysRes = await fetch("/info/system", { credentials: "include" });
+          if (sysRes.ok) {
+            const sysData = await sysRes.json();
+            if (sysData.battery && sysData.battery.percent !== undefined) {
+              lvl.innerText = Math.round(sysData.battery.percent) + "%";
+              lbl.innerText = sysData.battery.power_plugged ? "Charging" : "On Battery";
+              det.innerText = sysData.battery.power_plugged ? "Power Connected" : "Discharging";
+            } else {
+              lvl.innerHTML = '<i data-lucide="plug-zap" style="width:48px; height:48px;"></i>';
+              lbl.innerText = "Desktop PC";
+              det.innerText = "AC Power Connected";
+              lucide.createIcons();
+            }
+          }
+        } catch (e) {}
+
+        const activePlan = await getActivePlan();
+        document.querySelectorAll(".plan-btn").forEach((b) => b.classList.remove("active"));
+
+        let planId = "btn-balanced";
+        if (activePlan === "power-saver") planId = "btn-saver";
+        else if (activePlan === "performance") planId = "btn-high";
+
+        const activeBtn = document.getElementById(planId);
+        if (activeBtn) activeBtn.classList.add("active");
+      }
+
+      async function setPlan(planName) {
+        if (window.pclink && window.pclink.ui) {
+          pclink.ui.haptic("selection");
+        }
+
+        try {
+          const res = await pclink.system.exec({
+            command: `powerprofilesctl set ${planName}`
+          });
+
+          if (res.exit_code === 0) {
+            showToast(`Profile: ${planName.toUpperCase()}`);
+            await updateStatus();
+          } else {
+            showToast("Failed to switch profile");
+          }
+        } catch (e) {
+          console.error("Profile switch error:", e);
+        }
+      }
+
+      setInterval(updateStatus, 6000);
       updateStatus();
       lucide.createIcons();
     </script>
