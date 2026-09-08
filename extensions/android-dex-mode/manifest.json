@@ -3,6 +3,8 @@
   "id": "android-dex-mode",
   "name": "Android DeX Mode",
   "version": "0.0.1",
+  "min_server_version": "4.8.0",
+  "pclink_version": ">=4.9.0",
   "description": "Samsung DeX-style desktop environment for any Android device via wireless ADB and scrcpy.",
   "author": "BYTEDz",
   "category": "Utility",
