@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "id": "android-dex-mode",
+  "name": "Android DeX Mode",
+  "version": "0.0.1",
+  "description": "Samsung DeX-style desktop environment for any Android device via wireless ADB and scrcpy.",
+  "author": "BYTEDz",
+  "category": "Utility",
+  "permissions": [
+    "system.exec",
+    "fs.read",
+    "fs.write",
+    "storage.local"
+  ],
+  "backend": {
+    "runtime": "python",
+    "entry_point": "main.py:AndroidDexModeExtension",
+    "isolated": true,
+    "resource_limits": {
+      "max_memory_mb": 512,
+      "max_cpu_percent": 80,
+      "execution_timeout_sec": 30
+    }
+  },
+  "contributes": {
+    "views": [
+      {
+        "id": "dex-mode-main",
+        "title": "Android DeX Mode",
+        "icon": "monitor",
+        "entry_point": "templates/index.html",
+        "target": "main_tab"
+      }
+    ]
+  }
+}

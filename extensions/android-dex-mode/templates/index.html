@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Android DeX Mode</title>
+
+    <script src="/extensions/sdk/pclink-sdk.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-muted: rgba(59, 130, 246, 0.2);
+            --primary-faint: rgba(59, 130, 246, 0.08);
+            --on-primary: #ffffff;
+            --text: #f8fafc;
+            --text-muted: rgba(248, 250, 252, 0.6);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
+        }
+
+        :root[data-theme="light"] {
+            --surface: rgba(0, 0, 0, 0.04);
+            --surface-hover: rgba(0, 0, 0, 0.07);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --card-border: 1px solid rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            background: transparent !important;
+            background-color: transparent !important;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            padding: 16px;
+            padding-top: calc(16px + var(--safe-area-inset-top, 0px));
+            padding-bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--surface-hover);
+            border: var(--card-border);
+            color: var(--text-muted);
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-badge.active .status-dot {
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], input[type="number"] {
+            background: var(--surface-hover);
+            border: var(--card-border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: calc(var(--radius) * 0.6);
+            font-size: 0.85rem;
+            font-family: inherit;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        .custom-select-trigger {
+            background: var(--surface-hover);
+            border: var(--card-border);
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: calc(var(--radius) * 0.6);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .custom-select-trigger:active {
+            transform: scale(0.99);
+        }
+
+        .custom-select-trigger:focus, .custom-select-trigger.active {
+            border-color: var(--primary);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        @media (min-width: 480px) {
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: calc(var(--radius) * 0.6);
+            border: var(--card-border);
+            background: var(--surface-hover);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #ffffff;
+            border-color: var(--danger);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .chip {
+            padding: 5px 10px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: var(--surface-hover);
+            border: var(--card-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .chip:active {
+            transform: scale(0.96);
+        }
+
+        .chip.active {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-color: var(--primary);
+        }
+
+        .segmented-group {
+            display: flex;
+            background: var(--surface-hover);
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.6);
+            padding: 2px;
+            height: 38px;
+        }
+
+        .segmented-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: calc(var(--radius) * 0.5);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .segmented-btn.active {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+
+        .banner {
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.8rem;
+        }
+
+        .banner-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--warning);
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .app-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: var(--surface-hover);
+            border-radius: calc(var(--radius) * 0.5);
+            border: var(--card-border);
+            gap: 6px;
+        }
+
+        .app-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .step-index {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-muted);
+            color: var(--primary);
+            font-size: 0.72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
+            border-radius: var(--radius);
+            padding: 20px;
+            max-width: 380px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .device-option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--surface-hover);
+            border: var(--card-border);
+            border-radius: calc(var(--radius) * 0.6);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .device-option-item:active {
+            transform: scale(0.98);
+        }
+
+        .device-option-item.selected {
+            border-color: var(--primary);
+            background: var(--primary-faint);
+        }
+
+        .radio-indicator {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .device-option-item.selected .radio-indicator {
+            border-color: var(--primary);
+        }
+
+        .device-option-item.selected .radio-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .collapsible-trigger {
+            cursor: pointer;
+        }
+
+        .collapsible-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 4px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i data-lucide="monitor" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                Android DeX Mode
+            </h1>
+            <div id="runtimeStatusBadge" class="status-badge">
+                <span class="status-dot"></span>
+                <span>Idle</span>
+            </div>
+        </div>
+
+        <div id="binaryWarningBanner" class="banner banner-warning hidden">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="alert-triangle" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                <span id="binaryWarningMessage" style="font-weight: 600;">ADB or Scrcpy missing on host.</span>
+            </div>
+            <button id="btnInstallBinaries" class="btn btn-sm" style="background: var(--warning); color: #000; font-weight: 800; border: none;" onclick="installBinaries()">
+                Install
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="section-title collapsible-trigger" onclick="toggleGuide()">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="help-circle" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                    Setup &amp; Wireless ADB Guide
+                </span>
+                <i id="guideChevron" data-lucide="chevron-down" style="width: 16px; height: 16px; transition: transform 0.2s ease;"></i>
+            </div>
+
+            <div id="guideContent" class="collapsible-content">
+                <div class="guide-step">
+                    <div class="step-index">1</div>
+                    <div class="step-body">
+                        <span class="step-title">Developer Options</span>
+                        <span class="step-desc">Open <strong>Settings &gt; About Phone &gt; Version</strong> and tap <strong>Build Number</strong> 7 times until developer mode is unlocked.</span>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-index">2</div>
+                    <div class="step-body">
+                        <span class="step-title">Enable Wireless Debugging</span>
+                        <span class="step-desc">Navigate to <strong>Developer Options</strong> and toggle <strong>Wireless Debugging</strong> ON while connected to Wi-Fi.</span>
+                        <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                            <a href="intent:#Intent;action=android.settings.WIRELESS_DEBUGGING_SETTINGS;end" class="btn btn-sm btn-primary">
+                                <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                                Open Screen on Phone
+                            </a>
+                            <button class="btn btn-sm" onclick="triggerAdbSettingsIntent()">
+                                <i data-lucide="terminal" style="width: 13px; height: 13px;"></i>
+                                Trigger via Host ADB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-index">3</div>
+                    <div class="step-body">
+                        <span class="step-title">Pairing (Android 11+)</span>
+                        <span class="step-desc">Tap <strong>Pair device with pairing code</strong>. Note the 6-digit code and dynamic pairing port (e.g. <code>37821</code>), then click <strong>Pair (v11+)</strong> below.</span>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-index">4</div>
+                    <div class="step-body">
+                        <span class="step-title">Connect &amp; Launch</span>
+                        <span class="step-desc">Enter the primary IP address and port shown under Wireless Debugging (e.g. <code>43049</code> or <code>5555</code>), click <strong>Connect ADB</strong>, and start the Android DeX session.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <span>Target Phone</span>
+                <span id="adbStatusNote" style="font-size: 0.7rem; text-transform: none; font-weight: 600;"></span>
+            </div>
+
+            <div class="form-group">
+                <div id="deviceSelectTrigger" class="custom-select-trigger" onclick="openDevicePicker()">
+                    <span id="deviceSelectLabel" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Detecting linked phone...</span>
+                    <i data-lucide="chevron-down" style="width: 16px; height: 16px; flex-shrink: 0; opacity: 0.6;"></i>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <input type="text" id="ipInput" placeholder="192.168.1.50" />
+                </div>
+                <div class="form-group">
+                    <input type="number" id="portInput" value="5555" />
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <button id="btnConnectAdb" class="btn btn-primary" onclick="connectAdb()">
+                    <i data-lucide="wifi" style="width: 16px; height: 16px;"></i>
+                    Connect ADB
+                </button>
+                <button class="btn" onclick="togglePairingModal(true)">
+                    <i data-lucide="key" style="width: 16px; height: 16px;"></i>
+                    Pair (v11+)
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <span>Display &amp; Geometry</span>
+                <span id="activePresetBadge" style="color: var(--primary); font-family: monospace;">1080p Desktop</span>
+            </div>
+
+            <div class="chip-group">
+                <div class="chip active" data-w="1920" data-h="1080" data-dpi="210" onclick="applyPreset(this, '1080p Desktop')">1080p FHD</div>
+                <div class="chip" data-w="2560" data-h="1440" data-dpi="240" onclick="applyPreset(this, '1440p QHD')">1440p QHD</div>
+                <div class="chip" data-w="2560" data-h="1080" data-dpi="200" onclick="applyPreset(this, 'Ultrawide')">21:9 Ultrawide</div>
+                <div class="chip" data-w="1280" data-h="720" data-dpi="160" onclick="applyPreset(this, 'Compact 720p')">720p Tablet</div>
+            </div>
+
+            <div class="grid-4">
+                <div class="form-group">
+                    <label class="form-label" for="resWidth">Width</label>
+                    <input type="number" id="resWidth" value="1920" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="resHeight">Height</label>
+                    <input type="number" id="resHeight" value="1080" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="resDpi">DPI</label>
+                    <input type="number" id="resDpi" value="210" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Framerate</label>
+                    <div class="segmented-group">
+                        <div class="segmented-btn active" id="fpsBtn60" onclick="selectFps(60)">60 FPS</div>
+                        <div class="segmented-btn" id="fpsBtn30" onclick="selectFps(30)">30 FPS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <button id="btnStartWorkspace" class="btn btn-primary" style="padding: 14px; font-size: 0.95rem;" onclick="startWorkspace()">
+                <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+                Launch Android DeX Mode
+            </button>
+            <button id="btnStopWorkspace" class="btn btn-danger hidden" style="padding: 14px; font-size: 0.95rem;" onclick="stopWorkspace()">
+                <i data-lucide="square" style="width: 18px; height: 18px;"></i>
+                Terminate Session
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <span>Application Launcher</span>
+                <button class="btn btn-sm" onclick="fetchInstalledApps()">
+                    <i data-lucide="rotate-cw" style="width: 14px; height: 14px;"></i>
+                    Refresh
+                </button>
+            </div>
+
+            <div id="appsContainer" class="app-list">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 24px 8px; color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">
+                    Start Android DeX session to browse and launch installed applications.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="devicePickerModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800;">Select Target Phone</h3>
+                <button class="btn btn-sm" onclick="closeDevicePicker()" style="padding: 4px 8px;">✕</button>
+            </div>
+            <div id="deviceOptionsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding-right: 2px;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                <button class="btn btn-sm" onclick="closeDevicePicker()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pairingModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800;">Wireless Pairing</h3>
+                <button class="btn btn-sm" onclick="togglePairingModal(false)" style="padding: 4px 8px;">✕</button>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+                Obtain pairing port and 6-digit code from Android Developer Options &gt; Wireless Debugging &gt; Pair device.
+            </p>
+            <div class="form-group">
+                <input type="number" id="pairPortInput" placeholder="Pairing Port (e.g. 37821)" />
+            </div>
+            <div class="form-group">
+                <input type="text" id="pairCodeInput" placeholder="6-Digit Pairing Code" maxlength="6" style="text-align: center; letter-spacing: 2px;" />
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="btn btn-sm" onclick="togglePairingModal(false)">Cancel</button>
+                <button class="btn btn-sm btn-primary" onclick="pairAdb()">Confirm Pair</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.pathname.replace(/\/ui\/?$/, '');
+        let currentSessionActive = false;
+        let isGuideExpanded = false;
+        let discoveredDevices = [];
+        let selectedDeviceIp = '';
+        let selectedFps = 60;
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            };
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            const response = await fetch(`${API_BASE}${endpoint}`, options);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                throw new Error(errorData.detail || `Request failed (${response.status})`);
+            }
+            return response.json();
+        }
+
+        function toggleGuide() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const content = document.getElementById('guideContent');
+            const chevron = document.getElementById('guideChevron');
+            isGuideExpanded = !isGuideExpanded;
+
+            if (isGuideExpanded) {
+                content.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        async function triggerAdbSettingsIntent() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const ip = document.getElementById('ipInput').value.trim();
+            const port = parseInt(document.getElementById('portInput').value.trim(), 10) || 5555;
+
+            try {
+                const res = await apiCall('/settings/open-wireless-debugging', 'POST', { ip, port });
+                if (window.PCLink) {
+                    window.PCLink.notifications.show('Android DeX Mode', res.message, 'info');
+                }
+            } catch (err) {
+                alert(`Could not open screen via ADB: ${err.message}`);
+            }
+        }
+
+        async function checkBinaryStatus() {
+            try {
+                const data = await apiCall('/binaries/check');
+                const banner = document.getElementById('binaryWarningBanner');
+                const message = document.getElementById('binaryWarningMessage');
+
+                if (!data.adb || !data.scrcpy) {
+                    banner.classList.remove('hidden');
+                    const missing = [];
+                    if (!data.adb) missing.push('ADB');
+                    if (!data.scrcpy) missing.push('Scrcpy');
+                    message.textContent = `Missing tools: ${missing.join(', ')}.`;
+                } else {
+                    banner.classList.add('hidden');
+                }
+            } catch (err) {
+                console.debug('Binary probe skipped:', err);
+            }
+            lucide.createIcons();
+        }
+
+        async function installBinaries() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const btn = document.getElementById('btnInstallBinaries');
+            btn.disabled = true;
+            btn.innerText = 'Installing...';
+
+            try {
+                await apiCall('/binaries/download', 'POST');
+                await checkBinaryStatus();
+                if (window.PCLink) {
+                    window.PCLink.notifications.show('Android DeX Mode', 'Subsystem binaries ready.', 'success');
+                }
+            } catch (err) {
+                alert(`Installation error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Install';
+            }
+        }
+
+        async function loadConnectedDevices() {
+            try {
+                const data = await apiCall('/devices');
+                discoveredDevices = data.devices || [];
+                renderDeviceOptions();
+
+                if (!selectedDeviceIp && discoveredDevices.length > 0) {
+                    selectDevice(discoveredDevices[0].ip);
+                }
+            } catch (err) {
+                console.debug('Could not load device fleet:', err);
+            }
+        }
+
+        function openDevicePicker() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            document.getElementById('devicePickerModal').classList.remove('hidden');
+        }
+
+        function closeDevicePicker() {
+            document.getElementById('devicePickerModal').classList.add('hidden');
+        }
+
+        function renderDeviceOptions() {
+            const list = document.getElementById('deviceOptionsList');
+            if (!list) return;
+
+            if (discoveredDevices.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.8rem;">
+                        No linked phones found. Ensure your phone is paired in PCLink.
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = discoveredDevices.map(dev => `
+                <div class="device-option-item ${dev.ip === selectedDeviceIp ? 'selected' : ''}" onclick="selectDevice('${dev.ip}')">
+                    <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden; min-width: 0;">
+                        <span style="font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${dev.name}</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-family: monospace;">${dev.ip}</span>
+                    </div>
+                    <div class="radio-indicator"></div>
+                </div>
+            `).join('');
+        }
+
+        function selectDevice(ip) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            selectedDeviceIp = ip;
+            const dev = discoveredDevices.find(d => d.ip === ip);
+
+            const labelEl = document.getElementById('deviceSelectLabel');
+            if (labelEl) {
+                labelEl.textContent = dev ? `${dev.name} (${dev.ip})` : (ip || 'Select linked phone...');
+            }
+
+            if (ip) {
+                document.getElementById('ipInput').value = ip;
+            }
+
+            renderDeviceOptions();
+            closeDevicePicker();
+        }
+
+        function selectFps(fps) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            selectedFps = fps;
+            document.getElementById('fpsBtn60').classList.toggle('active', fps === 60);
+            document.getElementById('fpsBtn30').classList.toggle('active', fps === 30);
+        }
+
+        async function updateStatus() {
+            try {
+                const data = await apiCall('/status');
+                const badge = document.getElementById('runtimeStatusBadge');
+                const startBtn = document.getElementById('btnStartWorkspace');
+                const stopBtn = document.getElementById('btnStopWorkspace');
+
+                currentSessionActive = !!data.active;
+
+                if (data.active) {
+                    badge.className = 'status-badge active';
+                    badge.innerHTML = '<span class="status-dot"></span><span>Streaming</span>';
+                    startBtn.classList.add('hidden');
+                    stopBtn.classList.remove('hidden');
+                } else {
+                    badge.className = 'status-badge';
+                    badge.innerHTML = '<span class="status-dot"></span><span>Idle</span>';
+                    startBtn.classList.remove('hidden');
+                    stopBtn.classList.add('hidden');
+                }
+            } catch (err) {
+                console.debug('Status check failed:', err);
+            }
+            lucide.createIcons();
+        }
+
+        async function connectAdb() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const ip = document.getElementById('ipInput').value.trim();
+            const port = parseInt(document.getElementById('portInput').value.trim(), 10) || 5555;
+            const note = document.getElementById('adbStatusNote');
+
+            if (!ip) {
+                alert('Target phone IP address is required.');
+                return;
+            }
+
+            note.textContent = `Connecting to ${ip}:${port}...`;
+            note.style.color = 'var(--text-muted)';
+
+            try {
+                const res = await apiCall('/connect', 'POST', { ip, port });
+                note.textContent = res.message || 'Connected';
+                note.style.color = 'var(--success)';
+            } catch (err) {
+                note.textContent = err.message;
+                note.style.color = 'var(--danger)';
+            }
+        }
+
+        function togglePairingModal(open) {
+            const modal = document.getElementById('pairingModal');
+            if (open) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        async function pairAdb() {
+            const ip = document.getElementById('ipInput').value.trim();
+            const port = parseInt(document.getElementById('pairPortInput').value.trim(), 10);
+            const code = document.getElementById('pairCodeInput').value.trim();
+
+            if (!ip || !port || !code) {
+                alert('All pairing fields are required.');
+                return;
+            }
+
+            try {
+                await apiCall('/pair', 'POST', { ip, port, code });
+                togglePairingModal(false);
+                await connectAdb();
+            } catch (err) {
+                alert(`Pairing failed: ${err.message}`);
+            }
+        }
+
+        function applyPreset(element, label) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('resWidth').value = element.getAttribute('data-w');
+            document.getElementById('resHeight').value = element.getAttribute('data-h');
+            document.getElementById('resDpi').value = element.getAttribute('data-dpi');
+            document.getElementById('activePresetBadge').textContent = label;
+        }
+
+        async function startWorkspace() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            const ip = document.getElementById('ipInput').value.trim();
+            const port = parseInt(document.getElementById('portInput').value.trim(), 10) || 5555;
+            const width = parseInt(document.getElementById('resWidth').value, 10);
+            const height = parseInt(document.getElementById('resHeight').value, 10);
+            const dpi = parseInt(document.getElementById('resDpi').value, 10);
+            const max_fps = selectedFps;
+
+            if (!ip) {
+                alert('Target phone IP address is required.');
+                return;
+            }
+
+            const startBtn = document.getElementById('btnStartWorkspace');
+            startBtn.disabled = true;
+
+            try {
+                await apiCall('/start', 'POST', { ip, port, width, height, dpi, max_fps });
+                await updateStatus();
+                setTimeout(fetchInstalledApps, 1500);
+            } catch (err) {
+                alert(`Launch failure: ${err.message}`);
+            } finally {
+                startBtn.disabled = false;
+            }
+        }
+
+        async function stopWorkspace() {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('error');
+            const stopBtn = document.getElementById('btnStopWorkspace');
+            stopBtn.disabled = true;
+
+            try {
+                await apiCall('/stop', 'POST');
+                await updateStatus();
+                document.getElementById('appsContainer').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 24px 8px; color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">
+                        Session terminated.
+                    </div>
+                `;
+            } catch (err) {
+                alert(`Teardown error: ${err.message}`);
+            } finally {
+                stopBtn.disabled = false;
+            }
+        }
+
+        async function fetchInstalledApps() {
+            if (!currentSessionActive) return;
+            const container = document.getElementById('appsContainer');
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 16px; color: var(--text-muted); font-size: 0.75rem;">
+                    Reading packages...
+                </div>
+            `;
+
+            try {
+                const data = await apiCall('/apps');
+                const apps = data.apps || [];
+                if (apps.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 16px; color: var(--text-muted); font-size: 0.75rem;">
+                            No third-party packages found.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = apps.map(pkg => `
+                    <div class="app-item">
+                        <span class="app-title" title="${pkg}">${pkg.split('.').pop()}</span>
+                        <button class="btn btn-sm btn-primary" onclick="launchApp('${pkg}')">
+                            Open
+                        </button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 16px; color: var(--danger); font-size: 0.75rem;">
+                        ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function launchApp(packageName) {
+            if (window.pclink && window.pclink.ui) pclink.ui.haptic('selection');
+            try {
+                await apiCall('/apps/launch', 'POST', { package_name: packageName });
+            } catch (err) {
+                alert(`Launch failed: ${err.message}`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const guide = document.getElementById('guideContent');
+            guide.classList.add('hidden');
+
+            lucide.createIcons();
+            await checkBinaryStatus();
+            await loadConnectedDevices();
+            await updateStatus();
+            setInterval(updateStatus, 3000);
+        });
+    </script>
+</body>
+</html>
