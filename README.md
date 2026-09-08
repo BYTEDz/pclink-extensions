@@ -5,7 +5,6 @@
 # PCLink Extensions
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Package & Lint Status](https://github.com/BYTEDz/pclink-extensions/actions/workflows/package.yml/badge.svg)](https://github.com/BYTEDz/pclink-extensions/actions/workflows/package-extensions.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![Extensions Catalog](https://img.shields.io/badge/Extensions-Browse%20Catalog-brightgreen)](EXTENSIONS.md)
 
