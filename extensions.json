@@ -1,5 +1,67 @@
 [
   {
+    "id": "android-dex-mode",
+    "name": "Android DeX Mode",
+    "version": "0.0.1",
+    "description": "Samsung DeX-style desktop environment for any Android device via wireless ADB and scrcpy.",
+    "author": "BYTEDz",
+    "category": "Utility",
+    "supported_platforms": [
+      "windows",
+      "linux",
+      "darwin"
+    ],
+    "supported_architectures": [
+      "x86_64",
+      "amd64",
+      "arm64",
+      "aarch64"
+    ],
+    "min_pclink_version": ">=4.9.0",
+    "min_server_version": "4.8.0",
+    "theme_aware_icon": true,
+    "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/android-dex-mode/icon.svg",
+    "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/android-dex-mode-0.0.1.pclink",
+    "sha256": "065e9c209c2c8763d6e8ffc820595775cccc2c3d9f5d9f6ae2388d399e9b3d76",
+    "permissions": [
+      "system.exec",
+      "fs.read",
+      "fs.write",
+      "storage.local"
+    ],
+    "declared_permissions": [
+      "system.exec",
+      "fs.read",
+      "fs.write",
+      "storage.local"
+    ],
+    "ui_capabilities": {},
+    "contributes": {
+      "views": [
+        {
+          "id": "dex-mode-main",
+          "title": "Android DeX Mode",
+          "icon": "monitor",
+          "entry_point": "templates/index.html",
+          "target": "main_tab"
+        }
+      ]
+    },
+    "backend": {
+      "runtime": "python",
+      "entry_point": "main.py:AndroidDexModeExtension",
+      "isolated": true,
+      "resource_limits": {
+        "max_memory_mb": 512,
+        "max_cpu_percent": 80,
+        "execution_timeout_sec": 30
+      }
+    },
+    "added_on": "2026-09-08T21:26:55+01:00",
+    "updated_on": "2026-09-08T21:29:40+01:00",
+    "file_size": 88696
+  },
+  {
     "id": "audio-mixer",
     "name": "Audio Mixer",
     "version": "2.1.0",
@@ -22,7 +84,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/audio-mixer/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/audio-mixer-2.1.0.pclink",
-    "sha256": "4323fd71259210a1295605779a9bd90d5a06999c83ccd39d3daf7bd045206a88",
+    "sha256": "d85aeeec02bd21426adf912188dc95b7ef12e873947fd59a6b22257b8735df15",
     "permissions": [
       "media.control",
       "media.read",
@@ -99,7 +161,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/clipboard-history/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/clipboard-history-2.0.0.pclink",
-    "sha256": "ef475cc734711bddb82ddb9fdf5c88b02552d43c4860b0cc575c925b59ba1f11",
+    "sha256": "efa7bcb6eb2b1115ff3c4a6c0f3de212abb93a5cefee856a998b7ae6aafccf20",
     "permissions": [
       "storage.local",
       "system.exec",
@@ -172,7 +234,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/energy-pulse/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/energy-pulse-2.2.0.pclink",
-    "sha256": "2a2ea753c3a1280a6df3e99bcdb86c0d83e5ab68db909d65d0d029d37300ddaf",
+    "sha256": "022111d26a83ca5dc28e6d4829d4790a507bf4cb527fc2a41bce1c200bc774fb",
     "permissions": [
       "system.exec"
     ],
@@ -235,7 +297,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/file-downloader/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/file-downloader-2.1.0.pclink",
-    "sha256": "6cc4d9be889d112d3d8a3b39682c8c18ade7a3c62b5afa0a15cfabbf84608f00",
+    "sha256": "e3753fd882de05b70592db152e65f89bb299b8749f1365ad16ef1f0aa4f9e3c0",
     "permissions": [
       "fs.read",
       "fs.write",
@@ -314,7 +376,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/gamer-hud/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/gamer-hud-2.0.0.pclink",
-    "sha256": "cfc843dd31f2b613ef75b13585162be5ffdfcd84aecdfd15a26612627a48fc64",
+    "sha256": "62ac9330d2ac0bff87b7ad60880d847bb81117ad0fe8ef556ac99bf18965b240",
     "permissions": [
       "system.exec",
       "storage.local"
@@ -387,7 +449,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/media-master/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/media-master-2.2.0.pclink",
-    "sha256": "12f07056c7a2f694abd9f399ea1cdf3b00cd40a624b98347e06683498228748f",
+    "sha256": "a129231aa052690af0ca7fb0dedbcde990c3eaef152580f412387c5f3287acfa",
     "permissions": [
       "media.read",
       "media.control",
@@ -454,7 +516,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/network-guard/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/network-guard-2.0.1.pclink",
-    "sha256": "0605e721fd7eb0a0b3fb92edd5be63f5b3ada3b87f7715bdc901961bdbd16dd4",
+    "sha256": "2effe54ac0b8db50fbc27c0f7e3f4da4a17ba8f7a4ad1772ff276ddee092a234",
     "permissions": [
       "system.exec",
       "storage.local"
@@ -526,7 +588,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/ppt-controller/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/ppt-controller-2.0.0.pclink",
-    "sha256": "5c9860a50b5fb70b519c9c01a03e3bea4fc2ed7d6cb5ae86808091adb2610c7d",
+    "sha256": "a4fb5512122f6cb89130dab69897222a4af7c4762bccbd35dae532c53252a5ba",
     "permissions": [
       "input.inject"
     ],
@@ -579,7 +641,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/process-manager/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/process-manager-2.0.0.pclink",
-    "sha256": "a465e726d35a66941bcdb939f27789a172b36bd3563296c88bb1d490aa2b10e9",
+    "sha256": "e944cc12e39657c70ef2913db385b6d57a5a5fc428fd99eaf493912c4f8bbfe9",
     "permissions": [
       "system.exec",
       "storage.local"
@@ -634,7 +696,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/quick-notes/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/quick-notes-2.0.0.pclink",
-    "sha256": "16c63c321042a427a2e16f3105a3acc2a4388e41c863381294df6307792716c5",
+    "sha256": "f4b85d86f728a1b23abbd5e80721acbb3a602ba7e9642445b578aed5af0712a5",
     "permissions": [
       "storage.local"
     ],
@@ -687,7 +749,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/speed-test/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/speed-test-2.0.0.pclink",
-    "sha256": "4050a18b6ecd31482dd30cd8e275981e95f3b4ac49bdc6df6761a81388d74426",
+    "sha256": "2c7d189333af89174f5ab47e602dec36abcecaf9c7d7106df2e927e4cd1338da",
     "permissions": [
       "net.fetch",
       "system.exec",
@@ -762,7 +824,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/storage-sweeper/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/storage-sweeper-2.0.0.pclink",
-    "sha256": "197955aa5022c242c1c02832d16d7144195f43d170978a68285019ef36d8600a",
+    "sha256": "0242aa5d97e6ff837b172df376947e6756cb47a34724eb0d4a0f6e26ba0e3ce4",
     "permissions": [
       "fs.read",
       "fs.write",
@@ -837,7 +899,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/vessel-forge/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/vessel-forge-2.1.0.pclink",
-    "sha256": "8886f6d2646b22e1ab86a159573dfe0618cbbf333af33d157fe2424d6fdbb530",
+    "sha256": "b051d164091e3f445d47d995911a13be1e8bddf4e506069bf469fd05d796c69f",
     "permissions": [
       "system.exec",
       "notifications",
@@ -912,7 +974,7 @@
     "theme_aware_icon": true,
     "icon_url": "https://raw.githubusercontent.com/BYTEDz/pclink-extensions/main/extensions/web-controller/icon.svg",
     "download_url": "https://github.com/BYTEDz/pclink-extensions/releases/latest/download/web-controller-2.0.0.pclink",
-    "sha256": "96722f990be49b59479233796235e4437739e3cf113732fcf8f67512f7d4a464",
+    "sha256": "b6de0d4f14673a794b0b769e21e3b0c074a99d3d80a336b33fbdc1506c795636",
     "permissions": [
       "input.inject",
       "system.exec"
